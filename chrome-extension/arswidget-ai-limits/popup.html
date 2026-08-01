@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ArsWidget AI Limits</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <div class="brand"><img src="icons/icon-48.png" alt=""><span>ArsWidget</span></div>
+      <h1>Лимиты AI</h1>
+      <p id="status">Проверяю связь с ArsWidget...</p>
+      <div class="limits" id="limits" hidden></div>
+      <section class="consent" id="consent" hidden>
+        <p>После включения расширение читает только видимые проценты лимитов на открытых страницах Claude и ChatGPT/Codex. Оно передаёт в ArsWidget на этом Mac только три числовых значения.</p>
+        <button id="enable">Включить показ лимитов</button>
+      </section>
+      <p class="hint">Открой страницу лимитов в Claude или Codex. Расширение не читает пароли, cookies, чаты или историю.</p>
+      <button id="openClaude">Открыть Claude Usage</button>
+      <button class="secondary" id="openCodex">Открыть ChatGPT / Codex</button>
+      <button class="text" id="disable" hidden>Отключить показ лимитов</button>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
