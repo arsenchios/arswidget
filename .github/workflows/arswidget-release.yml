@@ -28,13 +28,6 @@ jobs:
       - name: Получить код
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - name: Проверить ключ обновлений
-        run: |
-          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
-            echo "::error::Добавь секрет ARSWIDGET_SPARKLE_PRIVATE_KEY перед выпуском."
-            exit 1
-          fi
-
       - name: Обновить номер версии для выпуска
         run: |
           BUILD_NUMBER=$((BUILD_NUMBER + 1000))
@@ -54,7 +47,7 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             build
 
-      - name: Подготовить архив и ленту обновлений
+      - name: Подготовить архив
         run: |
           APP_PATH="$RUNNER_TEMP/DerivedData/Build/Products/Release/$APP_NAME.app"
           UPDATES_DIR="$RUNNER_TEMP/updates"
@@ -62,16 +55,20 @@ jobs:
           test -d "$APP_PATH"
           ditto -c -k --keepParent "$APP_PATH" "$UPDATES_DIR/$APP_NAME-$VERSION.zip"
           printf '%s\n' "$NOTES" > "$UPDATES_DIR/$APP_NAME-$VERSION.md"
-          GENERATOR=$(find "$RUNNER_TEMP/DerivedData/SourcePackages" -type f -name generate_appcast -perm -111 | head -n 1)
-          test -n "$GENERATOR"
-          printf '%s' "$SPARKLE_PRIVATE_KEY" | "$GENERATOR" \
-            --ed-key-file - \
-            --download-url-prefix "https://github.com/$GITHUB_REPOSITORY/releases/download/v$VERSION/" \
-            --link "https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION" \
-            --embed-release-notes \
-            -o "$UPDATES_DIR/appcast.xml" \
-            "$UPDATES_DIR"
-          cp "$UPDATES_DIR/appcast.xml" updater/appcast.xml
+          if [ -n "$SPARKLE_PRIVATE_KEY" ]; then
+            GENERATOR=$(find "$RUNNER_TEMP/DerivedData/SourcePackages" -type f -name generate_appcast -perm -111 | head -n 1)
+            test -n "$GENERATOR"
+            printf '%s' "$SPARKLE_PRIVATE_KEY" | "$GENERATOR" \
+              --ed-key-file - \
+              --download-url-prefix "https://github.com/$GITHUB_REPOSITORY/releases/download/v$VERSION/" \
+              --link "https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION" \
+              --embed-release-notes \
+              -o "$UPDATES_DIR/appcast.xml" \
+              "$UPDATES_DIR"
+            cp "$UPDATES_DIR/appcast.xml" updater/appcast.xml
+          else
+            echo "Sparkle is not configured: creating a manual ZIP release only."
+          fi
 
       - name: Опубликовать GitHub Release
         env:
@@ -82,10 +79,13 @@ jobs:
             --title "ArsWidget $VERSION" \
             --notes "$NOTES"
 
-      - name: Обновить публичную ленту
+      - name: Сохранить номер версии и ленту обновлений
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add updater/appcast.xml ArsWidget.xcodeproj/project.pbxproj
-          git commit -m "Release ArsWidget $VERSION"
+          git add ArsWidget.xcodeproj/project.pbxproj
+          if [ -f "$RUNNER_TEMP/updates/appcast.xml" ]; then
+            git add updater/appcast.xml
+          fi
+          git diff --cached --quiet || git commit -m "Release ArsWidget $VERSION"
           git push
