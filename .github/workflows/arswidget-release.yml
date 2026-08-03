@@ -48,7 +48,10 @@ jobs:
             build
 
       - name: Установить инструмент для DMG
-        run: python3 -m pip install --require-hashes -r Configuration/dmg/requirements.txt
+        run: |
+          python3 -m venv "$RUNNER_TEMP/dmg-venv"
+          "$RUNNER_TEMP/dmg-venv/bin/pip" install --require-hashes -r Configuration/dmg/requirements.txt
+          echo "$RUNNER_TEMP/dmg-venv/bin" >> "$GITHUB_PATH"
 
       - name: Подготовить архив
         run: |
