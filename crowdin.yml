@@ -1,0 +1,4 @@
+files:
+  - source: /ArsWidget/Localizable.xcstrings
+    translation: /ArsWidget/Localizable.xcstrings
+    multilingual: 1
