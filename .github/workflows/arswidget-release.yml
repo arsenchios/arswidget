@@ -47,6 +47,13 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             build
 
+      - name: Переподписать встроенные компоненты
+        run: |
+          APP_PATH="$RUNNER_TEMP/DerivedData/Build/Products/Release/$APP_NAME.app"
+          test -d "$APP_PATH"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+
       - name: Установить инструмент для DMG
         run: |
           python3 -m venv "$RUNNER_TEMP/dmg-venv"
