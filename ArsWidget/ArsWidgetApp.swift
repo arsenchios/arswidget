@@ -240,7 +240,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func createArsWidgetWindow(for screen: NSScreen, with viewModel: ArsWidgetViewModel) -> NSWindow {
         let rect = NSRect(x: 0, y: 0, width: maxOpenNotchWidth, height: maxOpenNotchHeight + shadowPadding)
-        let styleMask: NSWindow.StyleMask = [.borderless, .utilityWindow, .hudWindow]
+        let styleMask: NSWindow.StyleMask = [.borderless, .nonactivatingPanel]
 
         let window = ArsWidgetSkyLightWindow(contentRect: rect, styleMask: styleMask, backing: .buffered, defer: false)
 
@@ -257,7 +257,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
 
         window.makeKeyAndOrderFront(nil)
-        NotchSpaceManager.shared.notchSpace.windows.insert(window)
 
         // Observe when the window's screen changes so we can update drag detectors
         windowScreenDidChangeObserver = NotificationCenter.default.addObserver(
