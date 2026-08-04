@@ -92,9 +92,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v$VERSION" \
-            "$RUNNER_TEMP/updates/$APP_NAME-$VERSION.zip" \
-            "$RUNNER_TEMP/updates/$APP_NAME-$VERSION.dmg" \
+          ASSETS="$RUNNER_TEMP/updates/$APP_NAME-$VERSION.zip"
+          ASSETS="$ASSETS $RUNNER_TEMP/updates/$APP_NAME-$VERSION.dmg"
+          if [ -f "$RUNNER_TEMP/updates/appcast.xml" ]; then
+            ASSETS="$ASSETS $RUNNER_TEMP/updates/appcast.xml"
+          fi
+          # shellcheck disable=SC2086
+          gh release create "v$VERSION" $ASSETS \
             --title "ArsWidget $VERSION" \
             --notes "$NOTES"
 

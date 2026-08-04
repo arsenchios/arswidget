@@ -18,7 +18,7 @@
 	<key>SUAutomaticallyUpdate</key>
 	<false/>
 	<key>SUFeedURL</key>
-	<string>https://arsenchios.github.io/arswidget/appcast.xml</string>
+	<string>https://github.com/arsenchios/arswidget/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>pgQIMpo2Za/eSOV8uZd6YR8ZE5JQeezUYAcNkZR120g=</string>
 	<key>UTImportedTypeDeclarations</key>
