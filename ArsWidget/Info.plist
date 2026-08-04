@@ -12,11 +12,15 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUEnableAutomaticChecks</key>
-	<false/>
+	<true/>
 	<key>SUScheduledCheckInterval</key>
 	<integer>21600</integer>
 	<key>SUAutomaticallyUpdate</key>
 	<false/>
+	<key>SUFeedURL</key>
+	<string>https://arsenchios.github.io/arswidget/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>pgQIMpo2Za/eSOV8uZd6YR8ZE5JQeezUYAcNkZR120g=</string>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict/>
