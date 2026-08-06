@@ -1,8 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" standalone="yes"?>
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
-  <channel>
-    <title>ArsWidget updates</title>
-    <link>https://github.com/arsenchios/arswidget/releases</link>
-    <description>Verified ArsWidget releases.</description>
-  </channel>
+    <channel>
+        <title>ArsWidget</title>
+        <item>
+            <title>0.1.5</title>
+            <pubDate>Thu, 06 Aug 2026 04:47:06 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.1.5</link>
+            <sparkle:version>1006</sparkle:version>
+            <sparkle:shortVersionString>0.1.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description sparkle:format="markdown"><![CDATA[Игры: только главная страница, игра не выгружается, закрытие кликом мимо, час-напоминание с кнопкой выкл. Помодоро: блокировка перерыва, уведомления, новый текст.
+]]></description>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.1.5/ArsWidget-0.1.5.dmg" length="9355778" type="application/octet-stream" sparkle:edSignature="D6dQP8IoX+6FluBysglj22sQGaNS3SF7azYiUj0MmyyYlQlp+PnCLqsXPXbKFvwPiSTHF1xm4zuRp2+/pdJ0Cg=="/>
+        </item>
+    </channel>
 </rss>
