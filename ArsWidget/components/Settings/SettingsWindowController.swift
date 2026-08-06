@@ -41,7 +41,7 @@ class SettingsWindowController: NSWindowController {
     private func setupWindow() {
         guard let window = window else { return }
 
-        window.title = String(localized: "Настройки ArsWidget")
+        window.title = String(localized: "Настройки arsansara ☯")
         window.titlebarAppearsTransparent = false
         window.titleVisibility = .visible
         window.toolbarStyle = .unified

@@ -1,7 +1,17 @@
 const keys = [
   ["codexWeeklyRemaining", "Codex, неделя"],
   ["claudeFiveHourRemaining", "Claude, 5 часов"],
-  ["claudeWeeklyRemaining", "Claude, неделя"]
+  ["claudeWeeklyRemaining", "Claude, неделя"],
+  ["deepseekRemaining", "DeepSeek"],
+  ["geminiRemaining", "Gemini"]
+];
+
+const siteNames = [
+  ["codexWeeklyRemaining", "Codex"],
+  ["claudeFiveHourRemaining", "Claude"],
+  ["claudeWeeklyRemaining", "Claude"],
+  ["deepseekRemaining", "DeepSeek"],
+  ["geminiRemaining", "Gemini"]
 ];
 
 async function render() {
@@ -11,6 +21,7 @@ async function render() {
   const rows = keys.filter(([key]) => Number.isFinite(arsWidgetUsage[key]));
   const status = document.querySelector("#status");
   const limits = document.querySelector("#limits");
+  const missing = document.querySelector("#missing");
 
   document.querySelector("#consent").hidden = arsWidgetUsageConsent;
   document.querySelector("#disable").hidden = !arsWidgetUsageConsent;
@@ -20,6 +31,16 @@ async function render() {
     : arsWidgetBridgeStatus.connected
     ? "ArsWidget подключён. Последние найденные значения:"
     : "Запусти ArsWidget, затем открой страницы лимитов.";
+
+  const missingNames = [...new Set(
+    siteNames
+      .filter(([key]) => !Number.isFinite(arsWidgetUsage[key]))
+      .map(([, name]) => name)
+  )];
+  missing.textContent = missingNames.length
+    ? `Можно подключить: ${missingNames.join(", ")}. Открой нужную страницу лимитов.`
+    : "";
+  missing.hidden = !missingNames.length;
 
   if (rows.length) {
     limits.hidden = false;
@@ -48,6 +69,19 @@ document.querySelector("#openClaude").addEventListener("click", () => {
 
 document.querySelector("#openCodex").addEventListener("click", () => {
   chrome.tabs.create({ url: "https://chatgpt.com/#settings/Account" });
+});
+
+document.querySelector("#openDeepSeek").addEventListener("click", () => {
+  chrome.tabs.create({ url: "https://platform.deepseek.com/usage" });
+});
+
+document.querySelector("#openGemini").addEventListener("click", () => {
+  chrome.tabs.create({ url: "https://aistudio.google.com/" });
+});
+
+document.querySelector("#refresh").addEventListener("click", () => {
+  chrome.runtime.sendMessage({ type: "RESEND" });
+  window.setTimeout(render, 500);
 });
 
 render();

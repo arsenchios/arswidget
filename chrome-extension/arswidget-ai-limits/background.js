@@ -15,6 +15,22 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 
+  if (message?.type === "RESEND") {
+    chrome.storage.local.get(USAGE_KEY)
+      .then(({ [USAGE_KEY]: usage = {} }) => sendUsage(usage));
+    chrome.tabs.query({}, (tabs) => {
+      for (const tab of tabs) {
+        chrome.tabs.sendMessage(tab.id, { type: "USAGE_ENABLED" }).catch(() => {});
+      }
+    });
+    return true;
+  }
+
+  if (message?.type === "USAGE_PAGE_NO_DATA") {
+    notifyNoData();
+    return;
+  }
+
   if (message?.type !== "USAGE_FOUND") return;
 
   chrome.storage.local.get(CONSENT_KEY)
@@ -50,13 +66,44 @@ function pickPercentages(value = {}) {
   for (const key of [
     "codexWeeklyRemaining",
     "claudeFiveHourRemaining",
-    "claudeWeeklyRemaining"
+    "claudeWeeklyRemaining",
+    "deepseekRemaining",
+    "geminiRemaining"
   ]) {
     if (Number.isFinite(value[key]) && value[key] >= 0 && value[key] <= 100) {
       result[key] = Math.round(value[key] * 10) / 10;
     }
   }
   return result;
+}
+
+let consecutiveFailures = 0;
+let lastFailureNotificationAt = 0;
+let lastNoDataNotificationAt = 0;
+
+function notifyFailure() {
+  consecutiveFailures += 1;
+  if (consecutiveFailures < 3 || Date.now() - lastFailureNotificationAt < 15 * 60 * 1000) {
+    return;
+  }
+  lastFailureNotificationAt = Date.now();
+  chrome.notifications.create({
+    type: "basic",
+    iconUrl: "icons/icon-128.png",
+    title: "arsansara не отвечает",
+    message: "Запусти arsansara на этом Mac, чтобы лимиты продолжали передаваться. Вкладки лимитов можно закрепить."
+  });
+}
+
+function notifyNoData() {
+  if (Date.now() - lastNoDataNotificationAt < 15 * 60 * 1000) return;
+  lastNoDataNotificationAt = Date.now();
+  chrome.notifications.create({
+    type: "basic",
+    iconUrl: "icons/icon-128.png",
+    title: "Страница лимитов изменилась",
+    message: "Расширение не находит проценты на открытой странице. Проверь, что ты залогинен, или обнови страницу."
+  });
 }
 
 async function sendUsage(usage = {}) {
@@ -73,11 +120,17 @@ async function sendUsage(usage = {}) {
     await chrome.storage.local.set({
       [STATUS_KEY]: { connected: ok, updatedAt: Date.now() }
     });
+    if (ok) {
+      consecutiveFailures = 0;
+    } else {
+      notifyFailure();
+    }
     return ok;
   } catch {
     await chrome.storage.local.set({
       [STATUS_KEY]: { connected: false, updatedAt: Date.now() }
     });
+    notifyFailure();
     return false;
   }
 }

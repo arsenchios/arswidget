@@ -618,6 +618,12 @@ struct ContentView: View {
             if let claude = aiUsageManager.snapshot?.claudeWeeklyRemaining {
                 aiUsageCapsule(label: "W", value: claude, color: .orange.opacity(0.72))
             }
+            if let deepseek = aiUsageManager.snapshot?.deepseekRemaining {
+                aiUsageCapsule(label: "D", value: deepseek, color: .teal)
+            }
+            if let gemini = aiUsageManager.snapshot?.geminiRemaining {
+                aiUsageCapsule(label: "G", value: gemini, color: .purple)
+            }
         }
     }
 

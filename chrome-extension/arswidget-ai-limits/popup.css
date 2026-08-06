@@ -6,6 +6,9 @@ main { padding: 16px; }
 h1 { margin: 15px 0 7px; font-size: 18px; }
 p { margin: 0; line-height: 1.4; color: #b6bac2; }
 .hint { margin: 14px 0; font-size: 12px; }
+.howto { margin: 10px 0 14px; padding: 10px 12px; border: 1px solid #2a2d31; border-radius: 10px; background: #17191c; }
+.howto summary { cursor: pointer; color: #b6bac2; font-weight: 650; font-size: 12px; }
+.howto ul { margin: 9px 0 0; padding-left: 16px; color: #9ba4b2; font-size: 12px; line-height: 1.6; }
 .consent { margin: 14px 0; padding: 11px; border: 1px solid #33445f; border-radius: 10px; background: #172032; }
 .consent button { margin-top: 10px; }
 .limits { margin-top: 12px; border: 1px solid #2a2d31; border-radius: 10px; overflow: hidden; }

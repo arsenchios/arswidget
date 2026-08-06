@@ -1,11 +1,15 @@
 const FIVE_HOUR = /(?:5\s*[- ]?\s*(?:hour|hours|час|часов|часа)|пятичас)/i;
 const WEEKLY = /(?:week|weekly|недел)/i;
 const CODEX = /codex/i;
+const DEEPSEEK = /deepseek/i;
+const GEMINI = /gemini/i;
 const REMAINING = /(?:remaining|left|available|осталось|доступно|осталось лимита)/i;
 const USED = /(?:used|consumed|использовано|потрачено|израсходовано)/i;
 let lastUsage = "";
 let scheduled = false;
 let isEnabled = false;
+let emptyScans = 0;
+let noDataNotified = false;
 
 function isUsagePage() {
   const path = location.pathname.toLowerCase();
@@ -13,6 +17,18 @@ function isUsagePage() {
 
   if (location.hostname.includes("claude.ai")) {
     return path.startsWith("/settings/usage");
+  }
+
+  if (location.hostname.includes("platform.deepseek.com")) {
+    return path.includes("usage");
+  }
+
+  if (location.hostname.includes("aistudio.google.com")) {
+    return true;
+  }
+
+  if (location.hostname.includes("gemini.google.com")) {
+    return path.includes("usage") || hash.includes("usage");
   }
 
   return path.includes("settings") || path.includes("codex") || hash.includes("settings");
@@ -50,6 +66,16 @@ function detectUsage() {
       && CODEX.test(context) && WEEKLY.test(context)) {
       usage.codexWeeklyRemaining = percent;
     }
+
+    if (location.hostname.includes("platform.deepseek.com")
+      && (REMAINING.test(context) || DEEPSEEK.test(context))) {
+      usage.deepseekRemaining = percent;
+    }
+
+    if ((location.hostname.includes("aistudio.google.com") || location.hostname.includes("gemini.google.com"))
+      && (REMAINING.test(context) || GEMINI.test(context))) {
+      usage.geminiRemaining = percent;
+    }
   }
 
   return usage;
@@ -60,6 +86,9 @@ function reportUsage() {
   if (!isEnabled) return;
   const usage = detectUsage();
   const serialized = JSON.stringify(usage);
+  if (serialized === "{}" && isUsagePage()) {
+    emptyScans += 1;
+  }
   if (serialized === lastUsage || serialized === "{}") return;
 
   lastUsage = serialized;
@@ -72,10 +101,21 @@ function scheduleReport() {
   window.setTimeout(reportUsage, 900);
 }
 
+function noteNoDataIfNeeded() {
+  // The page looks like a usage page, but no percentages were found after a
+  // few scans — the layout may have changed or the user may be logged out.
+  if (noDataNotified || emptyScans < 6) return;
+  noDataNotified = true;
+  chrome.runtime.sendMessage({ type: "USAGE_PAGE_NO_DATA" });
+}
+
 function start() {
   if (isEnabled || !isUsagePage()) return;
   isEnabled = true;
   scheduleReport();
+  if (isUsagePage()) {
+    window.setTimeout(noteNoDataIfNeeded, 12_000);
+  }
 }
 
 chrome.runtime.sendMessage({ type: "GET_CONSENT" }, (response) => {

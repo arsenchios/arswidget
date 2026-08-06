@@ -28,7 +28,7 @@ struct ArsWidgetApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra("ArsWidget", systemImage: "sparkle", isInserted: $showMenuBarIcon) {
+        MenuBarExtra("arsansara ☯", systemImage: "sparkle", isInserted: $showMenuBarIcon) {
             Button("Настройки") {
                 DispatchQueue.main.async {
                     SettingsWindowController.shared.showWindow()

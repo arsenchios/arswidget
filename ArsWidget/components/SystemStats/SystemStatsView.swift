@@ -165,9 +165,29 @@ struct SystemStatsView: View {
             }
 
             if let snapshot = aiUsage.snapshot {
-                aiLimitRow("Codex, неделя", value: snapshot.codexWeeklyRemaining, color: .blue)
-                aiLimitRow("Claude, 5 часов", value: snapshot.claudeFiveHourRemaining, color: .orange)
-                aiLimitRow("Claude, неделя", value: snapshot.claudeWeeklyRemaining, color: .orange.opacity(0.7))
+                let connected: [(String, Double?, Color)] = [
+                    ("Codex, неделя", snapshot.codexWeeklyRemaining, .blue),
+                    ("Claude, 5 часов", snapshot.claudeFiveHourRemaining, .orange),
+                    ("Claude, неделя", snapshot.claudeWeeklyRemaining, .orange.opacity(0.7)),
+                    ("DeepSeek", snapshot.deepseekRemaining, .teal),
+                    ("Gemini", snapshot.geminiRemaining, .purple),
+                ].filter { $0.1 != nil }
+
+                ForEach(connected, id: \.0) { title, value, color in
+                    aiLimitRow(title, value: value, color: color)
+                }
+
+                if connected.count < 5 {
+                    let missing: [String] = [
+                        (snapshot.codexWeeklyRemaining != nil ? nil : "Codex"),
+                        (snapshot.claudeFiveHourRemaining != nil || snapshot.claudeWeeklyRemaining != nil ? nil : "Claude"),
+                        (snapshot.deepseekRemaining != nil ? nil : "DeepSeek"),
+                        (snapshot.geminiRemaining != nil ? nil : "Gemini"),
+                    ].compactMap { $0 }
+                    Text("Можно подключить: \(missing.joined(separator: ", ")) — держи страницы лимитов открытыми в Chrome.")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
             } else {
                 Button {
                     showAILimitsSetup = true

@@ -1,14 +1,16 @@
 {
   "manifest_version": 3,
   "name": "ArsWidget AI Limits",
-  "version": "0.1.2",
-  "description": "Показывает остаток лимитов Claude и Codex в ArsWidget на этом Mac.",
-  "permissions": ["alarms", "storage"],
+  "version": "0.2.0",
+  "description": "Показывает остаток лимитов Claude, Codex, DeepSeek и Gemini в arsansara на этом Mac.",
+  "permissions": ["alarms", "storage", "notifications"],
   "host_permissions": [
     "http://127.0.0.1:63554/*",
     "https://claude.ai/*",
     "https://chatgpt.com/*",
-    "https://chat.openai.com/*"
+    "https://chat.openai.com/*",
+    "https://platform.deepseek.com/*",
+    "https://aistudio.google.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -22,7 +24,9 @@
       "matches": [
         "https://claude.ai/*",
         "https://chatgpt.com/*",
-        "https://chat.openai.com/*"
+        "https://chat.openai.com/*",
+        "https://platform.deepseek.com/usage/*",
+        "https://aistudio.google.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"

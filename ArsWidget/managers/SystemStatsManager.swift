@@ -30,6 +30,8 @@ struct AIUsageSnapshot: Codable, Equatable {
     var codexWeeklyRemaining: Double?
     var claudeFiveHourRemaining: Double?
     var claudeWeeklyRemaining: Double?
+    var deepseekRemaining: Double?
+    var geminiRemaining: Double?
     var updatedAt: Date
 }
 
@@ -54,6 +56,8 @@ final class AIUsageManager: ObservableObject {
         snapshot?.codexWeeklyRemaining != nil
             || snapshot?.claudeFiveHourRemaining != nil
             || snapshot?.claudeWeeklyRemaining != nil
+            || snapshot?.deepseekRemaining != nil
+            || snapshot?.geminiRemaining != nil
     }
 
     var dataFileURL: URL? {
@@ -204,6 +208,8 @@ final class AIUsageBridge {
             payload.codexWeeklyRemaining,
             payload.claudeFiveHourRemaining,
             payload.claudeWeeklyRemaining,
+            payload.deepseekRemaining,
+            payload.geminiRemaining,
         ].compactMap { $0 }
 
         guard !values.isEmpty, values.allSatisfy({ (0...100).contains($0) }) else { return false }
@@ -212,6 +218,8 @@ final class AIUsageBridge {
             codexWeeklyRemaining: payload.codexWeeklyRemaining,
             claudeFiveHourRemaining: payload.claudeFiveHourRemaining,
             claudeWeeklyRemaining: payload.claudeWeeklyRemaining,
+            deepseekRemaining: payload.deepseekRemaining,
+            geminiRemaining: payload.geminiRemaining,
             updatedAt: Date()
         )
         Task { @MainActor in
@@ -237,6 +245,8 @@ private struct AIUsageBridgePayload: Decodable, Sendable {
     let codexWeeklyRemaining: Double?
     let claudeFiveHourRemaining: Double?
     let claudeWeeklyRemaining: Double?
+    let deepseekRemaining: Double?
+    let geminiRemaining: Double?
 }
 
 @MainActor
