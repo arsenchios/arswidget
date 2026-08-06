@@ -132,4 +132,6 @@ if (isUsagePage()) {
     subtree: true,
     characterData: true
   });
+  // Periodic re-scan so login/layout issues are detected even on static pages.
+  window.setInterval(reportUsage, 60_000);
 }
