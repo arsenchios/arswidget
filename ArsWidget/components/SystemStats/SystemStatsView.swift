@@ -368,10 +368,19 @@ struct SystemStatsView: View {
             Text("Лимиты Claude и Codex")
                 .font(.title3.bold())
 
-            Text("Установи расширение ArsWidget для Chrome, затем открой страницы Usage у Claude и Codex. После подключения здесь появятся остаток лимита Claude на 5 часов и неделю, а также недельный лимит Codex.")
+            Text("Установи расширение ArsWidget для Chrome. Открой страницы Usage у Claude и Codex и держи их открытыми — вкладки можно закрепить. После подключения здесь появятся остаток лимита Claude на 5 часов и неделю, а также недельный лимит Codex.")
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            Button {
+                openExtensionStore()
+            } label: {
+                Label("Установить расширение Chrome", systemImage: "puzzlepiece.extension")
+                    .font(.caption.weight(.semibold))
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
 
             VStack(alignment: .leading, spacing: 7) {
                 Label("Расширение передаёт только проценты лимитов и время обновления.", systemImage: "checkmark.shield")
@@ -381,7 +390,7 @@ struct SystemStatsView: View {
             .font(.caption)
             .foregroundStyle(.secondary)
 
-            Text("Расширение передаёт данные только в запущенный ArsWidget через локальное соединение на этом Mac. Оно не отправляет их в интернет.")
+            Text("Расширение берёт с открытой страницы только проценты остатка лимитов — это безопасно. Они передаются только локально на твой Mac и в интернет не отправляются.")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -396,6 +405,13 @@ struct SystemStatsView: View {
         }
         .padding(12)
         .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func openExtensionStore() {
+        guard let url = URL(string: "https://chromewebstore.google.com/search/ArsWidget%20AI%20Limits"),
+              url.scheme?.lowercased() == "https"
+        else { return }
+        NSWorkspace.shared.open(url)
     }
 
     private var supportPanel: some View {
