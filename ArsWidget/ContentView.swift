@@ -25,6 +25,7 @@ struct ContentView: View {
     @ObservedObject var batteryModel = BatteryStatusViewModel.shared
     @ObservedObject var brightnessManager = BrightnessManager.shared
     @ObservedObject var volumeManager = VolumeManager.shared
+    @ObservedObject private var gameMonitor = GameSessionMonitor.shared
     @State private var hoverTask: Task<Void, Never>?
     @State private var isHovering: Bool = false
     @State private var anyDropDebounceTask: Task<Void, Never>?
@@ -144,6 +145,15 @@ struct ContentView: View {
         }()
 
         ZStack(alignment: .top) {
+            if vm.notchState == .closed && gameMonitor.showHourlyReminder {
+                Circle()
+                    .fill(Color.orange)
+                    .frame(width: 9, height: 9)
+                    .shadow(color: Color.orange.opacity(0.9), radius: 5)
+                    .overlay(Circle().stroke(Color.black.opacity(0.6), lineWidth: 1))
+                    .offset(x: vm.closedNotchSize.width / 2 + 18, y: 0)
+            }
+
             VStack(spacing: 0) {
                 let mainLayout = NotchLayout()
                     .frame(alignment: .top)

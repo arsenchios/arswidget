@@ -30,6 +30,7 @@ let trailingTabs = Array(tabs.suffix(tabs.count / 2))
 
 struct TabSelectionView: View {
     @ObservedObject var coordinator = ArsWidgetViewCoordinator.shared
+    @ObservedObject private var gameMonitor = GameSessionMonitor.shared
     @Namespace var animation
     let tabItems: [TabModel]
 
@@ -40,28 +41,42 @@ struct TabSelectionView: View {
     var body: some View {
         HStack(spacing: 0) {
             ForEach(tabItems) { tab in
-                    TabButton(label: tab.label, icon: tab.icon, selected: coordinator.currentView == tab.view) {
-                        withAnimation(.smooth) {
-                            coordinator.currentView = tab.view
-                        }
-                    }
-                    .frame(height: 26)
-                    .foregroundStyle(tab.view == coordinator.currentView ? .white : .gray)
-                    .background {
-                        if tab.view == coordinator.currentView {
-                            Capsule()
-                                .fill(coordinator.currentView == tab.view ? Color(nsColor: .secondarySystemFill) : Color.clear)
-                                .matchedGeometryEffect(id: "capsule", in: animation)
-                        } else {
-                            Capsule()
-                                .fill(coordinator.currentView == tab.view ? Color(nsColor: .secondarySystemFill) : Color.clear)
-                                .matchedGeometryEffect(id: "capsule", in: animation)
-                                .hidden()
-                        }
-                    }
+                tabButton(for: tab)
             }
         }
         .clipShape(Capsule())
+    }
+
+    private func tabButton(for tab: TabModel) -> some View {
+        TabButton(label: tab.label, icon: tab.icon, selected: coordinator.currentView == tab.view) {
+            withAnimation(.smooth) {
+                coordinator.currentView = tab.view
+            }
+        }
+        .frame(height: 26)
+        .foregroundStyle(tab.view == coordinator.currentView ? .white : .gray)
+        .background(selectionCapsule(selected: tab.view == coordinator.currentView))
+        .overlay(alignment: .topTrailing) {
+            gamesReminderDot(for: tab)
+        }
+    }
+
+    private func selectionCapsule(selected: Bool) -> some View {
+        Capsule()
+            .fill(selected ? Color(nsColor: .secondarySystemFill) : Color.clear)
+            .matchedGeometryEffect(id: "capsule", in: animation)
+    }
+
+    @ViewBuilder
+    private func gamesReminderDot(for tab: TabModel) -> some View {
+        if tab.view == .games && gameMonitor.showHourlyReminder {
+            Circle()
+                .fill(Color.orange)
+                .frame(width: 7, height: 7)
+                .shadow(color: Color.orange.opacity(0.9), radius: 4)
+                .padding(.top, -2)
+                .padding(.trailing, 2)
+        }
     }
 }
 

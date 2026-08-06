@@ -75,7 +75,7 @@ private struct PomodoroBreakOverlayView: View {
                 Text(pomodoro.formattedTimeRemaining)
                     .font(.system(size: 54, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white)
-                Text("Отойди от экрана — вернётся само.")
+                Text("Отдохни чуток, разомнись, да завари чаёк")
                     .font(.body)
                     .foregroundStyle(.white.opacity(0.7))
                 Button("Пропустить перерыв") {

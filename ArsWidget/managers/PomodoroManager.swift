@@ -74,7 +74,7 @@ private struct PendingPomodoroReview {
 }
 
 @MainActor
-final class PomodoroManager: ObservableObject {
+final class PomodoroManager: NSObject, ObservableObject {
     static let shared = PomodoroManager()
 
     @Published private(set) var phase: PomodoroPhase = .idle
@@ -108,11 +108,14 @@ final class PomodoroManager: ObservableObject {
     private var currentPhaseStartedAt: Date?
     private var pendingReview: PendingPomodoroReview?
 
-    private init() {
+    private override init() {
+        super.init()
         completedWorkSessions = storedCompletedWorkSessions
         loadPersistedState()
         ensureActiveTask()
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
     }
 
     var totalSeconds: Int {
@@ -684,7 +687,9 @@ final class PomodoroManager: ObservableObject {
         if overlayWindow == nil {
             overlayWindow = PomodoroBreakOverlayWindow()
         }
-        overlayWindow?.showOverlay(blocksInput: lockDuringBreak)
+        // The break always blocks other input: the only way out is the
+        // "Пропустить перерыв" button or Esc.
+        overlayWindow?.showOverlay(blocksInput: true)
     }
 
     private func hideBreakOverlay() {
@@ -718,5 +723,17 @@ final class PomodoroManager: ObservableObject {
         }
         storedActiveTaskID = activeTaskID?.uuidString ?? ""
         storedCompletedWorkSessions = completedWorkSessions
+    }
+}
+
+extension PomodoroManager: UNUserNotificationCenterDelegate {
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // Show banners even while the app is in the foreground, otherwise
+        // macOS silently swallows the Pomodoro notifications.
+        completionHandler([.banner, .sound])
     }
 }

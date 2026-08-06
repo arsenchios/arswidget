@@ -144,6 +144,7 @@
 		B1FEB4992C7686630066EBBC /* PanGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FEB4982C7686630066EBBC /* PanGesture.swift */; };
 		F38DE6482D8243E7008B5C6D /* BatteryActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38DE6472D8243E2008B5C6D /* BatteryActivityManager.swift */; };
 		AA0000000000000000000002 /* PomodoroManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* PomodoroManager.swift */; };
+		AA000000000000000000009A /* GameSessionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000099 /* GameSessionMonitor.swift */; };
 		AA0000000000000000000004 /* ClipboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000003 /* ClipboardManager.swift */; };
 		AA0000000000000000000006 /* VocabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000005 /* VocabManager.swift */; };
 		AA0000000000000000000008 /* SessionTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000007 /* SessionTimerManager.swift */; };
@@ -326,6 +327,7 @@
 		B1FEB4982C7686630066EBBC /* PanGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanGesture.swift; sourceTree = "<group>"; };
 		F38DE6472D8243E2008B5C6D /* BatteryActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryActivityManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000001 /* PomodoroManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroManager.swift; sourceTree = "<group>"; };
+		AA0000000000000000000099 /* GameSessionMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSessionMonitor.swift; sourceTree = "<group>"; };
 		AA0000000000000000000003 /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000005 /* VocabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000007 /* SessionTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimerManager.swift; sourceTree = "<group>"; };
@@ -625,6 +627,7 @@
 				B1F0A0012E60000100000001 /* BrightnessManager.swift */,
 				59D8C23B2E589FAA00147B33 /* VolumeManager.swift */,
 				AA0000000000000000000001 /* PomodoroManager.swift */,
+				AA0000000000000000000099 /* GameSessionMonitor.swift */,
 				AA0000000000000000000003 /* ClipboardManager.swift */,
 				AA0000000000000000000005 /* VocabManager.swift */,
 				AA0000000000000000000007 /* SessionTimerManager.swift */,
@@ -1018,6 +1021,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000000000002 /* PomodoroManager.swift in Sources */,
+				AA000000000000000000009A /* GameSessionMonitor.swift in Sources */,
 				AA0000000000000000000004 /* ClipboardManager.swift in Sources */,
 				AA0000000000000000000006 /* VocabManager.swift in Sources */,
 				AA0000000000000000000008 /* SessionTimerManager.swift in Sources */,

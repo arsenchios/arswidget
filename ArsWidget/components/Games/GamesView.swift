@@ -13,174 +13,172 @@
 //
 
 import SwiftUI
-import UserNotifications
 import WebKit
-
-private enum GameChoice: String, CaseIterable, Identifiable {
-    case kizuna = "Kizuna"
-    case tsunagu = "Цунаги"
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .kizuna: return "Kizuna"
-        case .tsunagu: return String(localized: "Цунаги")
-        }
-    }
-
-    var path: String {
-        switch self {
-        case .kizuna: return "/kizuna"
-        case .tsunagu: return "/tsunagu"
-        }
-    }
-}
 
 struct GamesView: View {
     @EnvironmentObject var vm: ArsWidgetViewModel
     @AppStorage("gamesBaseURL") private var baseURLString: String = "https://app.staroschuk.com"
-    @State private var selectedGame: GameChoice = .kizuna
-    @State private var isEditingURL = false
-    @StateObject private var session = GameSessionController.shared
+    @State private var outsideClickMonitor: Any?
+    @ObservedObject private var gameMonitor = GameSessionMonitor.shared
 
     private var gameURL: URL? {
         guard let base = URL(string: baseURLString.trimmingCharacters(in: .whitespacesAndNewlines)),
               base.scheme?.lowercased() == "https",
               base.host != nil
         else { return nil }
-        return base.appendingPathComponent(String(selectedGame.path.dropFirst()))
+        // The game's own catalogue page: it already contains the choice of
+        // games, so the widget does not need its own switcher.
+        let url = base.appendingPathComponent("games")
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        var queryItems = components?.queryItems ?? []
+        queryItems.append(URLQueryItem(name: "widget", value: "1"))
+        components?.queryItems = queryItems
+        return components?.url
     }
 
     var body: some View {
-        VStack(spacing: 6) {
-            HStack {
-                Picker("", selection: $selectedGame) {
-                    ForEach(GameChoice.allCases) { game in
-                        Text(game.title).tag(game)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 180)
-
-                Spacer()
-
-                Button {
-                    if let url = gameURL {
-                        NSWorkspace.shared.open(url)
-                    }
-                } label: {
-                    Image(systemName: "arrow.up.forward.app")
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.white.opacity(0.7))
-                .help("Открыть в браузере на весь экран")
-
-                Button {
-                    isEditingURL.toggle()
-                } label: {
-                    Image(systemName: "gearshape")
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.white.opacity(0.5))
-            }
-
-            if isEditingURL {
-                TextField("Адрес сервера игр", text: $baseURLString)
-                    .textFieldStyle(.roundedBorder)
-                    .font(.caption)
-            }
-
+        Group {
             if let url = gameURL {
-                GameWebView(
-                    cacheKey: selectedGame.rawValue,
-                    url: url,
-                    onInteraction: {
-                        session.registerInteraction()
+                ZStack(alignment: .top) {
+                    if gameMonitor.isGameClosedByUser {
+                        closedGamePlaceholder
+                    } else {
+                        GameWebView(url: url)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 840)
+                            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+
+                        if gameMonitor.showInGamePrompt {
+                            hourPromptBanner
+                                .padding(.top, 10)
+                                .padding(.horizontal, 10)
+                        }
+
+                        Button {
+                            gameMonitor.closeGame()
+                        } label: {
+                            Image(systemName: "power")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.65))
+                                .frame(width: 22, height: 22)
+                                .background(Circle().fill(Color.white.opacity(0.12)))
+                        }
+                        .buttonStyle(.plain)
+                        .help("Закрыть игру и освободить память")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                        .padding(12)
                     }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 820)
-                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                    )
+                }
+                .frame(height: 840)
             } else {
                 Text("Некорректный адрес сервера")
                     .font(.caption)
                     .foregroundStyle(.gray)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 820)
+                    .frame(height: 840)
             }
         }
-        .padding(.horizontal, 8)
         .onAppear {
             vm.updateOpenSizeIfNeeded()
-            session.attach(viewModel: vm)
-            session.start()
-            session.registerInteraction()
+            installOutsideClickMonitor()
         }
         .onDisappear {
-            session.detachIfNeeded(for: vm)
-        }
-        .onChange(of: selectedGame) { _, _ in
-            session.registerInteraction()
-        }
-    }
-}
-
-@MainActor
-final class GameSessionController: ObservableObject {
-    static let shared = GameSessionController()
-
-    private weak var viewModel: ArsWidgetViewModel?
-    private var timer: Timer?
-    private var lastInteraction = Date()
-    private let inactivityInterval: TimeInterval = 600
-
-    func attach(viewModel: ArsWidgetViewModel) {
-        self.viewModel = viewModel
-    }
-
-    func detachIfNeeded(for viewModel: ArsWidgetViewModel) {
-        if self.viewModel === viewModel {
-            self.viewModel = nil
-            stop()
-        }
-    }
-
-    func start() {
-        stop()
-        timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.checkIdleTimeout()
+            if let monitor = outsideClickMonitor {
+                NSEvent.removeMonitor(monitor)
+                outsideClickMonitor = nil
             }
         }
     }
 
-    func stop() {
-        timer?.invalidate()
-        timer = nil
+    private var closedGamePlaceholder: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "gamecontroller")
+                .font(.system(size: 30))
+                .foregroundStyle(.white.opacity(0.5))
+            Text("Игра закрыта")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.85))
+            Text("Память освобождена. Нажми «Включить», чтобы начать заново.")
+                .font(.system(size: 12))
+                .foregroundStyle(.white.opacity(0.45))
+                .multilineTextAlignment(.center)
+            Button {
+                gameMonitor.startGameAgain()
+            } label: {
+                Text("Включить")
+                    .font(.system(size: 12, weight: .semibold))
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 7)
+                    .background(Capsule().fill(Color.orange.opacity(0.85)))
+                    .foregroundStyle(.black)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
-    func registerInteraction() {
-        lastInteraction = Date()
+    private var hourPromptBanner: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text("Игра активна уже час. Продолжить или закрыть?")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.white)
+            Text("Игра занимает примерно \(gameMonitor.gameMemoryMB) МБ оперативной памяти")
+                .font(.system(size: 11))
+                .foregroundStyle(.orange.opacity(0.95))
+            HStack(spacing: 10) {
+                Button {
+                    gameMonitor.continueSession()
+                } label: {
+                    Text("Продолжить")
+                        .font(.system(size: 12, weight: .semibold))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 6)
+                        .background(Capsule().fill(Color.white.opacity(0.14)))
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    gameMonitor.closeGame()
+                } label: {
+                    Text("Закрыть")
+                        .font(.system(size: 12, weight: .semibold))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 6)
+                        .background(Capsule().fill(Color.orange.opacity(0.85)))
+                        .foregroundStyle(.black)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.black.opacity(0.92))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.orange.opacity(0.55), lineWidth: 1)
+                )
+                .shadow(color: .orange.opacity(0.25), radius: 10)
+        )
     }
 
-    private func checkIdleTimeout() {
-        guard let viewModel else { return }
-        guard viewModel.notchState == .open else { return }
-        guard ArsWidgetViewCoordinator.shared.currentView == .games else { return }
-        guard Date().timeIntervalSince(lastInteraction) >= inactivityInterval else { return }
-
-        GameWebViewStore.shared.releaseAll()
-        viewModel.close()
-
-        let content = UNMutableNotificationContent()
-        content.title = "Игра скрыта"
-        content.body = "Игра выгружена после долгого простоя, чтобы не расходовать память. Открой вкладку снова, чтобы продолжить."
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request)
+    /// In the games tab the notch stays open when the mouse leaves it, so the
+    /// only way to dismiss it is a click outside the widget. A global monitor
+    /// catches clicks in other apps and closes the games tab.
+    private func installOutsideClickMonitor() {
+        guard outsideClickMonitor == nil else { return }
+        outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { _ in
+            Task { @MainActor [weak vm] in
+                guard let vm,
+                      vm.notchState == .open,
+                      ArsWidgetViewCoordinator.shared.currentView == .games
+                else { return }
+                vm.close()
+            }
+        }
     }
 }
 
@@ -190,8 +188,8 @@ final class GameWebViewStore {
 
     private var webViews: [String: WKWebView] = [:]
 
-    func webView(for key: String, url: URL) -> WKWebView {
-        if let existing = webViews[key] {
+    func webView(for url: URL) -> WKWebView {
+        if let existing = webViews.values.first {
             if existing.url == nil {
                 existing.load(URLRequest(url: url))
             }
@@ -199,12 +197,73 @@ final class GameWebViewStore {
         }
 
         let configuration = WKWebViewConfiguration()
+        configuration.userContentController.addUserScript(
+            WKUserScript(
+                source: Self.widgetModeScript,
+                injectionTime: .atDocumentStart,
+                forMainFrameOnly: false
+            )
+        )
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.allowsBackForwardNavigationGestures = true
         webView.load(URLRequest(url: url))
-        webViews[key] = webView
+        webViews["games"] = webView
+        GameSessionMonitor.shared.noteGameLoaded()
         return webView
     }
+
+    /// Applied only inside the widget's web view ("widget" marker in the URL).
+    /// The games themselves are never changed: the page simply renders with a
+    /// black backdrop and without theme controls while embedded here.
+    private static let widgetModeScript = """
+    (function () {
+      const css = `
+        html, body { background: #000 !important; }
+        [data-st4="root"] { background: #000 !important; }
+        iframe, #kizuna-ui { background: #000 !important; }
+        [title="Светлый или ночной фон"], [title="Светлая или ночная тема"] { display: none !important; }
+        [onclick*="toggleTheme"], [onclick*="toggleBackdrop"], [onclick*="useAutoTheme"] { display: none !important; }
+        [sc-camel-on-click*="toggleTheme"], [sc-camel-on-click*="toggleBackdrop"], [sc-camel-on-click*="useAutoTheme"] { display: none !important; }
+      `;
+      const style = document.createElement('style');
+      style.textContent = css;
+      document.documentElement.appendChild(style);
+
+      const apply = () => {
+        try {
+          document.documentElement.style.setProperty('background', '#000', 'important');
+          if (document.body) document.body.style.setProperty('background', '#000', 'important');
+          document.querySelectorAll('[data-st4="root"]').forEach((el) => {
+            el.style.setProperty('background', '#000', 'important');
+          });
+          document.querySelectorAll('[data-st4="root"] > div').forEach((el) => {
+            if (el.style.position === 'relative') {
+              el.style.setProperty('padding-top', '4px', 'important');
+            }
+          });
+          document.querySelectorAll('[data-screen-label]').forEach((el) => {
+            el.style.setProperty('padding-top', '8px', 'important');
+          });
+          document.querySelectorAll('iframe').forEach((f) => {
+            f.style.setProperty('background', '#000', 'important');
+          });
+        } catch (_) {}
+      };
+
+      apply();
+      try {
+        const observer = new MutationObserver(apply);
+        observer.observe(document.documentElement, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ['style', 'class', 'onclick'],
+        });
+      } catch (_) {}
+      window.addEventListener('load', apply);
+      document.addEventListener('DOMContentLoaded', apply);
+    })();
+    """
 
     func releaseAll() {
         for webView in webViews.values {
@@ -218,41 +277,35 @@ final class GameWebViewStore {
 }
 
 private struct GameWebView: NSViewRepresentable {
-    let cacheKey: String
     let url: URL
-    let onInteraction: () -> Void
 
     func makeNSView(context: Context) -> TrackingContainerView {
-        let webView = GameWebViewStore.shared.webView(for: cacheKey, url: url)
-        return TrackingContainerView(webView: webView, onInteraction: onInteraction)
+        let webView = GameWebViewStore.shared.webView(for: url)
+        return TrackingContainerView(webView: webView)
     }
 
     func updateNSView(_ container: TrackingContainerView, context: Context) {
-        let webView = GameWebViewStore.shared.webView(for: cacheKey, url: url)
+        let webView = GameWebViewStore.shared.webView(for: url)
         container.updateWebView(webView)
-        container.onInteraction = onInteraction
 
-        if webView.url != url {
+        if webView.url == nil {
             webView.load(URLRequest(url: url))
         }
     }
 }
 
 final class TrackingContainerView: NSView {
-    var onInteraction: () -> Void
     private(set) var webView: WKWebView
-    private var trackingAreaRef: NSTrackingArea?
 
-    init(webView: WKWebView, onInteraction: @escaping () -> Void) {
+    init(webView: WKWebView) {
         self.webView = webView
-        self.onInteraction = onInteraction
         super.init(frame: .zero)
         wantsLayer = true
-        layer?.cornerRadius = 22
+        layer?.cornerRadius = 24
         layer?.cornerCurve = .continuous
         layer?.masksToBounds = true
         webView.wantsLayer = true
-        webView.layer?.cornerRadius = 22
+        webView.layer?.cornerRadius = 24
         webView.layer?.cornerCurve = .continuous
         webView.layer?.masksToBounds = true
         addSubview(webView)
@@ -268,38 +321,12 @@ final class TrackingContainerView: NSView {
         webView.frame = bounds
     }
 
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if let trackingAreaRef {
-            removeTrackingArea(trackingAreaRef)
-        }
-        let options: NSTrackingArea.Options = [.mouseMoved, .mouseEnteredAndExited, .activeAlways, .inVisibleRect]
-        let area = NSTrackingArea(rect: bounds, options: options, owner: self, userInfo: nil)
-        addTrackingArea(area)
-        trackingAreaRef = area
-    }
-
-    override func mouseMoved(with event: NSEvent) {
-        super.mouseMoved(with: event)
-        onInteraction()
-    }
-
-    override func mouseEntered(with event: NSEvent) {
-        super.mouseEntered(with: event)
-        onInteraction()
-    }
-
-    override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
-        onInteraction()
-    }
-
     func updateWebView(_ newWebView: WKWebView) {
         guard webView !== newWebView else { return }
         webView.removeFromSuperview()
         webView = newWebView
         webView.wantsLayer = true
-        webView.layer?.cornerRadius = 22
+        webView.layer?.cornerRadius = 24
         webView.layer?.cornerCurve = .continuous
         webView.layer?.masksToBounds = true
         addSubview(webView)
