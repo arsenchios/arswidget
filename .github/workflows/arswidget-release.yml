@@ -111,4 +111,5 @@ jobs:
             git add updater/appcast.xml
           fi
           git diff --cached --quiet || git commit -m "Release ArsWidget $VERSION"
-          git push
+          git pull --rebase origin main
+          git push origin main
