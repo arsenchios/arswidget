@@ -220,17 +220,23 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
         case .home, .shelf, .clipboard, .sessionTimer:
             return openNotchSize
         case .systemStats:
+            // Built from what is actually on screen: the old fixed height was
+            // sized for three AI limits and clipped the tab once more appeared.
             let systemStats = SystemStatsManager.shared
-            let height: CGFloat
-            if systemStats.showSupport && systemStats.isAILimitsSetupVisible {
-                height = 650
-            } else if systemStats.showSupport {
-                height = 480
-            } else if systemStats.isAILimitsSetupVisible {
-                height = 560
+            let aiUsage = AIUsageManager.shared
+            var height: CGFloat = 262
+
+            let connectedLimits = aiUsage.connectedMetrics.count
+            if connectedLimits > 0 {
+                height += CGFloat(connectedLimits) * 21
+                if !aiUsage.missingProviders.isEmpty { height += 18 }
             } else {
-                height = 320
+                height += 46 // "connect AI limits" call to action
             }
+
+            if systemStats.isAILimitsSetupVisible { height += 190 }
+            if systemStats.showSupport { height += 160 }
+
             return .init(width: openNotchSize.width, height: height)
         case .reminders:
             return .init(width: 640, height: 470)

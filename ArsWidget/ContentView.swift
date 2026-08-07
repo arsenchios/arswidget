@@ -83,10 +83,23 @@ struct ContentView: View {
         }
 
         if shouldShowClosedAIUsageIndicators {
-            chinWidth += 132
+            chinWidth += closedAIUsageWidth
         }
 
         return chinWidth
+    }
+
+    private static let closedAIUsageCapsuleWidth: CGFloat = 38
+    private static let closedAIUsageCapsuleSpacing: CGFloat = 5
+
+    /// Matches the capsules actually drawn. A fixed reserve fitted three
+    /// limits, so a fourth or fifth one was cut off by the notch.
+    private var closedAIUsageWidth: CGFloat {
+        let count = aiUsageManager.connectedMetrics.count
+        guard count > 0 else { return 0 }
+        return CGFloat(count) * Self.closedAIUsageCapsuleWidth
+            + CGFloat(count - 1) * Self.closedAIUsageCapsuleSpacing
+            + 8
     }
 
     private var shouldShowClosedPomodoroIndicator: Bool {
@@ -608,35 +621,28 @@ struct ContentView: View {
 
     @ViewBuilder
     private var closedAIUsageIndicators: some View {
-        HStack(spacing: 5) {
-            if let codex = aiUsageManager.snapshot?.codexWeeklyRemaining {
-                aiUsageCapsule(label: "C", value: codex, color: .blue)
-            }
-            if let claude = aiUsageManager.snapshot?.claudeFiveHourRemaining {
-                aiUsageCapsule(label: "5", value: claude, color: .orange)
-            }
-            if let claude = aiUsageManager.snapshot?.claudeWeeklyRemaining {
-                aiUsageCapsule(label: "W", value: claude, color: .orange.opacity(0.72))
-            }
-            if let deepseek = aiUsageManager.snapshot?.deepseekRemaining {
-                aiUsageCapsule(label: "D", value: deepseek, color: .teal)
-            }
-            if let gemini = aiUsageManager.snapshot?.geminiRemaining {
-                aiUsageCapsule(label: "G", value: gemini, color: .purple)
+        HStack(spacing: Self.closedAIUsageCapsuleSpacing) {
+            ForEach(aiUsageManager.connectedMetrics) { metric in
+                if let value = aiUsageManager.value(for: metric) {
+                    aiUsageCapsule(label: metric.shortLabel, value: value, color: metric.tint)
+                }
             }
         }
     }
 
     private func aiUsageCapsule(label: String, value: Double, color: Color) -> some View {
-        HStack(spacing: 3) {
+        let accent = AIUsageManager.isLow(value) ? Color.red : color
+
+        return HStack(spacing: 3) {
             Text(label)
                 .font(.system(size: 9, weight: .bold, design: .rounded))
             Text("\(Int(value.rounded()))")
                 .font(.system(size: 10, weight: .bold, design: .rounded))
                 .contentTransition(.numericText())
         }
-        .foregroundStyle(color)
-        .frame(width: 38, height: max(0, vm.effectiveClosedNotchHeight - 12))
+        // Stale numbers are dimmed instead of silently pretending to be live.
+        .foregroundStyle(accent.opacity(aiUsageManager.isStale ? 0.45 : 1))
+        .frame(width: Self.closedAIUsageCapsuleWidth, height: max(0, vm.effectiveClosedNotchHeight - 12))
         .background(Color.white.opacity(0.06))
         .clipShape(Capsule())
     }

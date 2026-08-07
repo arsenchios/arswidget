@@ -124,6 +124,10 @@ struct SystemStatsView: View {
             stats.isAILimitsSetupVisible = isVisible
             vm.updateOpenSizeIfNeeded()
         }
+        .onChange(of: aiUsage.connectedMetrics.count) {
+            // A limit that appears (or drops out) changes how tall the tab is.
+            vm.updateOpenSizeIfNeeded()
+        }
         .onChange(of: showFeedback) { _, isPresented in
             vm.isModalInteractionActive = isPresented
         }
@@ -153,10 +157,21 @@ struct SystemStatsView: View {
 
     private var aiLimitsSection: some View {
         VStack(alignment: .leading, spacing: 7) {
-            HStack {
+            HStack(spacing: 6) {
                 Label("Лимиты AI", systemImage: "chart.bar.xaxis")
                     .font(.caption.weight(.semibold))
-                Spacer()
+
+                if let freshness = aiUsage.freshnessText {
+                    Text(freshness)
+                        .font(.caption2)
+                        .foregroundStyle(aiUsage.isStale ? Color.orange : Color.white.opacity(0.4))
+                        .help(aiUsage.isStale
+                              ? Text("Chrome давно не присылал новые значения")
+                              : Text("Когда значения обновлялись в последний раз"))
+                }
+
+                Spacer(minLength: 0)
+
                 if aiUsage.hasData {
                     Toggle("Показывать сверху", isOn: $aiUsage.showInClosedNotch)
                         .toggleStyle(.switch)
@@ -164,53 +179,21 @@ struct SystemStatsView: View {
                 }
             }
 
-            if let snapshot = aiUsage.snapshot {
-                let connected: [(String, Double?, Color)] = [
-                    ("Codex, неделя", snapshot.codexWeeklyRemaining, .blue),
-                    ("Claude, 5 часов", snapshot.claudeFiveHourRemaining, .orange),
-                    ("Claude, неделя", snapshot.claudeWeeklyRemaining, .orange.opacity(0.7)),
-                    ("DeepSeek", snapshot.deepseekRemaining, .teal),
-                    ("Gemini", snapshot.geminiRemaining, .purple),
-                ].filter { $0.1 != nil }
+            let connected = aiUsage.connectedMetrics
 
-                ForEach(connected, id: \.0) { title, value, color in
-                    aiLimitRow(title, value: value, color: color)
+            if connected.isEmpty {
+                aiLimitsConnectButton
+            } else {
+                ForEach(connected) { metric in
+                    aiLimitRow(metric)
                 }
 
-                if connected.count < 5 {
-                    let missing: [String] = [
-                        (snapshot.codexWeeklyRemaining != nil ? nil : "Codex"),
-                        (snapshot.claudeFiveHourRemaining != nil || snapshot.claudeWeeklyRemaining != nil ? nil : "Claude"),
-                        (snapshot.deepseekRemaining != nil ? nil : "DeepSeek"),
-                        (snapshot.geminiRemaining != nil ? nil : "Gemini"),
-                    ].compactMap { $0 }
-                    Text("Можно подключить: \(missing.joined(separator: ", ")) — держи страницы лимитов открытыми в Chrome.")
+                let missing = aiUsage.missingProviders
+                if !missing.isEmpty {
+                    Text("Ещё можно подключить: \(missing.joined(separator: ", "))")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                 }
-            } else {
-                Button {
-                    showAILimitsSetup = true
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "puzzlepiece.extension")
-                            .font(.system(size: 13, weight: .medium))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Подключить лимиты AI")
-                                .font(.caption.weight(.semibold))
-                            Text("Claude и Codex в закрытом виджете")
-                                .font(.caption2)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption2.weight(.semibold))
-                    }
-                    .foregroundStyle(.white.opacity(0.62))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                }
-                .buttonStyle(.plain)
             }
 
             if showAILimitsSetup {
@@ -220,14 +203,67 @@ struct SystemStatsView: View {
         }
     }
 
-    private func aiLimitRow(_ title: String, value: Double?, color: Color) -> some View {
-        HStack(spacing: 7) {
-            Circle().fill(color).frame(width: 6, height: 6)
-            Text(title).font(.caption2).foregroundStyle(.white.opacity(0.75))
-            Spacer()
-            Text(value.map { "\(Int($0.rounded()))%" } ?? "-" )
+    private var aiLimitsConnectButton: some View {
+        Button {
+            withAnimation(.smooth) {
+                showAILimitsSetup.toggle()
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "puzzlepiece.extension")
+                    .font(.system(size: 13, weight: .medium))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Подключить лимиты AI")
+                        .font(.caption.weight(.semibold))
+                    Text("Claude, Codex, DeepSeek, Gemini")
+                        .font(.caption2)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: showAILimitsSetup ? "chevron.down" : "chevron.right")
+                    .font(.caption2.weight(.semibold))
+            }
+            .foregroundStyle(.white.opacity(0.62))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(Color.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func aiLimitRow(_ metric: AIUsageMetric) -> some View {
+        let value = aiUsage.value(for: metric) ?? 0
+        let fraction = min(max(value / 100, 0), 1)
+        // Nearly-exhausted limits go red; everything else keeps the vendor
+        // colour so a row stays recognisable at a glance.
+        let accent = AIUsageManager.isLow(value) ? Color.red : metric.tint
+        let dimmed = aiUsage.isStale
+
+        return HStack(spacing: 7) {
+            Circle()
+                .fill(accent)
+                .frame(width: 6, height: 6)
+
+            Text(metric.title)
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(dimmed ? 0.45 : 0.75))
+
+            Spacer(minLength: 6)
+
+            // Slim remaining-bar, same visual language as the CPU/memory rows.
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.white.opacity(0.12))
+                Capsule()
+                    .fill(accent.opacity(dimmed ? 0.4 : 1))
+                    .frame(width: 46 * fraction)
+                    .animation(.easeInOut(duration: 0.4), value: fraction)
+            }
+            .frame(width: 46, height: 4)
+
+            Text("\(Int(value.rounded()))%")
                 .font(.caption.monospacedDigit().weight(.semibold))
-                .foregroundStyle(value == nil ? .secondary : color)
+                .foregroundStyle(accent.opacity(dimmed ? 0.5 : 1))
+                .frame(width: 36, alignment: .trailing)
+                .contentTransition(.numericText())
         }
     }
 
@@ -380,51 +416,59 @@ struct SystemStatsView: View {
     }
 
     private var aiLimitsSetupPanel: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Image(systemName: "chart.bar.xaxis")
-                .font(.system(size: 26, weight: .medium))
-                .foregroundStyle(.blue)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "chart.bar.xaxis")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.blue)
+                Text("Два шага")
+                    .font(.caption.weight(.semibold))
+                Spacer(minLength: 0)
+                Button {
+                    withAnimation(.smooth) { showAILimitsSetup = false }
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
 
-            Text("Лимиты Claude и Codex")
-                .font(.title3.bold())
-
-            Text("Установи расширение ArsWidget для Chrome. Открой страницы Usage у Claude и Codex и держи их открытыми — вкладки можно закрепить. После подключения здесь появятся остаток лимита Claude на 5 часов и неделю, а также недельный лимит Codex.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 5) {
+                setupStep(1, "Поставь расширение ArsWidget для Chrome")
+                setupStep(2, "Открой страницы Usage и закрепи вкладки")
+            }
 
             Button {
                 openExtensionStore()
             } label: {
-                Label("Установить расширение Chrome", systemImage: "puzzlepiece.extension")
+                Label("Установить расширение", systemImage: "puzzlepiece.extension")
                     .font(.caption.weight(.semibold))
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
 
-            VStack(alignment: .leading, spacing: 7) {
-                Label("Расширение передаёт только проценты лимитов и время обновления.", systemImage: "checkmark.shield")
-                Label("Оно не получает и не отправляет пароли, cookies, запросы или переписки.", systemImage: "lock")
-                Label("Данные остаются на этом Mac и нужны только для виджета.", systemImage: "laptopcomputer")
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-
-            Text("Расширение берёт с открытой страницы только проценты остатка лимитов — это безопасно. Они передаются только локально на твой Mac и в интернет не отправляются.")
+            Label("Только проценты. Без паролей, cookies и переписок — всё остаётся на этом Mac.", systemImage: "lock.shield")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .fixedSize(horizontal: false, vertical: true)
-
-            Button("Скрыть инструкцию") {
-                withAnimation(.smooth) {
-                    showAILimitsSetup = false
-                }
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
         }
         .padding(12)
         .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func setupStep(_ number: Int, _ text: LocalizedStringKey) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 7) {
+            Text("\(number)")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.white.opacity(0.9))
+                .frame(width: 15, height: 15)
+                .background(Color.white.opacity(0.12), in: Circle())
+            Text(text)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 
     private func openExtensionStore() {

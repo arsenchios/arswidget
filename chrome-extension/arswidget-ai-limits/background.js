@@ -2,27 +2,69 @@ const BRIDGE_URL = "http://127.0.0.1:63554/v1/ai-usage";
 const USAGE_KEY = "arsWidgetUsage";
 const STATUS_KEY = "arsWidgetBridgeStatus";
 const CONSENT_KEY = "arsWidgetUsageConsent";
+const NOTIFY_KEY = "arsWidgetNotifyState";
+const RESEND_ALARM = "resendUsage";
+const NOTIFY_COOLDOWN_MS = 15 * 60 * 1000;
+const PERCENT_KEYS = [
+  "codexWeeklyRemaining",
+  "claudeFiveHourRemaining",
+  "claudeWeeklyRemaining",
+  "deepseekRemaining",
+  "geminiRemaining"
+];
+
+// A service worker is torn down after a few idle seconds, so anything the
+// throttling logic needs to remember has to live in storage, not in module
+// scope — otherwise every counter restarts at zero on the next wake-up.
+async function readNotifyState() {
+  const { [NOTIFY_KEY]: state = {} } = await chrome.storage.local.get(NOTIFY_KEY);
+  return {
+    consecutiveFailures: state.consecutiveFailures ?? 0,
+    lastFailureAt: state.lastFailureAt ?? 0,
+    lastNoDataAt: state.lastNoDataAt ?? 0
+  };
+}
+
+async function writeNotifyState(patch) {
+  const state = await readNotifyState();
+  await chrome.storage.local.set({ [NOTIFY_KEY]: { ...state, ...patch } });
+}
+
+async function ensureAlarm() {
+  const existing = await chrome.alarms.get(RESEND_ALARM);
+  if (!existing) {
+    chrome.alarms.create(RESEND_ALARM, { periodInMinutes: 1 });
+  }
+}
 
 chrome.runtime.onInstalled.addListener(async () => {
-  await chrome.storage.local.setAccessLevel({ accessLevel: "TRUSTED_CONTEXTS" });
-  chrome.alarms.create("resendUsage", { periodInMinutes: 1 });
+  // The alarm is created first: if setAccessLevel is unavailable in this
+  // Chrome build it must not take the periodic resend down with it.
+  await ensureAlarm();
+  try {
+    await chrome.storage.local.setAccessLevel({ accessLevel: "TRUSTED_CONTEXTS" });
+  } catch {
+    // Default access level already excludes untrusted contexts.
+  }
 });
+
+chrome.runtime.onStartup.addListener(ensureAlarm);
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === "GET_CONSENT") {
     chrome.storage.local.get(CONSENT_KEY)
-      .then(({ [CONSENT_KEY]: enabled = false }) => sendResponse({ enabled }));
+      .then(({ [CONSENT_KEY]: enabled = false }) => sendResponse({ enabled }))
+      .catch(() => sendResponse({ enabled: false }));
     return true;
   }
 
   if (message?.type === "RESEND") {
+    ensureAlarm();
     chrome.storage.local.get(USAGE_KEY)
-      .then(({ [USAGE_KEY]: usage = {} }) => sendUsage(usage));
-    chrome.tabs.query({}, (tabs) => {
-      for (const tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, { type: "USAGE_ENABLED" }).catch(() => {});
-      }
-    });
+      .then(({ [USAGE_KEY]: usage = {} }) => sendUsage(usage))
+      .then((ok) => sendResponse({ ok }))
+      .catch(() => sendResponse({ ok: false }));
+    wakeContentScripts();
     return true;
   }
 
@@ -43,18 +85,34 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   return true;
 });
 
+async function wakeContentScripts() {
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+    if (typeof tab.id !== "number") continue;
+    chrome.tabs.sendMessage(tab.id, { type: "USAGE_ENABLED" }).catch(() => {});
+  }
+}
+
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name !== "resendUsage") return;
+  if (alarm.name !== RESEND_ALARM) return;
   const { [USAGE_KEY]: usage = {}, [CONSENT_KEY]: enabled = false } = await chrome.storage.local.get([USAGE_KEY, CONSENT_KEY]);
   if (!enabled) return;
   await sendUsage(usage);
 });
 
 async function mergeUsage(candidate) {
+  const values = pickPercentages(candidate);
+  if (Object.keys(values).length === 0) {
+    const { [USAGE_KEY]: current = {} } = await chrome.storage.local.get(USAGE_KEY);
+    return current;
+  }
+
   const { [USAGE_KEY]: current = {} } = await chrome.storage.local.get(USAGE_KEY);
   const merged = {
     ...current,
-    ...pickPercentages(candidate),
+    ...values,
+    // When a page was last really read. The widget shows the age of this, so
+    // values left over from a closed tab stop looking fresh.
     updatedAt: Date.now()
   };
   await chrome.storage.local.set({ [USAGE_KEY]: merged });
@@ -63,13 +121,7 @@ async function mergeUsage(candidate) {
 
 function pickPercentages(value = {}) {
   const result = {};
-  for (const key of [
-    "codexWeeklyRemaining",
-    "claudeFiveHourRemaining",
-    "claudeWeeklyRemaining",
-    "deepseekRemaining",
-    "geminiRemaining"
-  ]) {
+  for (const key of PERCENT_KEYS) {
     if (Number.isFinite(value[key]) && value[key] >= 0 && value[key] <= 100) {
       result[key] = Math.round(value[key] * 10) / 10;
     }
@@ -77,27 +129,25 @@ function pickPercentages(value = {}) {
   return result;
 }
 
-let consecutiveFailures = 0;
-let lastFailureNotificationAt = 0;
-let lastNoDataNotificationAt = 0;
+async function notifyFailure() {
+  const state = await readNotifyState();
+  const consecutiveFailures = state.consecutiveFailures + 1;
+  await writeNotifyState({ consecutiveFailures });
 
-function notifyFailure() {
-  consecutiveFailures += 1;
-  if (consecutiveFailures < 3 || Date.now() - lastFailureNotificationAt < 15 * 60 * 1000) {
-    return;
-  }
-  lastFailureNotificationAt = Date.now();
+  if (consecutiveFailures < 3 || Date.now() - state.lastFailureAt < NOTIFY_COOLDOWN_MS) return;
+  await writeNotifyState({ lastFailureAt: Date.now() });
   chrome.notifications.create({
     type: "basic",
     iconUrl: "icons/icon-128.png",
-    title: "arsansara не отвечает",
-    message: "Запусти arsansara на этом Mac, чтобы лимиты продолжали передаваться. Вкладки лимитов можно закрепить."
+    title: "ArsWidget не отвечает",
+    message: "Запусти ArsWidget на этом Mac, чтобы лимиты продолжали передаваться. Вкладки лимитов можно закрепить."
   });
 }
 
-function notifyNoData() {
-  if (Date.now() - lastNoDataNotificationAt < 15 * 60 * 1000) return;
-  lastNoDataNotificationAt = Date.now();
+async function notifyNoData() {
+  const state = await readNotifyState();
+  if (Date.now() - state.lastNoDataAt < NOTIFY_COOLDOWN_MS) return;
+  await writeNotifyState({ lastNoDataAt: Date.now() });
   chrome.notifications.create({
     type: "basic",
     iconUrl: "icons/icon-128.png",
@@ -109,6 +159,9 @@ function notifyNoData() {
 async function sendUsage(usage = {}) {
   const payload = pickPercentages(usage);
   if (Object.keys(payload).length === 0) return false;
+  if (Number.isFinite(usage.updatedAt)) {
+    payload.capturedAt = usage.updatedAt;
+  }
 
   try {
     const response = await fetch(BRIDGE_URL, {
@@ -121,16 +174,16 @@ async function sendUsage(usage = {}) {
       [STATUS_KEY]: { connected: ok, updatedAt: Date.now() }
     });
     if (ok) {
-      consecutiveFailures = 0;
+      await writeNotifyState({ consecutiveFailures: 0 });
     } else {
-      notifyFailure();
+      await notifyFailure();
     }
     return ok;
   } catch {
     await chrome.storage.local.set({
       [STATUS_KEY]: { connected: false, updatedAt: Date.now() }
     });
-    notifyFailure();
+    await notifyFailure();
     return false;
   }
 }

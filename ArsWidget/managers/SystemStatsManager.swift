@@ -35,12 +35,95 @@ struct AIUsageSnapshot: Codable, Equatable {
     var updatedAt: Date
 }
 
+/// One place that knows every limit we can show, so the tab, the closed notch
+/// and the "you can still connect ..." hint can never drift apart again.
+enum AIUsageMetric: String, CaseIterable, Identifiable {
+    case codexWeekly
+    case claudeFiveHour
+    case claudeWeekly
+    case deepseek
+    case gemini
+
+    var id: String { rawValue }
+
+    /// Vendor name, used for the "not connected yet" hint (Claude has two rows).
+    var provider: String {
+        switch self {
+        case .codexWeekly: return "Codex"
+        case .claudeFiveHour, .claudeWeekly: return "Claude"
+        case .deepseek: return "DeepSeek"
+        case .gemini: return "Gemini"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .codexWeekly: return String(localized: "Codex, неделя")
+        case .claudeFiveHour: return String(localized: "Claude, 5 часов")
+        case .claudeWeekly: return String(localized: "Claude, неделя")
+        case .deepseek: return String(localized: "DeepSeek")
+        case .gemini: return String(localized: "Gemini")
+        }
+    }
+
+    /// Single character shown inside the closed-notch capsule.
+    var shortLabel: String {
+        switch self {
+        case .codexWeekly: return "C"
+        case .claudeFiveHour: return "5"
+        case .claudeWeekly: return "W"
+        case .deepseek: return "D"
+        case .gemini: return "G"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .codexWeekly: return .blue
+        case .claudeFiveHour: return .orange
+        case .claudeWeekly: return Color.orange.opacity(0.72)
+        case .deepseek: return .teal
+        case .gemini: return .purple
+        }
+    }
+
+    func value(in snapshot: AIUsageSnapshot) -> Double? {
+        switch self {
+        case .codexWeekly: return snapshot.codexWeeklyRemaining
+        case .claudeFiveHour: return snapshot.claudeFiveHourRemaining
+        case .claudeWeekly: return snapshot.claudeWeeklyRemaining
+        case .deepseek: return snapshot.deepseekRemaining
+        case .gemini: return snapshot.geminiRemaining
+        }
+    }
+}
+
 @MainActor
 final class AIUsageManager: ObservableObject {
     static let shared = AIUsageManager()
 
+    /// Values older than this mean Chrome is closed, the tab is gone or the
+    /// account is logged out — the numbers are still shown, but marked stale.
+    static let staleAfter: TimeInterval = 15 * 60
+
+    /// Below this share of the limit left, the number is shown as a warning.
+    static let lowRemainingPercent: Double = 15
+
+    static func isLow(_ remainingPercent: Double) -> Bool {
+        remainingPercent < lowRemainingPercent
+    }
+
     @Published private(set) var snapshot: AIUsageSnapshot?
-    @AppStorage("aiUsageShowInClosedNotch") var showInClosedNotch = false
+    /// Recomputed on a timer, but only republished when the visible text
+    /// actually changes, so the notch is not redrawn every 15 seconds.
+    @Published private(set) var freshnessText: String?
+    @Published private(set) var isStale = false
+
+    // @AppStorage does not drive objectWillChange on its own inside a class,
+    // so views observing this manager would repaint late (or not at all).
+    @AppStorage("aiUsageShowInClosedNotch") var showInClosedNotch = false {
+        willSet { objectWillChange.send() }
+    }
 
     private var refreshTimer: AnyCancellable?
     private let fileName = "ai-usage.json"
@@ -52,12 +135,25 @@ final class AIUsageManager: ObservableObject {
             .sink { [weak self] _ in self?.reload() }
     }
 
-    var hasData: Bool {
-        snapshot?.codexWeeklyRemaining != nil
-            || snapshot?.claudeFiveHourRemaining != nil
-            || snapshot?.claudeWeeklyRemaining != nil
-            || snapshot?.deepseekRemaining != nil
-            || snapshot?.geminiRemaining != nil
+    var hasData: Bool { !connectedMetrics.isEmpty }
+
+    /// Metrics we actually received a value for, in display order.
+    var connectedMetrics: [AIUsageMetric] {
+        guard let snapshot else { return [] }
+        return AIUsageMetric.allCases.filter { $0.value(in: snapshot) != nil }
+    }
+
+    /// Vendors with nothing connected yet, deduplicated (Claude counts once).
+    var missingProviders: [String] {
+        let connected = Set(connectedMetrics.map(\.provider))
+        var seen = Set<String>()
+        return AIUsageMetric.allCases
+            .map(\.provider)
+            .filter { seen.insert($0).inserted && !connected.contains($0) }
+    }
+
+    func value(for metric: AIUsageMetric) -> Double? {
+        snapshot.flatMap { metric.value(in: $0) }
     }
 
     var dataFileURL: URL? {
@@ -68,18 +164,23 @@ final class AIUsageManager: ObservableObject {
     }
 
     func reload() {
-        guard let dataFileURL,
-              let data = try? Data(contentsOf: dataFileURL),
-              let decoded = try? JSONDecoder().decode(AIUsageSnapshot.self, from: data)
-        else {
-            snapshot = nil
-            return
+        if let dataFileURL,
+           let data = try? Data(contentsOf: dataFileURL),
+           let decoded = try? JSONDecoder().decode(AIUsageSnapshot.self, from: data),
+           decoded != snapshot {
+            snapshot = decoded
         }
-        snapshot = decoded
+        // A missing or unreadable file must not wipe values we already show:
+        // the bridge keeps the live snapshot in memory even if the disk write
+        // failed, and dropping it would blank the tab for no reason.
+        refreshFreshness()
     }
 
     func accept(_ snapshot: AIUsageSnapshot) {
-        self.snapshot = snapshot
+        if snapshot != self.snapshot {
+            self.snapshot = snapshot
+        }
+        refreshFreshness()
 
         guard let dataFileURL else { return }
         do {
@@ -92,6 +193,31 @@ final class AIUsageManager: ObservableObject {
         } catch {
             // The live value is still shown for this launch if persistence fails.
         }
+    }
+
+    private func refreshFreshness() {
+        guard let updatedAt = snapshot?.updatedAt else {
+            if freshnessText != nil { freshnessText = nil }
+            if isStale { isStale = false }
+            return
+        }
+
+        let age = max(0, Date().timeIntervalSince(updatedAt))
+        let text: String
+        switch age {
+        case ..<90:
+            text = String(localized: "только что")
+        case ..<3600:
+            text = String(localized: "\(Int(age / 60)) мин назад")
+        case ..<86_400:
+            text = String(localized: "\(Int(age / 3600)) ч назад")
+        default:
+            text = String(localized: "давно")
+        }
+
+        if text != freshnessText { freshnessText = text }
+        let stale = age > Self.staleAfter
+        if stale != isStale { isStale = stale }
     }
 }
 
@@ -109,33 +235,42 @@ final class AIUsageBridge {
     private init() {}
 
     func start() {
-        guard listener == nil else { return }
+        // `listener` is touched from the app lifecycle and from Network's own
+        // callback queue, so every access is funnelled through `queue`.
+        queue.async { [weak self] in
+            guard let self, self.listener == nil else { return }
 
-        let parameters = NWParameters.tcp
-        parameters.acceptLocalOnly = true
-        parameters.allowLocalEndpointReuse = true
+            let parameters = NWParameters.tcp
+            parameters.acceptLocalOnly = true
+            parameters.allowLocalEndpointReuse = true
 
-        do {
-            let listener = try NWListener(using: parameters, on: port)
-            listener.newConnectionHandler = { [weak self] connection in
-                self?.handle(connection)
-            }
-            listener.stateUpdateHandler = { [weak self] state in
-                if case .failed = state {
-                    self?.listener?.cancel()
-                    self?.listener = nil
+            do {
+                let listener = try NWListener(using: parameters, on: self.port)
+                listener.newConnectionHandler = { [weak self] connection in
+                    self?.handle(connection)
                 }
+                listener.stateUpdateHandler = { [weak self] state in
+                    guard let self else { return }
+                    if case .failed = state {
+                        self.queue.async {
+                            self.listener?.cancel()
+                            self.listener = nil
+                        }
+                    }
+                }
+                self.listener = listener
+                listener.start(queue: self.queue)
+            } catch {
+                self.listener = nil
             }
-            self.listener = listener
-            listener.start(queue: queue)
-        } catch {
-            listener = nil
         }
     }
 
     func stop() {
-        listener?.cancel()
-        listener = nil
+        queue.async { [weak self] in
+            self?.listener?.cancel()
+            self?.listener = nil
+        }
     }
 
     private func handle(_ connection: NWConnection) {
@@ -220,12 +355,26 @@ final class AIUsageBridge {
             claudeWeeklyRemaining: payload.claudeWeeklyRemaining,
             deepseekRemaining: payload.deepseekRemaining,
             geminiRemaining: payload.geminiRemaining,
-            updatedAt: Date()
+            updatedAt: Self.captureDate(from: payload.capturedAt)
         )
         Task { @MainActor in
             AIUsageManager.shared.accept(snapshot)
         }
         return true
+    }
+
+    /// When the extension last actually read the numbers off a page, in epoch
+    /// milliseconds. The extension re-sends its cache every minute even when no
+    /// tab is open, so trusting the arrival time would make dead values look
+    /// fresh forever. Obviously broken timestamps fall back to "now".
+    private static func captureDate(from milliseconds: Double?) -> Date {
+        let now = Date()
+        guard let milliseconds, milliseconds > 0 else { return now }
+        let captured = Date(timeIntervalSince1970: milliseconds / 1000)
+        guard captured <= now.addingTimeInterval(60),
+              captured > now.addingTimeInterval(-7 * 24 * 60 * 60)
+        else { return now }
+        return captured
     }
 
     private func respond(on connection: NWConnection, status: String) {
@@ -247,6 +396,9 @@ private struct AIUsageBridgePayload: Decodable, Sendable {
     let claudeWeeklyRemaining: Double?
     let deepseekRemaining: Double?
     let geminiRemaining: Double?
+    /// Epoch milliseconds of the last real read from a page. Optional so older
+    /// builds of the extension keep working.
+    let capturedAt: Double?
 }
 
 @MainActor
@@ -257,10 +409,14 @@ final class SystemStatsManager: ObservableObject {
     @Published var showSupport = false
     @Published var isAILimitsSetupVisible = false
 
+    // @AppStorage inside a class does not fire objectWillChange, so without
+    // these the switch and stepper only redrew on the next stats tick.
     @AppStorage("systemStatsEnabled") var isEnabled: Bool = true {
+        willSet { objectWillChange.send() }
         didSet { restart() }
     }
     @AppStorage("systemStatsIntervalSeconds") var intervalSeconds: Int = 3 {
+        willSet { objectWillChange.send() }
         didSet { restart() }
     }
 
