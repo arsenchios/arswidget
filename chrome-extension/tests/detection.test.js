@@ -1,0 +1,152 @@
+// Проверка распознавания процентов в content.js.
+// Запуск без зависимостей: node chrome-extension/tests/detection.test.js
+//
+// Тесты лежат вне папки расширения, чтобы не попадать в ZIP для Chrome Web Store.
+//
+// Страницы лимитов меняют вёрстку, поэтому здесь зафиксированы реальные
+// раскладки текста. Если распознавание сломается, тест покажет это до релиза.
+
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
+
+const CONTENT_SCRIPT = path.join(__dirname, "..", "arswidget-ai-limits", "content.js");
+
+/// Прогоняет content.js в песочнице с поддельной страницей и возвращает то,
+/// что скрипт отправил бы в фоновую часть расширения.
+function detect(hostname, pathname, bodyText) {
+  const sent = [];
+  const sandbox = {
+    location: { hostname, pathname, hash: "", href: "" },
+    document: { body: { innerText: bodyText }, documentElement: {} },
+    window: { setTimeout: () => 0, setInterval: () => 0 },
+    MutationObserver: class { observe() {} },
+    chrome: {
+      runtime: {
+        lastError: null,
+        sendMessage: (message, callback) => {
+          if (message.type === "GET_CONSENT") {
+            callback({ enabled: true });
+            return undefined;
+          }
+          sent.push(message);
+          return Promise.resolve({ ok: true });
+        },
+        onMessage: { addListener: () => {} }
+      }
+    }
+  };
+  sandbox.globalThis = sandbox;
+  vm.createContext(sandbox);
+  vm.runInContext(fs.readFileSync(CONTENT_SCRIPT, "utf8"), sandbox);
+  // start() ставит скан через setTimeout, здесь вызываем скан напрямую.
+  vm.runInContext("reportUsage()", sandbox);
+  return sent[0]?.usage ?? {};
+}
+
+const cases = [
+  {
+    name: "Claude: подписи в одну строку со значением",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "5-hour limit · 12% remaining\nWeekly limit · 88% remaining",
+    expect: { claudeFiveHourRemaining: 12, claudeWeeklyRemaining: 88 }
+  },
+  {
+    name: "Claude: значения блоками",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "Usage\nCurrent session\n5-hour limit\n42% used\nResets at 14:00\nWeekly limit\nWeekly usage\n77% used",
+    expect: { claudeFiveHourRemaining: 58, claudeWeeklyRemaining: 23 }
+  },
+  {
+    name: "Claude: недельный лимит назван, но число ещё не отрисовано",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "Usage\n5-hour limit\n18% used\nWeekly limit\nResets Monday",
+    expect: { claudeFiveHourRemaining: 82 }
+  },
+  {
+    name: "Claude: обе подписи над одним числом — берём ближнюю",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "Weekly limit\n5-hour limit\n34% used",
+    expect: { claudeFiveHourRemaining: 66 }
+  },
+  {
+    name: "Слово-признак стоит после числа",
+    host: "platform.deepseek.com",
+    path: "/usage",
+    body: "Quota\n64%\nremaining this month",
+    expect: { deepseekRemaining: 64 }
+  },
+  {
+    name: "DeepSeek: слово-признак над числом",
+    host: "platform.deepseek.com",
+    path: "/usage",
+    body: "Usage\nBalance\nremaining\n64%",
+    expect: { deepseekRemaining: 64 }
+  },
+  {
+    name: "Codex: название сервиса двумя строками выше",
+    host: "chatgpt.com",
+    path: "/settings/Account",
+    body: "Account\nCodex\nWeekly limit\n23% used",
+    expect: { codexWeeklyRemaining: 77 }
+  },
+  {
+    name: "Gemini",
+    host: "aistudio.google.com",
+    path: "/",
+    body: "Quota\nremaining\n40%",
+    expect: { geminiRemaining: 40 }
+  },
+  {
+    name: "Не залогинен — процентов нет",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "Log in to continue",
+    expect: {}
+  },
+  {
+    name: "Процент без слова-признака не берём",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "Plan\n50%",
+    expect: {}
+  },
+  {
+    name: "Значение вне 0-100 игнорируется",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "5-hour limit\n420% used",
+    expect: {}
+  },
+  {
+    name: "Страница не про лимиты — ничего не читаем",
+    host: "claude.ai",
+    path: "/chat/123",
+    body: "5-hour limit\n42% used",
+    expect: {}
+  }
+];
+
+let failed = 0;
+for (const testCase of cases) {
+  const actual = detect(testCase.host, testCase.path, testCase.body);
+  const ok = JSON.stringify(actual) === JSON.stringify(testCase.expect);
+  if (!ok) {
+    failed += 1;
+    console.error(`FAIL  ${testCase.name}`);
+    console.error(`      ожидалось ${JSON.stringify(testCase.expect)}`);
+    console.error(`      получено  ${JSON.stringify(actual)}`);
+  } else {
+    console.log(`ok    ${testCase.name}`);
+  }
+}
+
+if (failed > 0) {
+  console.error(`\nПровалено проверок: ${failed} из ${cases.length}.`);
+  process.exit(1);
+}
+console.log(`\nВсе ${cases.length} проверок прошли.`);

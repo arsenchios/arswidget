@@ -41,10 +41,15 @@ function isUsagePage() {
   return path.includes("settings") || path.includes("codex") || hash.includes("settings");
 }
 
-/// A percentage belongs to the line it sits on, read together with the couple
-/// of lines above it — on these pages the caption always precedes the number.
-/// Looking at the following line too (as before) let a number leak into the
-/// limit that merely happened to be rendered underneath it.
+/// A percentage is read from the line it sits on, with two contexts around it.
+///
+/// `context` also covers the following line, because "remaining"/"used" and a
+/// vendor name may sit on either side of the number — that is how the previous
+/// version worked and it must keep working.
+///
+/// `captionContext` stops at the number, because the limit captions do not:
+/// "5-hour" and "weekly" both landing in one window is exactly what used to
+/// copy a single value into both Claude rows.
 function readPercentage(lines, index) {
   const line = lines[index];
   const match = line.match(/(\d{1,3}(?:[.,]\d+)?)\s*%/);
@@ -54,15 +59,17 @@ function readPercentage(lines, index) {
   if (!Number.isFinite(value) || value < 0 || value > 100) return null;
 
   const prefix = lines.slice(Math.max(0, index - 2), index).join(" ");
-  const context = prefix ? `${prefix} ${line}` : line;
+  const captionContext = prefix ? `${prefix} ${line}` : line;
   const percentIndex = (prefix ? prefix.length + 1 : 0) + match.index;
+  const suffix = lines[index + 1] ?? "";
+  const context = suffix ? `${captionContext} ${suffix}` : captionContext;
 
   let remaining = null;
   if (REMAINING.test(context)) remaining = value;
   else if (USED.test(context)) remaining = 100 - value;
   if (remaining === null) return null;
 
-  return { remaining, context, percentIndex };
+  return { remaining, context, captionContext, percentIndex };
 }
 
 /// Distance from the percentage back to the nearest caption before it, or null
@@ -94,13 +101,13 @@ function detectUsage() {
     const found = readPercentage(lines, index);
     if (!found) continue;
 
-    const { remaining, context, percentIndex } = found;
+    const { remaining, context, captionContext, percentIndex } = found;
 
     if (location.hostname.includes("claude.ai")) {
       // Both windows can be named above the same number; keep the nearer one
       // instead of writing the value into both rows.
-      const toFiveHour = distanceToCaptionBefore(FIVE_HOUR, context, percentIndex);
-      const toWeekly = distanceToCaptionBefore(WEEKLY, context, percentIndex);
+      const toFiveHour = distanceToCaptionBefore(FIVE_HOUR, captionContext, percentIndex);
+      const toWeekly = distanceToCaptionBefore(WEEKLY, captionContext, percentIndex);
 
       if (toFiveHour !== null && (toWeekly === null || toFiveHour <= toWeekly)) {
         usage.claudeFiveHourRemaining = remaining;
