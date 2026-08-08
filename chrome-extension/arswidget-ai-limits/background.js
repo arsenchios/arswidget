@@ -102,12 +102,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 async function mergeUsage(candidate) {
   const values = pickPercentages(candidate);
-  if (Object.keys(values).length === 0) {
-    const { [USAGE_KEY]: current = {} } = await chrome.storage.local.get(USAGE_KEY);
-    return current;
-  }
-
   const { [USAGE_KEY]: current = {} } = await chrome.storage.local.get(USAGE_KEY);
+  if (Object.keys(values).length === 0) return current;
+
   const merged = {
     ...current,
     ...values,
