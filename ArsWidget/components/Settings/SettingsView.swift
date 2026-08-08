@@ -1174,6 +1174,7 @@ struct Advanced: View {
     @Default(.customAccentColorData) var customAccentColorData
     @Default(.showOnLockScreen) var showOnLockScreen
     @Default(.hideFromScreenRecording) var hideFromScreenRecording
+    @ObservedObject private var telemetry = AppTelemetryManager.shared
 
     @State private var customAccentColor: Color = .accentColor
     @State private var selectedPresetColor: PresetAccentColor? = nil
@@ -1206,6 +1207,20 @@ struct Advanced: View {
 
     var body: some View {
         Form {
+            Section {
+                Toggle(isOn: $telemetry.isEnabled) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Анонимная статистика использования")
+                        Text("Раз в сутки уходит версия ArsWidget, версия macOS и сколько раз открывали каждую вкладку. Без имени, без содержимого заметок, буфера и словаря.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            } header: {
+                Text("Приватность")
+            }
+
             Section {
                 VStack(alignment: .leading, spacing: 16) {
                     // Toggle between system and custom

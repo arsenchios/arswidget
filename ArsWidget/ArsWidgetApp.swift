@@ -28,7 +28,7 @@ struct ArsWidgetApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra("arsansara ☯", systemImage: "sparkle", isInserted: $showMenuBarIcon) {
+        MenuBarExtra("ArsWidget", systemImage: "sparkle", isInserted: $showMenuBarIcon) {
             Button("Настройки") {
                 DispatchQueue.main.async {
                     SettingsWindowController.shared.showWindow()
@@ -85,6 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         MusicManager.shared.destroy()
         AIUsageBridge.shared.stop()
+        AppTelemetryManager.shared.stop()
         KeyboardCleaningManager.shared.stop()
         VocabManager.shared.dismissPrompt()
         cleanupDragDetectors()
@@ -287,6 +288,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         AIUsageBridge.shared.start()
+        AppTelemetryManager.shared.start()
 
         NotificationCenter.default.addObserver(
             self,

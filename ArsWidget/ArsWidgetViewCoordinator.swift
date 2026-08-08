@@ -50,7 +50,12 @@ struct ExpandedItem {
 class ArsWidgetViewCoordinator: ObservableObject {
     static let shared = ArsWidgetViewCoordinator()
 
-    @Published var currentView: NotchViews = .home
+    @Published var currentView: NotchViews = .home {
+        didSet {
+            guard currentView != oldValue else { return }
+            AppTelemetryManager.shared.noteTabOpened(currentView)
+        }
+    }
     @Published var helloAnimationRunning: Bool = false
     @Published private(set) var isFirstRunTourPresented = false
     private var sneakPeekDispatch: DispatchWorkItem?

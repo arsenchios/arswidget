@@ -19,7 +19,12 @@ struct SystemStatsView: View {
     @AppStorage("arswidgetServicesURL") private var servicesURL = ""
     @State private var showFeedback = false
     @State private var feedbackText = ""
+    @State private var feedbackContact = ""
+    @State private var feedbackKind = "idea"
+    @State private var feedbackState: FeedbackState = .idle
     @State private var copiedFeedback = false
+
+    private enum FeedbackState { case idle, sending, sent, failed }
     @State private var showLinkSetupMessage = false
     @State private var showCleaningPermissionMessage = false
     @State private var showCleaningStartFailure = false
@@ -130,6 +135,10 @@ struct SystemStatsView: View {
         }
         .onChange(of: showFeedback) { _, isPresented in
             vm.isModalInteractionActive = isPresented
+            if isPresented {
+                feedbackState = .idle
+                copiedFeedback = false
+            }
         }
         .onDisappear {
             vm.isModalInteractionActive = false
@@ -357,9 +366,13 @@ struct SystemStatsView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("Ваше сообщение")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+            Picker("", selection: $feedbackKind) {
+                Text("Идея").tag("idea")
+                Text("Проблема").tag("bug")
+                Text("Отзыв").tag("review")
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
 
             TextEditor(text: $feedbackText)
                 .font(.body)
@@ -368,33 +381,84 @@ struct SystemStatsView: View {
                 .padding(8)
                 .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 10))
 
-            Text("Хотите ускорить реализацию? Поддержка проекта помогает мне взять ваше пожелание в работу в первую очередь. Это добровольно и не влияет на возможность предложить идею.")
+            TextField("Как ответить — почта или телеграм (необязательно)", text: $feedbackContact)
+                .textFieldStyle(.roundedBorder)
+
+            Text("Отправляется только текст сообщения и версия приложения.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack {
-                if copiedFeedback {
-                    Text("Скопировано")
+            HStack(spacing: 10) {
+                switch feedbackState {
+                case .sending:
+                    ProgressView().controlSize(.small)
+                case .sent:
+                    Label("Отправлено, спасибо", systemImage: "checkmark.circle.fill")
                         .font(.caption)
                         .foregroundStyle(.green)
+                case .failed:
+                    // Nothing typed is ever lost: it goes to the clipboard so
+                    // it can be sent by hand.
+                    Label("Не удалось отправить — текст скопирован", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                case .idle:
+                    if copiedFeedback {
+                        Text("Скопировано").font(.caption).foregroundStyle(.green)
+                    }
                 }
 
-                Spacer()
+                Spacer(minLength: 0)
 
                 Button("Закрыть") {
                     showFeedback = false
                 }
 
-                Button("Поддержать и скопировать") {
-                    copyFeedback()
-                    openSupportPage()
+                Button("Отправить") {
+                    submitFeedback()
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(feedbackText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(feedbackText.trimmingCharacters(in: .whitespacesAndNewlines).count < 3
+                          || feedbackState == .sending)
+            }
+
+            Divider()
+
+            HStack(spacing: 8) {
+                Text("ArsWidget бесплатный. Поддержка помогает делать его дальше.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer(minLength: 0)
+                Button("Поддержать") { openSupportPage() }
+                    .controlSize(.small)
             }
         }
         .padding(18)
+        .frame(width: 456)
+    }
+
+    private func submitFeedback() {
+        let text = feedbackText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard text.count >= 3 else { return }
+        feedbackState = .sending
+
+        Task {
+            let delivered = await AppTelemetryManager.shared.sendFeedback(
+                kind: feedbackKind,
+                message: text,
+                contact: feedbackContact
+            )
+            feedbackState = delivered ? .sent : .failed
+            if delivered {
+                feedbackText = ""
+                feedbackContact = ""
+                try? await Task.sleep(nanoseconds: 1_600_000_000)
+                if feedbackState == .sent { showFeedback = false }
+            } else {
+                copyFeedback()
+            }
+        }
     }
 
     private func copyFeedback() {

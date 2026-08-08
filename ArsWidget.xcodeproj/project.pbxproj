@@ -149,6 +149,7 @@
 		AA0000000000000000000006 /* VocabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000005 /* VocabManager.swift */; };
 		AA0000000000000000000008 /* SessionTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000007 /* SessionTimerManager.swift */; };
 		AA000000000000000000000A /* SystemStatsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000009 /* SystemStatsManager.swift */; };
+		AA00000000000000000000B2 /* AppTelemetryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000B1 /* AppTelemetryManager.swift */; };
 		AA000000000000000000000C /* PomodoroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000B /* PomodoroView.swift */; };
 		AA000000000000000000000E /* PomodoroBreakOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000D /* PomodoroBreakOverlayWindow.swift */; };
 		AA0000000000000000000010 /* RemindersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000F /* RemindersView.swift */; };
@@ -332,6 +333,7 @@
 		AA0000000000000000000005 /* VocabManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000007 /* SessionTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimerManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000009 /* SystemStatsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStatsManager.swift; sourceTree = "<group>"; };
+		AA00000000000000000000B1 /* AppTelemetryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTelemetryManager.swift; sourceTree = "<group>"; };
 		AA000000000000000000000B /* PomodoroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroView.swift; sourceTree = "<group>"; };
 		AA000000000000000000000D /* PomodoroBreakOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroBreakOverlayWindow.swift; sourceTree = "<group>"; };
 		AA000000000000000000000F /* RemindersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersView.swift; sourceTree = "<group>"; };
@@ -632,6 +634,7 @@
 				AA0000000000000000000005 /* VocabManager.swift */,
 				AA0000000000000000000007 /* SessionTimerManager.swift */,
 				AA0000000000000000000009 /* SystemStatsManager.swift */,
+				AA00000000000000000000B1 /* AppTelemetryManager.swift */,
 				A1C100000000000000000001 /* KeyboardCleaningManager.swift */,
 			);
 			path = managers;
@@ -1026,6 +1029,7 @@
 				AA0000000000000000000006 /* VocabManager.swift in Sources */,
 				AA0000000000000000000008 /* SessionTimerManager.swift in Sources */,
 				AA000000000000000000000A /* SystemStatsManager.swift in Sources */,
+				AA00000000000000000000B2 /* AppTelemetryManager.swift in Sources */,
 				AA000000000000000000000C /* PomodoroView.swift in Sources */,
 				AA000000000000000000000E /* PomodoroBreakOverlayWindow.swift in Sources */,
 				AA0000000000000000000010 /* RemindersView.swift in Sources */,
