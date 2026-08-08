@@ -189,9 +189,28 @@ function noteNoDataIfNeeded() {
 }
 
 function start() {
-  if (isEnabled || !isUsagePage()) return;
+  // Consent is remembered; whether this is a usage page is re-checked on every
+  // scan, because these sites swap the page under us without a reload.
+  if (isEnabled) return;
   isEnabled = true;
   scheduleReport();
+}
+
+/// Claude, ChatGPT and AI Studio are single-page apps: opening the site and
+/// then clicking through to Usage changes the URL without loading a document.
+/// Watching for that is what makes the extension work for someone who did not
+/// arrive at the usage page by a direct link.
+function watchForPageChanges() {
+  let lastHref = location.href;
+  window.setInterval(() => {
+    if (location.href === lastHref) return;
+    lastHref = location.href;
+    // A new screen deserves a fresh verdict on whether the numbers are there.
+    emptyScans = 0;
+    noDataNotified = false;
+    lastUsage = "";
+    scheduleReport();
+  }, 1000);
 }
 
 try {
@@ -207,12 +226,11 @@ chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "USAGE_ENABLED") start();
 });
 
-if (isUsagePage()) {
-  new MutationObserver(scheduleReport).observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-    characterData: true
-  });
-  // Periodic re-scan so login/layout issues are detected even on static pages.
-  window.setInterval(reportUsage, 30_000);
-}
+new MutationObserver(scheduleReport).observe(document.documentElement, {
+  childList: true,
+  subtree: true,
+  characterData: true
+});
+// Periodic re-scan so login/layout issues are detected even on static pages.
+window.setInterval(reportUsage, 30_000);
+watchForPageChanges();

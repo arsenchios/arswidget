@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ArsWidget AI Limits",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Показывает остаток лимитов Claude, Codex, DeepSeek и Gemini в ArsWidget на этом Mac.",
   "permissions": ["alarms", "storage", "notifications"],
   "host_permissions": [

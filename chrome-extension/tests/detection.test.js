@@ -131,6 +131,54 @@ const cases = [
   }
 ];
 
+/// Claude и ChatGPT — одностраничные приложения: переход на страницу лимитов
+/// внутри сайта не перезагружает документ. Расширение обязано это заметить,
+/// иначе оно молчит у всех, кто пришёл на Usage кликом, а не по прямой ссылке.
+function checkSinglePageNavigation() {
+  const sent = [];
+  let urlWatcher = null;
+  const location = { hostname: "claude.ai", pathname: "/chats", hash: "", href: "https://claude.ai/chats" };
+  const timers = [];
+  const sandbox = {
+    location,
+    document: { body: { innerText: "新 chat" }, documentElement: {} },
+    window: {
+      setTimeout: (fn) => { timers.push(fn); return 0; },
+      setInterval: (fn, ms) => { if (ms === 1000) urlWatcher = fn; return 0; }
+    },
+    MutationObserver: class { observe() {} },
+    chrome: {
+      runtime: {
+        lastError: null,
+        sendMessage: (message, callback) => {
+          if (message.type === "GET_CONSENT") { callback({ enabled: true }); return undefined; }
+          sent.push(message);
+          return Promise.resolve({ ok: true });
+        },
+        onMessage: { addListener: () => {} }
+      }
+    }
+  };
+  sandbox.globalThis = sandbox;
+  vm.createContext(sandbox);
+  vm.runInContext(fs.readFileSync(CONTENT_SCRIPT, "utf8"), sandbox);
+
+  // The user clicks through to Usage inside the app: URL and content change,
+  // but no document ever loads.
+  location.pathname = "/settings/usage";
+  location.href = "https://claude.ai/settings/usage";
+  sandbox.document.body.innerText = "5-hour limit · 18% remaining";
+  if (typeof urlWatcher !== "function") return { ok: false, detail: "нет наблюдателя за сменой адреса" };
+  urlWatcher();
+  vm.runInContext("reportUsage()", sandbox);
+
+  const usage = sent.find((m) => m.type === "USAGE_FOUND")?.usage;
+  return {
+    ok: JSON.stringify(usage) === JSON.stringify({ claudeFiveHourRemaining: 18 }),
+    detail: JSON.stringify(usage)
+  };
+}
+
 let failed = 0;
 for (const testCase of cases) {
   const actual = detect(testCase.host, testCase.path, testCase.body);
@@ -145,8 +193,18 @@ for (const testCase of cases) {
   }
 }
 
+const spa = checkSinglePageNavigation();
+const total = cases.length + 1;
+if (spa.ok) {
+  console.log("ok    Переход на страницу лимитов внутри сайта, без перезагрузки");
+} else {
+  failed += 1;
+  console.error("FAIL  Переход на страницу лимитов внутри сайта, без перезагрузки");
+  console.error(`      получено  ${spa.detail}`);
+}
+
 if (failed > 0) {
-  console.error(`\nПровалено проверок: ${failed} из ${cases.length}.`);
+  console.error(`\nПровалено проверок: ${failed} из ${total}.`);
   process.exit(1);
 }
-console.log(`\nВсе ${cases.length} проверок прошли.`);
+console.log(`\nВсе ${total} проверок прошли.`);

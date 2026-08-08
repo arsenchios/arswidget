@@ -99,7 +99,7 @@ jobs:
           fi
           # shellcheck disable=SC2086
           gh release create "v$VERSION" $ASSETS \
-            --title "arsansara ☯ $VERSION" \
+            --title "ArsWidget $VERSION" \
             --notes "$NOTES"
 
       - name: Сохранить номер версии и ленту обновлений
