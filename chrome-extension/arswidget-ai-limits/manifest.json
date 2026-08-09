@@ -11,8 +11,10 @@
     "https://chat.openai.com/*",
     "https://platform.deepseek.com/*",
     "https://aistudio.google.com/*",
+    "https://perplexity.ai/*",
     "https://www.perplexity.ai/*",
     "https://cursor.com/*",
+    "https://www.cursor.com/*",
     "https://grok.com/*"
   ],
   "background": {
@@ -30,8 +32,10 @@
         "https://chat.openai.com/*",
         "https://platform.deepseek.com/usage*",
         "https://aistudio.google.com/*",
+        "https://perplexity.ai/*",
         "https://www.perplexity.ai/*",
         "https://cursor.com/*",
+        "https://www.cursor.com/*",
         "https://grok.com/*"
       ],
       "js": ["content.js"],
