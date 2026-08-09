@@ -194,8 +194,54 @@ struct VocabView: View {
             .background(Capsule().fill(color.opacity(0.16)))
     }
 
+    /// Уровни из большого словаря — то, чем словарь пополняется по-настоящему.
+    /// Тем ниже остаются как быстрый способ взять слова одной темой.
+    private var levelPicker: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("По уровню сложности")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.5))
+
+            ForEach(VocabLevel.allCases) { level in
+                let available = vocab.availableCount(level: level)
+                HStack(spacing: 8) {
+                    Text(level.rawValue)
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .frame(width: 24, alignment: .leading)
+                    Text(level.subtitle)
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.6))
+                    Spacer(minLength: 0)
+                    if available == 0 {
+                        Text("всё добавлено")
+                            .font(.caption2)
+                            .foregroundStyle(.white.opacity(0.35))
+                    } else {
+                        Text("осталось \(available)")
+                            .font(.caption2)
+                            .foregroundStyle(.white.opacity(0.35))
+                        Button("+20") { vocab.addWords(level: level, count: 20) }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        Button("+50") { vocab.addWords(level: level, count: 50) }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                    }
+                }
+            }
+        }
+    }
+
     private var topicPicker: some View {
         VStack(alignment: .leading, spacing: 6) {
+            if !VocabManager.levelPack(for: vocab.languagePack).isEmpty {
+                levelPicker
+                Divider().overlay(Color.white.opacity(0.1))
+                Text("Или готовой темой")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+
             let topics = VocabManager.topics(for: vocab.languagePack)
             if topics.isEmpty {
                 Text("Для своего набора готовых тем нет — слова добавляются вручную в настройках.")

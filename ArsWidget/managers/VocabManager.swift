@@ -825,6 +825,64 @@ final class VocabManager: ObservableObject {
         }
     }
 
+    // MARK: Большие словари по уровням
+
+    /// Словарь, собранный `tools/build_vocab_packs.py` из открытых источников
+    /// и лежащий в приложении файлом. Уровень — это позиция русского слова в
+    /// частотном списке: чем чаще слово в живой речи, тем раньше его учить.
+    /// Читается один раз при первом обращении.
+    private static var loadedPacks: [VocabLanguagePack: [VocabLevelWord]] = [:]
+
+    static func levelPack(for pack: VocabLanguagePack) -> [VocabLevelWord] {
+        if let cached = loadedPacks[pack] { return cached }
+
+        let fileName: String?
+        switch pack {
+        case .ukrainian: fileName = "vocab-ukrainian"
+        case .english, .indonesian, .custom: fileName = nil
+        }
+
+        var words: [VocabLevelWord] = []
+        if let fileName,
+           let url = Bundle.main.url(forResource: fileName, withExtension: "json"),
+           let data = try? Data(contentsOf: url),
+           let decoded = try? JSONDecoder().decode(VocabLevelPackFile.self, from: data) {
+            words = decoded.words
+        }
+        loadedPacks[pack] = words
+        return words
+    }
+
+    /// Сколько слов этого уровня ещё не добавлено.
+    func availableCount(level: VocabLevel) -> Int {
+        let existing = Set(words.map(\.id))
+        return Self.levelPack(for: languagePack)
+            .filter { $0.level == level.rawValue && !existing.contains($0.ru) }
+            .count
+    }
+
+    /// Добавляет следующие `count` слов уровня — начиная с самых частых.
+    @discardableResult
+    func addWords(level: VocabLevel, count: Int) -> Int {
+        var deleted = deletedIDs(for: languagePack)
+        var existing = Set(words.map(\.id))
+        var added: [VocabWord] = []
+
+        for candidate in Self.levelPack(for: languagePack) where candidate.level == level.rawValue {
+            guard added.count < count else { break }
+            guard !existing.contains(candidate.ru) else { continue }
+            added.append(VocabWord(ru: candidate.ru, uk: candidate.target, isActive: true, isCustom: true))
+            existing.insert(candidate.ru)
+            deleted.remove(candidate.ru)
+        }
+
+        guard !added.isEmpty else { return 0 }
+        saveDeletedIDs(deleted, for: languagePack)
+        words.insert(contentsOf: added, at: 0)
+        saveWords()
+        return added.count
+    }
+
     /// Сколько слов темы ещё нет в текущем наборе.
     func newWordCount(in topic: VocabTopic) -> Int {
         let existing = Set(words.map(\.id))
@@ -855,4 +913,35 @@ struct VocabTopic: Identifiable {
     let id: String
     let title: String
     let words: [VocabWord]
+}
+
+/// Уровень сложности. Считается не на глаз: это диапазон позиций слова в
+/// частотном списке живой речи.
+enum VocabLevel: String, CaseIterable, Identifiable {
+    case a1 = "A1"
+    case a2 = "A2"
+    case b1 = "B1"
+    case b2 = "B2"
+
+    var id: String { rawValue }
+
+    var subtitle: String {
+        switch self {
+        case .a1: return String(localized: "самые частые")
+        case .a2: return String(localized: "бытовые")
+        case .b1: return String(localized: "уверенный уровень")
+        case .b2: return String(localized: "редкие и точные")
+        }
+    }
+}
+
+struct VocabLevelWord: Codable {
+    let ru: String
+    let target: String
+    let level: String
+}
+
+struct VocabLevelPackFile: Codable {
+    let language: String
+    let words: [VocabLevelWord]
 }
