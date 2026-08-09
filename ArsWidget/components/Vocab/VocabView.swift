@@ -2,9 +2,12 @@
 //  VocabView.swift
 //  ArsWidget
 //
-//  Added in personal fork: "Слова" tab — pick which Ukrainian words you're
-//  studying, set how often they pop up and in which direction, and see
-//  your progress. The actual quiz card is VocabPromptOverlayWindow.
+//  Вкладка «Слова». Языки разложены по вкладкам: выбранная вкладка решает,
+//  чей список слов виден, а галочка «учу этот язык» — кого спрашивать. Раньше
+//  эти два разных смысла делили один ряд из кружков и выпадающего списка, и
+//  понять, что за список перед тобой, было нельзя.
+//
+//  Сама карточка опроса — VocabPromptOverlayWindow.
 //
 
 import SwiftUI
@@ -12,73 +15,101 @@ import SwiftUI
 struct VocabView: View {
     @EnvironmentObject var vm: ArsWidgetViewModel
     @ObservedObject var vocab = VocabManager.shared
+    @State private var showTopics = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            controls
+            header
+            languageTabs
+            packControls
             Divider().overlay(Color.white.opacity(0.1))
             wordList
         }
         .padding(.horizontal, 8)
-        .onAppear {
-            vm.updateOpenSizeIfNeeded()
+        .foregroundStyle(.white)
+        .onAppear { vm.updateOpenSizeIfNeeded() }
+    }
+
+    // MARK: Шапка
+
+    private var header: some View {
+        HStack {
+            Toggle(isOn: $vocab.isEnabled) {
+                Text("Изучение языков")
+                    .font(.system(size: 14, weight: .semibold))
+            }
+            .toggleStyle(.switch)
+            .controlSize(.mini)
+
+            Spacer()
+
+            Text("\(vocab.totalActiveCount) слов в изучении")
+                .font(.caption2)
+                .foregroundStyle(.gray)
         }
     }
 
-    private var controls: some View {
+    // MARK: Вкладки языков
+
+    private var languageTabs: some View {
+        HStack(spacing: 4) {
+            ForEach(VocabLanguagePack.allCases) { pack in
+                languageTab(pack)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func languageTab(_ pack: VocabLanguagePack) -> some View {
+        let isSelected = vocab.languagePack == pack
+        let isLearning = vocab.isPackEnabled(pack)
+        let color = VocabManager.color(for: pack)
+
+        return Button {
+            vocab.languagePack = pack
+        } label: {
+            VStack(spacing: 4) {
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(color)
+                        .frame(width: 7, height: 7)
+                        .opacity(isLearning ? 1 : 0.35)
+                    Text(vocab.title(for: pack))
+                        .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                }
+                .foregroundStyle(.white.opacity(isSelected ? 1 : 0.6))
+
+                // Подчёркивание выбранной вкладки — тем же цветом языка.
+                Rectangle()
+                    .fill(isSelected ? color : .clear)
+                    .frame(height: 2)
+            }
+            .padding(.horizontal, 8)
+            .padding(.top, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .help(isLearning ? Text("Этот язык сейчас изучается") : Text("Язык открыт для просмотра, но не изучается"))
+    }
+
+    // MARK: Настройки выбранной вкладки
+
+    private var packControls: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Toggle(isOn: $vocab.isEnabled) {
-                    Text("Изучение языков")
-                        .font(.system(size: 14, weight: .semibold))
+            HStack(spacing: 10) {
+                Toggle(isOn: Binding(
+                    get: { vocab.isPackEnabled(vocab.languagePack) },
+                    set: { vocab.setPackEnabled(vocab.languagePack, enabled: $0) }
+                )) {
+                    Text("Учу этот язык")
+                        .font(.caption)
                 }
-                .toggleStyle(.switch)
-                .controlSize(.mini)
+                .toggleStyle(.checkbox)
+                .controlSize(.small)
 
-                Spacer()
+                directionChips
 
-                Text("\(vocab.totalActiveCount) слов в изучении")
-                    .font(.caption2)
-                    .foregroundStyle(.gray)
-            }
-
-            Text("\(vocab.sourceLanguageLabel) → \(vocab.targetLanguageLabel)")
-                .font(.caption2)
-                .foregroundStyle(.white.opacity(0.55))
-
-            HStack(spacing: 6) {
-                ForEach(VocabLanguagePack.allCases) { pack in
-                    Button {
-                        vocab.setPackEnabled(pack, enabled: !vocab.isPackEnabled(pack))
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: vocab.isPackEnabled(pack) ? "checkmark.circle.fill" : "circle")
-                            Text(pack.targetCode)
-                        }
-                        .font(.caption2)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Capsule().fill(Color.white.opacity(vocab.languagePack == pack ? 0.14 : 0.08)))
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(vocab.isPackEnabled(pack) ? .white : .white.opacity(0.45))
-                }
-
-                Spacer()
-
-                Picker("", selection: Binding(get: { vocab.languagePack }, set: { vocab.languagePack = $0 })) {
-                    ForEach(VocabLanguagePack.allCases) { pack in
-                        Text(vocab.title(for: pack)).tag(pack)
-                    }
-                }
-                .pickerStyle(.menu)
-                .frame(width: 150)
-            }
-
-            if vocab.isEnabled && vocab.totalActiveCount == 0 {
-                Text("При включении автоматически появится стартовый набор слов.")
-                    .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.55))
+                Spacer(minLength: 0)
             }
 
             HStack {
@@ -99,41 +130,144 @@ struct VocabView: View {
                 .frame(width: 130)
             }
 
-            Button("Показать слово сейчас") {
-                vocab.showRandomWord()
-            }
-            .buttonStyle(.plain)
-            .font(.caption)
-            .foregroundStyle(.white.opacity(vocab.totalActiveCount == 0 ? 0.3 : 0.8))
-            .disabled(vocab.totalActiveCount == 0)
+            HStack(spacing: 10) {
+                Button {
+                    withAnimation(.smooth) { showTopics.toggle() }
+                } label: {
+                    Label("Добавить слова", systemImage: "plus.circle")
+                }
+                .buttonStyle(.plain)
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.82))
 
-            Button {
-                SettingsWindowController.shared.showWindow(selecting: "Vocab")
-            } label: {
-                Label("Добавить язык или термины", systemImage: "plus.circle")
+                Button("Показать слово сейчас") {
+                    vocab.showRandomWord()
+                }
+                .buttonStyle(.plain)
+                .font(.caption)
+                .foregroundStyle(.white.opacity(vocab.totalActiveCount == 0 ? 0.3 : 0.8))
+                .disabled(vocab.totalActiveCount == 0)
+
+                Spacer(minLength: 0)
+
+                if vocab.deletedCount > 0 {
+                    Button("Вернуть удалённые (\(vocab.deletedCount))") {
+                        vocab.restoreDeletedWords()
+                    }
+                    .buttonStyle(.plain)
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.5))
+                }
             }
-            .buttonStyle(.plain)
-            .font(.caption)
-            .foregroundStyle(.white.opacity(0.82))
+
+            if showTopics {
+                topicPicker
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
         }
-        .foregroundStyle(.white)
     }
+
+    /// Пара языков цветом: слева то, что спрашивают, справа — чем отвечать.
+    /// Подпись всегда есть, цвет только помогает узнать пару быстрее.
+    private var directionChips: some View {
+        let pack = vocab.languagePack
+        let packColor = VocabManager.color(for: pack)
+        let ruFirst = vocab.direction != .ukToRu
+
+        return HStack(spacing: 5) {
+            languageChip(ruFirst ? "Русский" : vocab.targetLabel(for: pack),
+                         color: ruFirst ? VocabManager.sourceColor : packColor)
+            Image(systemName: vocab.direction == .mixed ? "arrow.left.arrow.right" : "arrow.right")
+                .font(.system(size: 8, weight: .bold))
+                .foregroundStyle(.white.opacity(0.45))
+            languageChip(ruFirst ? vocab.targetLabel(for: pack) : "Русский",
+                         color: ruFirst ? packColor : VocabManager.sourceColor)
+        }
+    }
+
+    private func languageChip(_ title: String, color: Color) -> some View {
+        Text(title)
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundStyle(color)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background(Capsule().fill(color.opacity(0.16)))
+    }
+
+    private var topicPicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            let topics = VocabManager.topics(for: vocab.languagePack)
+            if topics.isEmpty {
+                Text("Для своего набора готовых тем нет — слова добавляются вручную в настройках.")
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.55))
+                Button {
+                    SettingsWindowController.shared.showWindow(selecting: "Vocab")
+                } label: {
+                    Label("Открыть настройки словаря", systemImage: "gearshape")
+                }
+                .buttonStyle(.plain)
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.82))
+            } else {
+                ForEach(topics) { topic in
+                    let remaining = vocab.newWordCount(in: topic)
+                    HStack(spacing: 8) {
+                        Text(topic.title)
+                            .font(.caption)
+                        Spacer(minLength: 0)
+                        if remaining == 0 {
+                            Text("уже добавлено")
+                                .font(.caption2)
+                                .foregroundStyle(.white.opacity(0.4))
+                        } else {
+                            Button("Добавить \(remaining)") {
+                                vocab.addTopic(topic)
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        }
+                    }
+                }
+
+                Button {
+                    SettingsWindowController.shared.showWindow(selecting: "Vocab")
+                } label: {
+                    Label("Свои слова и языки", systemImage: "gearshape")
+                }
+                .buttonStyle(.plain)
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(0.6))
+            }
+        }
+        .padding(10)
+        .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    // MARK: Список слов
 
     private var wordList: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 3) {
+                if vocab.visibleWords.isEmpty {
+                    Text("В этом наборе пока нет слов. Добавьте готовую тему выше.")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.5))
+                        .padding(.vertical, 12)
+                }
                 ForEach(vocab.visibleWords) { word in
                     WordRow(word: word)
                 }
             }
         }
-        .frame(maxHeight: 360)
+        .frame(maxHeight: 320)
     }
 }
 
 private struct WordRow: View {
     let word: VocabWord
     @ObservedObject var vocab = VocabManager.shared
+    @State private var isHovering = false
 
     var body: some View {
         HStack(spacing: 8) {
@@ -143,24 +277,20 @@ private struct WordRow: View {
                 Image(systemName: word.isActive ? "checkmark.square.fill" : "square")
             }
             .buttonStyle(.plain)
-            .foregroundStyle(word.isActive ? .cyan : .white.opacity(0.4))
+            .foregroundStyle(word.isActive ? VocabManager.color(for: vocab.languagePack) : .white.opacity(0.4))
+            .help(word.isActive ? Text("Убрать из изучения") : Text("Взять в изучение"))
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text("\(word.ru) — \(word.uk)")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(word.isActive ? 1 : 0.6))
-                        .lineLimit(1)
-
-                    if word.isCustom {
-                        Text("своё")
-                            .font(.system(size: 9, weight: .semibold))
-                            .foregroundStyle(.black.opacity(0.8))
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
-                            .background(Capsule().fill(Color.cyan.opacity(0.85)))
-                    }
+                    Text(word.ru)
+                        .foregroundStyle(VocabManager.sourceColor.opacity(word.isActive ? 1 : 0.55))
+                    Text("—")
+                        .foregroundStyle(.white.opacity(0.3))
+                    Text(word.uk)
+                        .foregroundStyle(VocabManager.color(for: vocab.languagePack).opacity(word.isActive ? 1 : 0.55))
                 }
+                .font(.system(size: 12))
+                .lineLimit(1)
 
                 if word.box >= 4 {
                     Text("Уже выучено")
@@ -174,7 +304,22 @@ private struct WordRow: View {
             progressDots
 
             actionMenu
+
+            // Удаление одним нажатием — то, ради чего раньше приходилось
+            // открывать меню, и только для своих слов.
+            Button {
+                vocab.removeWord(word)
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.white.opacity(isHovering ? 0.8 : 0.3))
+                    .frame(width: 16, height: 16)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(Text("Удалить слово навсегда"))
         }
+        .onHover { isHovering = $0 }
     }
 
     private var progressDots: some View {
@@ -185,6 +330,7 @@ private struct WordRow: View {
                     .frame(width: 4, height: 4)
             }
         }
+        .help(Text("Прогресс: \(min(word.box, 4)) из 4"))
     }
 
     private var actionMenu: some View {
@@ -197,14 +343,9 @@ private struct WordRow: View {
                 vocab.resetProgress(for: word)
             }
 
-            Button("Уже знаю") {
-                vocab.markMastered(word)
-            }
-
-            if word.isCustom {
-                Divider()
-                Button("Удалить слово", role: .destructive) {
-                    vocab.removeWord(word)
+            if word.box < 4 {
+                Button("Уже знаю") {
+                    vocab.markMastered(word)
                 }
             }
         } label: {
@@ -218,6 +359,6 @@ private struct WordRow: View {
 
 #Preview {
     VocabView()
-        .frame(width: 300, height: 220)
+        .frame(width: 640, height: 470)
         .background(.black)
 }

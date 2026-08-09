@@ -89,6 +89,7 @@ final class VocabManager: ObservableObject {
     @Published var showPromptOverlay: Bool = false
 
     @AppStorage("vocabEnabled") var isEnabled: Bool = false {
+        willSet { objectWillChange.send() }
         didSet {
             if isEnabled {
                 ensureStarterWordsIfNeeded()
@@ -102,11 +103,18 @@ final class VocabManager: ObservableObject {
             restartTimer()
         }
     }
+    // @AppStorage внутри класса сам не сообщает виду об изменении, поэтому
+    // каждому свойству нужен явный objectWillChange — без него вкладка языка
+    // и направление перевода на экране не перерисовываются.
     @AppStorage("vocabIntervalMinutes") var intervalMinutes: Int = 10 {
+        willSet { objectWillChange.send() }
         didSet { restartTimer() }
     }
-    @AppStorage("vocabDirectionRaw") private var directionRaw: String = VocabDirection.ruToUk.rawValue
+    @AppStorage("vocabDirectionRaw") private var directionRaw: String = VocabDirection.ruToUk.rawValue {
+        willSet { objectWillChange.send() }
+    }
     @AppStorage("vocabLanguagePackRaw") private var languagePackRaw: String = VocabLanguagePack.ukrainian.rawValue {
+        willSet { objectWillChange.send() }
         didSet {
             dismissPrompt()
             loadWords()
@@ -114,6 +122,7 @@ final class VocabManager: ObservableObject {
         }
     }
     @AppStorage("vocabEnabledLanguagePacksRaw") private var enabledLanguagePacksRaw: String = VocabLanguagePack.ukrainian.rawValue {
+        willSet { objectWillChange.send() }
         didSet {
             dismissPrompt()
             ensureStarterWordsIfNeeded()
@@ -160,17 +169,35 @@ final class VocabManager: ObservableObject {
         return name.isEmpty ? "Свой набор" : name
     }
 
-    var currentPromptAccent: Color {
-        switch currentPromptPack ?? languagePack {
+    /// Цвет русского — он всегда одна из двух сторон перевода.
+    static let sourceColor = Color(red: 0.29, green: 0.60, blue: 0.91)
+
+    /// Цвет языка. Украинский жёлтый, индонезийский красный — как флаги, так
+    /// пара «синий → жёлтый» читается без чтения подписи. Английский зелёный,
+    /// чтобы не спорить с синим русским.
+    static func color(for pack: VocabLanguagePack) -> Color {
+        switch pack {
         case .ukrainian:
             return Color(red: 0.91, green: 0.70, blue: 0.22)
         case .english:
-            return Color(red: 0.29, green: 0.60, blue: 0.91)
+            return Color(red: 0.20, green: 0.68, blue: 0.47)
         case .indonesian:
             return Color(red: 0.84, green: 0.35, blue: 0.34)
         case .custom:
             return Color(red: 0.45, green: 0.72, blue: 0.65)
         }
+    }
+
+    var currentPromptAccent: Color {
+        Self.color(for: currentPromptPack ?? languagePack)
+    }
+
+    /// Цвета той пары, которая сейчас на карточке: слева то, что спрашивают.
+    var currentPromptPairColors: (from: Color, to: Color) {
+        let packColor = Self.color(for: currentPromptPack ?? languagePack)
+        return currentPromptIsRuToUk
+            ? (Self.sourceColor, packColor)
+            : (packColor, Self.sourceColor)
     }
 
     func promptText(for word: VocabWord) -> String {
@@ -209,7 +236,22 @@ final class VocabManager: ObservableObject {
     }
 
     var activeCount: Int { words.filter { $0.isActive }.count }
-    var visibleWords: [VocabWord] { words.filter { $0.box < 4 || $0.isActive } }
+
+    /// Выученные раньше просто исчезали из списка: «Уже знаю» ставит box = 4 и
+    /// снимает активность, а список показывал только неизученные — вернуть
+    /// слово было нечем. Теперь видно всё, выученное уходит вниз.
+    var visibleWords: [VocabWord] {
+        words.enumerated()
+            .sorted { left, right in
+                let leftDone = left.element.box >= 4
+                let rightDone = right.element.box >= 4
+                if leftDone != rightDone { return !leftDone }
+                return left.offset < right.offset
+            }
+            .map(\.element)
+    }
+
+    var masteredCount: Int { words.filter { $0.box >= 4 }.count }
 
     func activeCount(for pack: VocabLanguagePack) -> Int {
         loadWords(for: pack).filter(\.isActive).count
@@ -282,13 +324,42 @@ final class VocabManager: ObservableObject {
         saveWords()
     }
 
+    /// Удаляет слово навсегда — в том числе встроенное. Встроенные при каждой
+    /// загрузке подмешиваются обратно из кода, поэтому их id запоминается
+    /// отдельно, иначе удалённое слово возвращалось бы после перезапуска.
     func removeWord(_ word: VocabWord) {
         guard let idx = words.firstIndex(where: { $0.id == word.id }) else { return }
         words.remove(at: idx)
+        if Self.builtinWordIDs(for: languagePack).contains(word.id) {
+            var deleted = deletedIDs(for: languagePack)
+            deleted.insert(word.id)
+            saveDeletedIDs(deleted, for: languagePack)
+        }
         saveWords()
         if currentPrompt?.id == word.id {
             dismissPrompt()
         }
+    }
+
+    var deletedCount: Int { deletedIDs(for: languagePack).count }
+
+    /// Страховка от случайного нажатия: вернуть всё удалённое во вкладке.
+    func restoreDeletedWords() {
+        saveDeletedIDs([], for: languagePack)
+        loadWords()
+    }
+
+    private func deletedIDs(for pack: VocabLanguagePack) -> Set<String> {
+        let raw = UserDefaults.standard.stringArray(forKey: deletedKey(for: pack)) ?? []
+        return Set(raw)
+    }
+
+    private func saveDeletedIDs(_ ids: Set<String>, for pack: VocabLanguagePack) {
+        UserDefaults.standard.set(Array(ids), forKey: deletedKey(for: pack))
+    }
+
+    private func deletedKey(for pack: VocabLanguagePack) -> String {
+        "vocabDeletedV1_\(pack.rawValue)"
     }
 
     private func loadWords() {
@@ -296,16 +367,17 @@ final class VocabManager: ObservableObject {
     }
 
     private func loadWords(for pack: VocabLanguagePack) -> [VocabWord] {
-        let builtinWords = Self.builtinWords(for: pack)
+        let deleted = deletedIDs(for: pack)
+        let builtinWords = Self.builtinWords(for: pack).filter { !deleted.contains($0.id) }
         let builtinWordIDs = Self.builtinWordIDs(for: pack)
 
         if let data = UserDefaults.standard.data(forKey: storageKey(for: pack)),
            let saved = try? JSONDecoder().decode([VocabWord].self, from: data) {
-            let savedByID = Dictionary(uniqueKeysWithValues: saved.map { ($0.id, $0) })
+            let savedByID = Dictionary(saved.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
             // Merge saved progress with the built-in list, in case the
             // built-in list gained new words since last launch.
             var merged = builtinWords.map { savedByID[$0.id] ?? $0 }
-            let customSavedWords = saved.filter { !builtinWordIDs.contains($0.id) }
+            let customSavedWords = saved.filter { !builtinWordIDs.contains($0.id) && !deleted.contains($0.id) }
             merged.insert(contentsOf: customSavedWords.reversed(), at: 0)
             return merged
         } else {
@@ -621,19 +693,166 @@ final class VocabManager: ObservableObject {
     ]
 
     static func builtinWords(for pack: VocabLanguagePack) -> [VocabWord] {
+        let list: [VocabWord]
         switch pack {
         case .ukrainian:
-            return ukrainianWords
+            list = ukrainianWords
         case .english:
-            return englishWords
+            list = englishWords
         case .indonesian:
-            return indonesianWords
+            list = indonesianWords
         case .custom:
-            return []
+            list = []
         }
+        // Некоторые слова в украинском совпадают с русским буквально
+        // («причина», «аптека», «температура»). Перевод верный, но карточка
+        // бесполезна: вопрос и ответ одинаковые. В опрос такие не берём.
+        return list.filter { $0.ru.caseInsensitiveCompare($0.uk) != .orderedSame }
     }
 
     static func builtinWordIDs(for pack: VocabLanguagePack) -> Set<String> {
         Set(builtinWords(for: pack).map(\.id))
     }
+
+    // MARK: Наборы слов по темам
+
+    /// Готовые тематические наборы — чтобы пополнять словарь не по одному
+    /// слову. Всё лежит в приложении: без интернета, без ключей и без счёта
+    /// за нейросеть, и перевод не меняется от запуска к запуску.
+    static func topics(for pack: VocabLanguagePack) -> [VocabTopic] {
+        switch pack {
+        case .ukrainian:
+            return [
+                VocabTopic(id: "uk-food", title: "Еда и кафе", words: [
+                    .init(ru: "еда", uk: "їжа"),
+                    .init(ru: "завтрак", uk: "сніданок"),
+                    .init(ru: "обед", uk: "обід"),
+                    .init(ru: "ужин", uk: "вечеря"),
+                    .init(ru: "вкусно", uk: "смачно"),
+                    .init(ru: "голодный", uk: "голодний"),
+                    .init(ru: "счёт", uk: "рахунок"),
+                    .init(ru: "заказать", uk: "замовити"),
+                ]),
+                VocabTopic(id: "uk-city", title: "Город и дорога", words: [
+                    .init(ru: "улица", uk: "вулиця"),
+                    .init(ru: "здание", uk: "будівля"),
+                    .init(ru: "поезд", uk: "потяг"),
+                    .init(ru: "самолёт", uk: "літак"),
+                    .init(ru: "остановка", uk: "зупинка"),
+                    .init(ru: "налево", uk: "ліворуч"),
+                    .init(ru: "направо", uk: "праворуч"),
+                    .init(ru: "быстрее", uk: "швидше"),
+                ]),
+                VocabTopic(id: "uk-talk", title: "Разговор", words: [
+                    .init(ru: "привет", uk: "привіт"),
+                    .init(ru: "спасибо", uk: "дякую"),
+                    .init(ru: "пожалуйста", uk: "будь ласка"),
+                    .init(ru: "извини", uk: "вибач"),
+                    .init(ru: "как дела", uk: "як справи"),
+                    .init(ru: "понимаю", uk: "розумію"),
+                    .init(ru: "конечно", uk: "звісно"),
+                    .init(ru: "позже", uk: "пізніше"),
+                ]),
+            ]
+        case .english:
+            return [
+                VocabTopic(id: "en-food", title: "Еда и кафе", words: [
+                    .init(ru: "еда", uk: "food"),
+                    .init(ru: "завтрак", uk: "breakfast"),
+                    .init(ru: "обед", uk: "lunch"),
+                    .init(ru: "ужин", uk: "dinner"),
+                    .init(ru: "вкусно", uk: "tasty"),
+                    .init(ru: "голодный", uk: "hungry"),
+                    .init(ru: "счёт", uk: "the bill"),
+                    .init(ru: "заказать", uk: "to order"),
+                ]),
+                VocabTopic(id: "en-city", title: "Город и дорога", words: [
+                    .init(ru: "улица", uk: "street"),
+                    .init(ru: "здание", uk: "building"),
+                    .init(ru: "поезд", uk: "train"),
+                    .init(ru: "самолёт", uk: "plane"),
+                    .init(ru: "остановка", uk: "stop"),
+                    .init(ru: "налево", uk: "left"),
+                    .init(ru: "направо", uk: "right"),
+                    .init(ru: "быстрее", uk: "faster"),
+                ]),
+                VocabTopic(id: "en-talk", title: "Разговор", words: [
+                    .init(ru: "привет", uk: "hi"),
+                    .init(ru: "спасибо", uk: "thank you"),
+                    .init(ru: "пожалуйста", uk: "please"),
+                    .init(ru: "извини", uk: "sorry"),
+                    .init(ru: "как дела", uk: "how are you"),
+                    .init(ru: "понимаю", uk: "I understand"),
+                    .init(ru: "конечно", uk: "sure"),
+                    .init(ru: "позже", uk: "later"),
+                ]),
+            ]
+        case .indonesian:
+            return [
+                VocabTopic(id: "id-food", title: "Еда и кафе", words: [
+                    .init(ru: "завтрак", uk: "sarapan"),
+                    .init(ru: "обед", uk: "makan siang"),
+                    .init(ru: "ужин", uk: "makan malam"),
+                    .init(ru: "вкусно", uk: "enak"),
+                    .init(ru: "голодный", uk: "lapar"),
+                    .init(ru: "счёт", uk: "tagihan"),
+                    .init(ru: "заказать", uk: "memesan"),
+                    .init(ru: "рис", uk: "nasi"),
+                ]),
+                VocabTopic(id: "id-city", title: "Город и дорога", words: [
+                    .init(ru: "поезд", uk: "kereta"),
+                    .init(ru: "самолёт", uk: "pesawat"),
+                    .init(ru: "остановка", uk: "halte"),
+                    .init(ru: "аэропорт", uk: "bandara"),
+                    .init(ru: "машина", uk: "mobil"),
+                    .init(ru: "далеко", uk: "jauh"),
+                    .init(ru: "близко", uk: "dekat"),
+                    .init(ru: "сколько стоит", uk: "berapa harganya"),
+                ]),
+                VocabTopic(id: "id-talk", title: "Разговор", words: [
+                    .init(ru: "доброе утро", uk: "selamat pagi"),
+                    .init(ru: "добрый вечер", uk: "selamat malam"),
+                    .init(ru: "извини", uk: "maaf"),
+                    .init(ru: "как дела", uk: "apa kabar"),
+                    .init(ru: "меня зовут", uk: "nama saya"),
+                    .init(ru: "я не понимаю", uk: "saya tidak mengerti"),
+                    .init(ru: "сколько", uk: "berapa"),
+                    .init(ru: "где", uk: "di mana"),
+                ]),
+            ]
+        case .custom:
+            return []
+        }
+    }
+
+    /// Сколько слов темы ещё нет в текущем наборе.
+    func newWordCount(in topic: VocabTopic) -> Int {
+        let existing = Set(words.map(\.id))
+        return topic.words.filter { !existing.contains($0.id) }.count
+    }
+
+    /// Добавляет недостающие слова темы и сразу берёт их в изучение.
+    /// Уже удалённые вручную слова возвращаются: человек попросил их явно.
+    func addTopic(_ topic: VocabTopic) {
+        var deleted = deletedIDs(for: languagePack)
+        var existing = Set(words.map(\.id))
+        var added: [VocabWord] = []
+
+        for word in topic.words where !existing.contains(word.id) {
+            added.append(VocabWord(ru: word.ru, uk: word.uk, isActive: true, isCustom: true))
+            existing.insert(word.id)
+            deleted.remove(word.id)
+        }
+
+        guard !added.isEmpty else { return }
+        saveDeletedIDs(deleted, for: languagePack)
+        words.insert(contentsOf: added, at: 0)
+        saveWords()
+    }
+}
+
+struct VocabTopic: Identifiable {
+    let id: String
+    let title: String
+    let words: [VocabWord]
 }
