@@ -150,10 +150,12 @@
 		AA0000000000000000000008 /* SessionTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000007 /* SessionTimerManager.swift */; };
 		AA000000000000000000000A /* SystemStatsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000009 /* SystemStatsManager.swift */; };
 		AA00000000000000000000B2 /* AppTelemetryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000B1 /* AppTelemetryManager.swift */; };
+		AA00000000000000000000D2 /* HabitsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000D1 /* HabitsManager.swift */; };
 		AA00000000000000000000C2 /* vocab-ukrainian.json in Resources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000C1 /* vocab-ukrainian.json */; };
 		AA000000000000000000000C /* PomodoroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000B /* PomodoroView.swift */; };
 		AA000000000000000000000E /* PomodoroBreakOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000D /* PomodoroBreakOverlayWindow.swift */; };
 		AA0000000000000000000010 /* RemindersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000F /* RemindersView.swift */; };
+		AA00000000000000000000D4 /* HabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000D3 /* HabitsView.swift */; };
 		AA0000000000000000000012 /* ClipboardHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000011 /* ClipboardHistoryView.swift */; };
 		AA0000000000000000000014 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000013 /* BreathingView.swift */; };
 		AA0000000000000000000016 /* VocabPromptOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* VocabPromptOverlayWindow.swift */; };
@@ -335,10 +337,12 @@
 		AA0000000000000000000007 /* SessionTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimerManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000009 /* SystemStatsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStatsManager.swift; sourceTree = "<group>"; };
 		AA00000000000000000000B1 /* AppTelemetryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTelemetryManager.swift; sourceTree = "<group>"; };
+		AA00000000000000000000D1 /* HabitsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsManager.swift; sourceTree = "<group>"; };
 		AA00000000000000000000C1 /* vocab-ukrainian.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = vocab-ukrainian.json; path = Resources/vocab-ukrainian.json; sourceTree = "<group>"; };
 		AA000000000000000000000B /* PomodoroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroView.swift; sourceTree = "<group>"; };
 		AA000000000000000000000D /* PomodoroBreakOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroBreakOverlayWindow.swift; sourceTree = "<group>"; };
 		AA000000000000000000000F /* RemindersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersView.swift; sourceTree = "<group>"; };
+		AA00000000000000000000D3 /* HabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000011 /* ClipboardHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardHistoryView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000013 /* BreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathingView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000015 /* VocabPromptOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabPromptOverlayWindow.swift; sourceTree = "<group>"; };
@@ -566,6 +570,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000000000000000000000F /* RemindersView.swift */,
+				AA00000000000000000000D3 /* HabitsView.swift */,
 			);
 			path = Reminders;
 			sourceTree = "<group>";
@@ -637,6 +642,7 @@
 				AA0000000000000000000007 /* SessionTimerManager.swift */,
 				AA0000000000000000000009 /* SystemStatsManager.swift */,
 				AA00000000000000000000B1 /* AppTelemetryManager.swift */,
+				AA00000000000000000000D1 /* HabitsManager.swift */,
 				A1C100000000000000000001 /* KeyboardCleaningManager.swift */,
 			);
 			path = managers;
@@ -1034,9 +1040,11 @@
 				AA0000000000000000000008 /* SessionTimerManager.swift in Sources */,
 				AA000000000000000000000A /* SystemStatsManager.swift in Sources */,
 				AA00000000000000000000B2 /* AppTelemetryManager.swift in Sources */,
+				AA00000000000000000000D2 /* HabitsManager.swift in Sources */,
 				AA000000000000000000000C /* PomodoroView.swift in Sources */,
 				AA000000000000000000000E /* PomodoroBreakOverlayWindow.swift in Sources */,
 				AA0000000000000000000010 /* RemindersView.swift in Sources */,
+				AA00000000000000000000D4 /* HabitsView.swift in Sources */,
 				AA0000000000000000000012 /* ClipboardHistoryView.swift in Sources */,
 				AA0000000000000000000014 /* BreathingView.swift in Sources */,
 				AA0000000000000000000016 /* VocabPromptOverlayWindow.swift in Sources */,

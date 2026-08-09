@@ -525,7 +525,19 @@ final class VocabManager: ObservableObject {
         return result
     }
 
+    /// Ударения, расставленные один раз и проверенные `tools/stress_helper.py`.
+    /// Файла может не быть — тогда работает маленькая таблица ниже.
+    private static let stressedWords: [String: String] = {
+        guard let url = Bundle.main.url(forResource: "vocab-stress", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode([String: [String: String]].self, from: data)
+        else { return [:] }
+        return decoded["stressed"] ?? [:]
+    }()
+
     private func displayText(_ text: String) -> String {
+        if let stressed = Self.stressedWords[text] { return stressed }
+
         let marked: [String: String] = [
             "успеть": "успЕть", "отменить": "отменИть", "обсудить": "обсудИть",
             "вспомнить": "вспОмнить", "предложить": "предложИть", "привычка": "привЫчка",

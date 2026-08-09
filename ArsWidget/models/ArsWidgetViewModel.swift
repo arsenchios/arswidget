@@ -239,7 +239,9 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
 
             return .init(width: openNotchSize.width, height: height)
         case .reminders:
-            return .init(width: 640, height: 470)
+            // Список напоминаний стал короче, а снизу добавился трекер
+            // привычек — вкладка целиком стала выше.
+            return .init(width: 640, height: 540)
         case .vocab:
             return .init(width: 640, height: 470)
         case .games:

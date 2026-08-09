@@ -54,6 +54,13 @@ struct RemindersView: View {
             } else {
                 remindersColumns
             }
+
+            Divider().overlay(Color.white.opacity(0.1))
+
+            // Привычки живут на этой же вкладке: и то и другое про «что я делаю
+            // сегодня», только напоминание закрывается один раз, а привычка
+            // держится днями.
+            HabitsView()
         }
         .padding(.horizontal, 8)
         .task {
@@ -230,7 +237,9 @@ struct RemindersView: View {
                     }
                 }
             }
-            .frame(maxHeight: 330)
+            // Ниже на этой вкладке теперь трекер привычек, поэтому список
+            // напоминаний ужат: раньше он занимал почти всю высоту.
+            .frame(maxHeight: 208)
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
