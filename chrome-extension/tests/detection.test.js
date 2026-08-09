@@ -128,6 +128,41 @@ const cases = [
     path: "/chat/123",
     body: "5-hour limit\n42% used",
     expect: {}
+  },
+  {
+    name: "ChatGPT и Codex на одной странице не путаются",
+    host: "chatgpt.com",
+    path: "/settings/Account",
+    body: "Account\nCodex\nWeekly limit\n23% used\nChatGPT\nMonthly limit\n60% used",
+    expect: { codexWeeklyRemaining: 77, chatgptRemaining: 40 }
+  },
+  {
+    name: "Perplexity",
+    host: "www.perplexity.ai",
+    path: "/settings/account",
+    body: "Pro searches\nremaining\n35%",
+    expect: { perplexityRemaining: 35 }
+  },
+  {
+    name: "Cursor",
+    host: "cursor.com",
+    path: "/dashboard",
+    body: "Premium requests\n72% used",
+    expect: { cursorRemaining: 28 }
+  },
+  {
+    name: "Grok",
+    host: "grok.com",
+    path: "/settings",
+    body: "Usage\n45% remaining",
+    expect: { grokRemaining: 45 }
+  },
+  {
+    name: "Неизвестный сайт игнорируется целиком",
+    host: "example.com",
+    path: "/settings",
+    body: "Weekly limit\n50% used",
+    expect: {}
   }
 ];
 

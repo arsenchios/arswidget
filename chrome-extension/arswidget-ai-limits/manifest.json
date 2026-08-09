@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ArsWidget AI Limits",
-  "version": "0.2.2",
-  "description": "Показывает остаток лимитов Claude, Codex, DeepSeek и Gemini в ArsWidget на этом Mac.",
+  "version": "0.3.0",
+  "description": "Показывает остаток лимитов Claude, ChatGPT, Codex, DeepSeek, Gemini, Perplexity, Cursor и Grok в ArsWidget на этом Mac.",
   "permissions": ["alarms", "storage", "notifications"],
   "host_permissions": [
     "http://127.0.0.1:63554/*",
@@ -10,7 +10,10 @@
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
     "https://platform.deepseek.com/*",
-    "https://aistudio.google.com/*"
+    "https://aistudio.google.com/*",
+    "https://www.perplexity.ai/*",
+    "https://cursor.com/*",
+    "https://grok.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -26,7 +29,10 @@
         "https://chatgpt.com/*",
         "https://chat.openai.com/*",
         "https://platform.deepseek.com/usage*",
-        "https://aistudio.google.com/*"
+        "https://aistudio.google.com/*",
+        "https://www.perplexity.ai/*",
+        "https://cursor.com/*",
+        "https://grok.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"

@@ -32,68 +32,98 @@ struct AIUsageSnapshot: Codable, Equatable {
     var claudeWeeklyRemaining: Double?
     var deepseekRemaining: Double?
     var geminiRemaining: Double?
+    // Added later; optional so a file written by an older build still decodes.
+    var chatgptRemaining: Double?
+    var perplexityRemaining: Double?
+    var cursorRemaining: Double?
+    var grokRemaining: Double?
     var updatedAt: Date
 }
 
 /// One place that knows every limit we can show, so the tab, the closed notch
 /// and the "you can still connect ..." hint can never drift apart again.
 enum AIUsageMetric: String, CaseIterable, Identifiable {
-    case codexWeekly
     case claudeFiveHour
     case claudeWeekly
+    case codexWeekly
+    case chatgpt
     case deepseek
     case gemini
+    case perplexity
+    case cursor
+    case grok
 
     var id: String { rawValue }
 
     /// Vendor name, used for the "not connected yet" hint (Claude has two rows).
     var provider: String {
         switch self {
-        case .codexWeekly: return "Codex"
         case .claudeFiveHour, .claudeWeekly: return "Claude"
+        case .codexWeekly: return "Codex"
+        case .chatgpt: return "ChatGPT"
         case .deepseek: return "DeepSeek"
         case .gemini: return "Gemini"
+        case .perplexity: return "Perplexity"
+        case .cursor: return "Cursor"
+        case .grok: return "Grok"
         }
     }
 
     var title: String {
         switch self {
-        case .codexWeekly: return String(localized: "Codex, неделя")
         case .claudeFiveHour: return String(localized: "Claude, 5 часов")
         case .claudeWeekly: return String(localized: "Claude, неделя")
+        case .codexWeekly: return String(localized: "Codex, неделя")
+        case .chatgpt: return String(localized: "ChatGPT")
         case .deepseek: return String(localized: "DeepSeek")
         case .gemini: return String(localized: "Gemini")
+        case .perplexity: return String(localized: "Perplexity")
+        case .cursor: return String(localized: "Cursor")
+        case .grok: return String(localized: "Grok")
         }
     }
 
-    /// Single character shown inside the closed-notch capsule.
+    /// Shown inside the closed-notch capsule. Two letters, because with nine
+    /// services a single letter stops being recognisable.
     var shortLabel: String {
         switch self {
-        case .codexWeekly: return "C"
-        case .claudeFiveHour: return "5"
-        case .claudeWeekly: return "W"
-        case .deepseek: return "D"
-        case .gemini: return "G"
+        case .claudeFiveHour: return "C5"
+        case .claudeWeekly: return "Cw"
+        case .codexWeekly: return "Cx"
+        case .chatgpt: return "GP"
+        case .deepseek: return "DS"
+        case .gemini: return "Gm"
+        case .perplexity: return "Px"
+        case .cursor: return "Cu"
+        case .grok: return "Gr"
         }
     }
 
     var tint: Color {
         switch self {
-        case .codexWeekly: return .blue
         case .claudeFiveHour: return .orange
         case .claudeWeekly: return Color.orange.opacity(0.72)
+        case .codexWeekly: return .blue
+        case .chatgpt: return Color.blue.opacity(0.7)
         case .deepseek: return .teal
         case .gemini: return .purple
+        case .perplexity: return .mint
+        case .cursor: return .indigo
+        case .grok: return .pink
         }
     }
 
     func value(in snapshot: AIUsageSnapshot) -> Double? {
         switch self {
-        case .codexWeekly: return snapshot.codexWeeklyRemaining
         case .claudeFiveHour: return snapshot.claudeFiveHourRemaining
         case .claudeWeekly: return snapshot.claudeWeeklyRemaining
+        case .codexWeekly: return snapshot.codexWeeklyRemaining
+        case .chatgpt: return snapshot.chatgptRemaining
         case .deepseek: return snapshot.deepseekRemaining
         case .gemini: return snapshot.geminiRemaining
+        case .perplexity: return snapshot.perplexityRemaining
+        case .cursor: return snapshot.cursorRemaining
+        case .grok: return snapshot.grokRemaining
         }
     }
 }
@@ -341,10 +371,14 @@ final class AIUsageBridge {
     private func accept(_ payload: AIUsageBridgePayload) -> Bool {
         let values = [
             payload.codexWeeklyRemaining,
+            payload.chatgptRemaining,
             payload.claudeFiveHourRemaining,
             payload.claudeWeeklyRemaining,
             payload.deepseekRemaining,
             payload.geminiRemaining,
+            payload.perplexityRemaining,
+            payload.cursorRemaining,
+            payload.grokRemaining,
         ].compactMap { $0 }
 
         guard !values.isEmpty, values.allSatisfy({ (0...100).contains($0) }) else { return false }
@@ -355,6 +389,10 @@ final class AIUsageBridge {
             claudeWeeklyRemaining: payload.claudeWeeklyRemaining,
             deepseekRemaining: payload.deepseekRemaining,
             geminiRemaining: payload.geminiRemaining,
+            chatgptRemaining: payload.chatgptRemaining,
+            perplexityRemaining: payload.perplexityRemaining,
+            cursorRemaining: payload.cursorRemaining,
+            grokRemaining: payload.grokRemaining,
             updatedAt: Self.captureDate(from: payload.capturedAt)
         )
         Task { @MainActor in
@@ -392,10 +430,14 @@ final class AIUsageBridge {
 
 private struct AIUsageBridgePayload: Decodable, Sendable {
     let codexWeeklyRemaining: Double?
+    let chatgptRemaining: Double?
     let claudeFiveHourRemaining: Double?
     let claudeWeeklyRemaining: Double?
     let deepseekRemaining: Double?
     let geminiRemaining: Double?
+    let perplexityRemaining: Double?
+    let cursorRemaining: Double?
+    let grokRemaining: Double?
     /// Epoch milliseconds of the last real read from a page. Optional so older
     /// builds of the extension keep working.
     let capturedAt: Double?

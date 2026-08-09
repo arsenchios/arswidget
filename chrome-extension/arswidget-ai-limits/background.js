@@ -5,12 +5,17 @@ const CONSENT_KEY = "arsWidgetUsageConsent";
 const NOTIFY_KEY = "arsWidgetNotifyState";
 const RESEND_ALARM = "resendUsage";
 const NOTIFY_COOLDOWN_MS = 15 * 60 * 1000;
+// Единственные поля, которые уходят в приложение. Всё остальное отбрасывается.
 const PERCENT_KEYS = [
   "codexWeeklyRemaining",
+  "chatgptRemaining",
   "claudeFiveHourRemaining",
   "claudeWeeklyRemaining",
   "deepseekRemaining",
-  "geminiRemaining"
+  "geminiRemaining",
+  "perplexityRemaining",
+  "cursorRemaining",
+  "grokRemaining"
 ];
 
 // A service worker is torn down after a few idle seconds, so anything the

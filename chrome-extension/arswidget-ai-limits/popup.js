@@ -1,9 +1,13 @@
 const METRICS = [
-  { key: "codexWeeklyRemaining", title: "Codex, неделя", provider: "Codex" },
   { key: "claudeFiveHourRemaining", title: "Claude, 5 часов", provider: "Claude" },
   { key: "claudeWeeklyRemaining", title: "Claude, неделя", provider: "Claude" },
+  { key: "codexWeeklyRemaining", title: "Codex, неделя", provider: "Codex" },
+  { key: "chatgptRemaining", title: "ChatGPT", provider: "ChatGPT" },
   { key: "deepseekRemaining", title: "DeepSeek", provider: "DeepSeek" },
-  { key: "geminiRemaining", title: "Gemini", provider: "Gemini" }
+  { key: "geminiRemaining", title: "Gemini", provider: "Gemini" },
+  { key: "perplexityRemaining", title: "Perplexity", provider: "Perplexity" },
+  { key: "cursorRemaining", title: "Cursor", provider: "Cursor" },
+  { key: "grokRemaining", title: "Grok", provider: "Grok" }
 ];
 
 function ageText(timestamp) {
@@ -93,6 +97,18 @@ document.querySelector("#openDeepSeek").addEventListener("click", () => {
 
 document.querySelector("#openGemini").addEventListener("click", () => {
   chrome.tabs.create({ url: "https://aistudio.google.com/" });
+});
+
+document.querySelector("#openPerplexity").addEventListener("click", () => {
+  chrome.tabs.create({ url: "https://www.perplexity.ai/settings/account" });
+});
+
+document.querySelector("#openCursor").addEventListener("click", () => {
+  chrome.tabs.create({ url: "https://cursor.com/dashboard" });
+});
+
+document.querySelector("#openGrok").addEventListener("click", () => {
+  chrome.tabs.create({ url: "https://grok.com/settings" });
 });
 
 document.querySelector("#refresh").addEventListener("click", () => {
