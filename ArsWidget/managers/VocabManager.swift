@@ -507,8 +507,25 @@ final class VocabManager: ObservableObject {
         currentPromptPack = nil
     }
 
+    /// Ударение показывается надстрочным знаком: «успі́х», а не «успИх».
+    /// Заглавная буква посреди слова читается как опечатка и ломает вид строки;
+    /// комбинируемый акут (U+0301) — то, чем ударение обозначают в словарях.
+    /// В таблице ниже ударный гласный записан заглавной, а превращает его в
+    /// знак этот код — так таблицу проще пополнять руками.
+    private static func withStressMark(_ marked: String) -> String {
+        var result = ""
+        for character in marked {
+            if character.isUppercase, character.isLetter {
+                result += character.lowercased()
+                result += "\u{0301}"
+            } else {
+                result.append(character)
+            }
+        }
+        return result
+    }
+
     private func displayText(_ text: String) -> String {
-        // Capital letters are a readable fallback for the built-in words where stress matters.
         let marked: [String: String] = [
             "успеть": "успЕть", "отменить": "отменИть", "обсудить": "обсудИть",
             "вспомнить": "вспОмнить", "предложить": "предложИть", "привычка": "привЫчка",
@@ -519,7 +536,8 @@ final class VocabManager: ObservableObject {
             "рішення": "рІшення", "можливість": "можлИвість", "увага": "увАга",
             "сьогодні": "сьогОдні", "будь ласка": "будь лАска"
         ]
-        return marked[text] ?? text
+        guard let stressed = marked[text] else { return text }
+        return Self.withStressMark(stressed)
     }
 
     private func storageKey(for pack: VocabLanguagePack) -> String {
