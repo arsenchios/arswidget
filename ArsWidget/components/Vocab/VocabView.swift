@@ -371,15 +371,11 @@ private struct WordRow: View {
                 .lineLimit(1)
 
                 if word.box >= 4 {
-                    Text("Уже выучено")
+                    Text("Уже знаю")
                         .font(.system(size: 10))
                         .foregroundStyle(.green.opacity(0.8))
                 }
             }
-
-            Spacer()
-
-            progressDots
 
             actionMenu
 
@@ -396,6 +392,10 @@ private struct WordRow: View {
             }
             .buttonStyle(.plain)
             .help(Text("Удалить слово навсегда"))
+
+            Spacer()
+
+            progressDots
         }
         .onHover { isHovering = $0 }
     }

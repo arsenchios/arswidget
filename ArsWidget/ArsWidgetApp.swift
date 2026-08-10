@@ -20,6 +20,13 @@ struct ArsWidgetApp: App {
     let updaterController: SPUStandardUpdaterController
 
     init() {
+        // This value used to be persisted, so changing the default alone would
+        // leave existing installations showing the previous release nickname.
+        let legacyReleaseNames = ["Flying Rabbit 🐇🪽", "Flying Rabbit 🐇 🪽"]
+        if legacyReleaseNames.contains(Defaults[.releaseName]) {
+            Defaults[.releaseName] = "arsansara ☯"
+        }
+
         updaterController = SPUStandardUpdaterController(
             startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 

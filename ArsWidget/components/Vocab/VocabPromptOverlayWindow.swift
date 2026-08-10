@@ -99,21 +99,21 @@ private struct VocabPromptCardView: View {
             if let word = vocab.currentPrompt {
                 VStack(spacing: 2) {
                     Text("Переведи")
-                    Text(vocab.currentPromptInstructionDetail)
+                    promptLanguageLine
                 }
                 .font(.system(size: 13, weight: .regular, design: .rounded))
                 .foregroundStyle(.white.opacity(0.68))
 
                 Text(vocab.promptText(for: word))
                     .font(.system(size: 25, weight: .bold, design: .rounded))
-                    .foregroundStyle(vocab.currentPromptAccent)
+                    .foregroundStyle(vocab.currentPromptTextColor)
                     .multilineTextAlignment(.center)
                     .lineLimit(3)
 
                 if revealed {
                     Text(vocab.answerText(for: word))
                         .font(.system(size: 19, weight: .semibold, design: .rounded))
-                        .foregroundStyle(vocab.currentPromptAccent)
+                        .foregroundStyle(vocab.currentAnswerTextColor)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                         .multilineTextAlignment(.center)
 
@@ -138,7 +138,7 @@ private struct VocabPromptCardView: View {
                     }
                     .font(.system(size: 14, weight: .semibold))
 
-                    Button("Уже выучил") {
+                    Button("Уже знаю") {
                         vocab.markMastered(word)
                         revealed = false
                     }
@@ -162,6 +162,20 @@ private struct VocabPromptCardView: View {
         )
         .onChange(of: vocab.currentPrompt) { _, _ in
             revealed = false
+        }
+    }
+
+    private var promptLanguageLine: some View {
+        let pack = vocab.currentPromptPack ?? vocab.languagePack
+        let colors = vocab.currentPromptPairColors
+        let from = vocab.currentPromptIsRuToUk ? "Русский" : vocab.targetLabel(for: pack)
+        let to = vocab.currentPromptIsRuToUk ? vocab.targetLabel(for: pack) : "Русский"
+
+        return HStack(spacing: 0) {
+            Text("с ")
+            Text(from).foregroundStyle(colors.from)
+            Text(" на ")
+            Text(to).foregroundStyle(colors.to)
         }
     }
 }

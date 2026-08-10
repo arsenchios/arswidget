@@ -186,14 +186,14 @@ final class VocabManager: ObservableObject {
     static let sourceColor = Color(red: 0.29, green: 0.60, blue: 0.91)
 
     /// Цвет языка. Украинский жёлтый, индонезийский красный — как флаги, так
-    /// пара «синий → жёлтый» читается без чтения подписи. Английский зелёный,
-    /// чтобы не спорить с синим русским.
+    /// пара «синий → жёлтый» читается без чтения подписи. Английский —
+    /// насыщенно-синий, как попросил пользователь.
     static func color(for pack: VocabLanguagePack) -> Color {
         switch pack {
         case .ukrainian:
             return Color(red: 0.91, green: 0.70, blue: 0.22)
         case .english:
-            return Color(red: 0.20, green: 0.68, blue: 0.47)
+            return Color(red: 0.30, green: 0.52, blue: 0.96)
         case .indonesian:
             return Color(red: 0.84, green: 0.35, blue: 0.34)
         case .custom:
@@ -204,6 +204,9 @@ final class VocabManager: ObservableObject {
     var currentPromptAccent: Color {
         Self.color(for: currentPromptPack ?? languagePack)
     }
+
+    var currentPromptTextColor: Color { currentPromptPairColors.from }
+    var currentAnswerTextColor: Color { currentPromptPairColors.to }
 
     /// Цвета той пары, которая сейчас на карточке: слева то, что спрашивают.
     var currentPromptPairColors: (from: Color, to: Color) {

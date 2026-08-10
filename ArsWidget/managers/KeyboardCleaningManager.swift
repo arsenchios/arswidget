@@ -11,6 +11,12 @@ import SwiftUI
 final class KeyboardCleaningManager: ObservableObject {
     static let shared = KeyboardCleaningManager()
 
+    enum StartResult {
+        case started
+        case inputMonitoringRequired
+        case eventTapUnavailable
+    }
+
     @Published private(set) var isActive = false
     @Published private(set) var secondsRemaining = 0
 
@@ -26,19 +32,29 @@ final class KeyboardCleaningManager: ObservableObject {
     }
 
     @discardableResult
-    func start(duration: Int = 30) -> Bool {
-        guard !isActive else { return true }
+    func start(duration: Int = 30) -> StartResult {
+        guard !isActive else { return .started }
+
+        // A CGEvent tap on current macOS needs Input Monitoring. Request it
+        // explicitly so the app appears in the right Privacy pane instead of
+        // reporting the unrelated Accessibility permission as the problem.
+        guard CGPreflightListenEventAccess() || CGRequestListenEventAccess() else {
+            return .inputMonitoringRequired
+        }
 
         let mask = eventMask
         guard let tap = CGEvent.tapCreate(
-            tap: .cghidEventTap,
+            // .cghidEventTap is reserved for root processes and returned nil
+            // for ArsWidget even when Accessibility was enabled. A session tap
+            // is the supported level for a normal desktop app.
+            tap: .cgSessionEventTap,
             place: .headInsertEventTap,
             options: .defaultTap,
             eventsOfInterest: mask,
             callback: Self.eventTapCallback,
             userInfo: Unmanaged.passUnretained(self).toOpaque()
         ) else {
-            return false
+            return .eventTapUnavailable
         }
 
         eventTap = tap
@@ -52,7 +68,7 @@ final class KeyboardCleaningManager: ObservableObject {
         isActive = true
         showOverlays()
         startCountdown()
-        return true
+        return .started
     }
 
     func stop() {

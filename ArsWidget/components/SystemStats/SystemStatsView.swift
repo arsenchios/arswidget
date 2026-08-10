@@ -28,6 +28,7 @@ struct SystemStatsView: View {
     @State private var showLinkSetupMessage = false
     @State private var showChromeRequiredMessage = false
     @State private var showCleaningPermissionMessage = false
+    @State private var showInputMonitoringMessage = false
     @State private var showCleaningStartFailure = false
     @State private var showAILimitsSetup = false
     @State private var expandedProcessMetric: ProcessMetric?
@@ -197,14 +198,25 @@ struct SystemStatsView: View {
             Text("Расширение ArsWidget работает в Google Chrome. Установите или откройте Chrome и повторите попытку.")
         }
         .alert("Нужен доступ к управлению компьютером", isPresented: $showCleaningPermissionMessage) {
+            Button("Открыть настройки") {
+                openAccessibilitySettings()
+            }
             Button("Понятно", role: .cancel) {}
         } message: {
-            Text("macOS попросит разрешение «Универсальный доступ». Без него нельзя временно блокировать клавиатуру.")
+            Text("В «Универсальном доступе» включите именно ArsWidget.app. Разрешение для Codex Computer Use.app или старой копии ArsWidget не подойдёт.")
         }
         .alert("Не удалось включить режим очистки", isPresented: $showCleaningStartFailure) {
             Button("Понятно", role: .cancel) {}
         } message: {
             Text("Проверь разрешение «Универсальный доступ» для ArsWidget в Системных настройках.")
+        }
+        .alert("Нужен доступ к мониторингу ввода", isPresented: $showInputMonitoringMessage) {
+            Button("Открыть настройки") {
+                openInputMonitoringSettings()
+            }
+            Button("Понятно", role: .cancel) {}
+        } message: {
+            Text("В разделе «Мониторинг ввода» разрешите ArsWidget.app. Это отдельный доступ от «Универсального доступа» и нужен, чтобы на 30 секунд блокировать клавиши и трекпад.")
         }
     }
 
@@ -369,10 +381,25 @@ struct SystemStatsView: View {
                 showCleaningPermissionMessage = true
                 return
             }
-            if !keyboardCleaner.start() {
+            switch keyboardCleaner.start() {
+            case .started:
+                break
+            case .inputMonitoringRequired:
+                showInputMonitoringMessage = true
+            case .eventTapUnavailable:
                 showCleaningStartFailure = true
             }
         }
+    }
+
+    private func openAccessibilitySettings() {
+        guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else { return }
+        NSWorkspace.shared.open(url)
+    }
+
+    private func openInputMonitoringSettings() {
+        guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent") else { return }
+        NSWorkspace.shared.open(url)
     }
 
     private var networkColor: Color {
