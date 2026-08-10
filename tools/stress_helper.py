@@ -47,8 +47,8 @@ def strip_accent(text: str) -> str:
 
 
 def needs_stress(word: str) -> bool:
-    """Односложным ударение не нужно, ставить его там — только путать."""
-    return sum(1 for ch in word if ch in VOWELS) > 1
+    """Слово вообще содержит гласную, значит ударение поставить есть куда."""
+    return any(ch in VOWELS for ch in word)
 
 
 def collect_words(side: str = "target") -> list:
@@ -147,7 +147,67 @@ def command_merge(answer_path: Path, side: str) -> int:
     return 0
 
 
+def command_verify() -> int:
+    """Проверяет словарь после того, как ударения проставили прямо в нём.
+
+    Сравнивать не с чем: исходный файл уже перезаписан. Поэтому проверяется
+    то, что можно проверить формально — что знак стоит после гласной, что он
+    один на слово, и что в русском поле знака нет. Плюс печатается, скольким
+    словам ударение так и не поставили.
+    """
+    data = json.loads(PACK_PATH.read_text(encoding="utf-8"))
+    words = data.get("words", [])
+
+    problems = []
+    without = []
+    marked = 0
+    for item in words:
+        # Без нормализации: знак ударения после «к» или «г» Unicode склеивает в
+        # готовые буквы «ќ» и «ѓ», и ошибка перестаёт быть видна как ударение.
+        # Гласные так не склеиваются, поэтому правильные ударения не пострадают.
+        target = item.get("target", "")
+        source = item.get("ru", "")
+
+        if any(ch in "ќѓЌЃ" for ch in target):
+            problems.append(f"{target}: ударение попало на согласную (получились буквы ќ/ѓ)")
+            continue
+
+        if ACCENT in source:
+            problems.append(f"ударение в русском слове: {source}")
+
+        count = target.count(ACCENT)
+        if count == 0:
+            if any(ch in VOWELS for ch in target):
+                without.append(target)
+            continue
+        if count > 1:
+            problems.append(f"{target}: ударений {count}, должно быть одно")
+            continue
+        position = target.index(ACCENT)
+        if position == 0 or target[position - 1] not in VOWELS:
+            problems.append(f"{target}: ударение стоит не после гласной")
+            continue
+        marked += 1
+
+    print(f"Слов в словаре: {len(words)}")
+    print(f"С ударением:    {marked}")
+    print(f"Без ударения:   {len(without)}")
+    if without[:15]:
+        print("  например:", ", ".join(without[:15]))
+    if problems:
+        print(f"\nОшибок: {len(problems)}")
+        for line in problems[:40]:
+            print("  " + line)
+        if len(problems) > 40:
+            print(f"  … и ещё {len(problems) - 40}")
+        return 1
+    print("\nОшибок не найдено.")
+    return 0
+
+
 def main() -> int:
+    if len(sys.argv) >= 2 and sys.argv[1] == "verify":
+        return command_verify()
     if len(sys.argv) < 2 or sys.argv[1] not in {"export", "merge"}:
         print(__doc__)
         return 1
