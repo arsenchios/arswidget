@@ -173,11 +173,17 @@ struct SystemStatsView: View {
             vm.updateOpenSizeIfNeeded()
         }
         .onChange(of: showFeedback) { _, isPresented in
-            vm.isModalInteractionActive = isPresented
+            updateModalInteractionState()
             if isPresented {
                 feedbackState = .idle
                 copiedFeedback = false
             }
+        }
+        .onChange(of: showCleaningPermissionMessage) { _, _ in
+            updateModalInteractionState()
+        }
+        .onChange(of: showInputMonitoringMessage) { _, _ in
+            updateModalInteractionState()
         }
         .onDisappear {
             vm.isModalInteractionActive = false
@@ -186,6 +192,22 @@ struct SystemStatsView: View {
         }
         .popover(isPresented: $showFeedback, arrowEdge: .bottom) {
             feedbackPopover
+        }
+        .popover(isPresented: $showCleaningPermissionMessage, arrowEdge: .bottom) {
+            keyboardPermissionPopover(
+                title: "Нужен доступ к управлению компьютером",
+                message: "В «Универсальном доступе» включите именно ArsWidget.app. Разрешение для Codex Computer Use.app или старой копии ArsWidget не подойдёт.",
+                openSettings: openAccessibilitySettings,
+                dismiss: { showCleaningPermissionMessage = false }
+            )
+        }
+        .popover(isPresented: $showInputMonitoringMessage, arrowEdge: .bottom) {
+            keyboardPermissionPopover(
+                title: "Нужен доступ к мониторингу ввода",
+                message: "В разделе «Мониторинг ввода» разрешите ArsWidget.app. Это отдельный доступ от «Универсального доступа» и нужен, чтобы на 30 секунд блокировать клавиши и трекпад.",
+                openSettings: openInputMonitoringSettings,
+                dismiss: { showInputMonitoringMessage = false }
+            )
         }
         .alert("Ссылка появится перед релизом", isPresented: $showLinkSetupMessage) {
             Button("Понятно", role: .cancel) {}
@@ -197,26 +219,10 @@ struct SystemStatsView: View {
         } message: {
             Text("Расширение ArsWidget работает в Google Chrome. Установите или откройте Chrome и повторите попытку.")
         }
-        .alert("Нужен доступ к управлению компьютером", isPresented: $showCleaningPermissionMessage) {
-            Button("Открыть настройки") {
-                openAccessibilitySettings()
-            }
-            Button("Понятно", role: .cancel) {}
-        } message: {
-            Text("В «Универсальном доступе» включите именно ArsWidget.app. Разрешение для Codex Computer Use.app или старой копии ArsWidget не подойдёт.")
-        }
         .alert("Не удалось включить режим очистки", isPresented: $showCleaningStartFailure) {
             Button("Понятно", role: .cancel) {}
         } message: {
             Text("Проверь разрешение «Универсальный доступ» для ArsWidget в Системных настройках.")
-        }
-        .alert("Нужен доступ к мониторингу ввода", isPresented: $showInputMonitoringMessage) {
-            Button("Открыть настройки") {
-                openInputMonitoringSettings()
-            }
-            Button("Понятно", role: .cancel) {}
-        } message: {
-            Text("В разделе «Мониторинг ввода» разрешите ArsWidget.app. Это отдельный доступ от «Универсального доступа» и нужен, чтобы на 30 секунд блокировать клавиши и трекпад.")
         }
     }
 
@@ -400,6 +406,40 @@ struct SystemStatsView: View {
     private func openInputMonitoringSettings() {
         guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent") else { return }
         NSWorkspace.shared.open(url)
+    }
+
+    private func updateModalInteractionState() {
+        vm.isModalInteractionActive = showFeedback
+            || showCleaningPermissionMessage
+            || showInputMonitoringMessage
+    }
+
+    private func keyboardPermissionPopover(
+        title: String,
+        message: String,
+        openSettings: @escaping () -> Void,
+        dismiss: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.headline)
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 8) {
+                Button("Открыть настройки") {
+                    openSettings()
+                }
+                .buttonStyle(.borderedProminent)
+                Button("Понятно") {
+                    dismiss()
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding(16)
+        .frame(width: 315, alignment: .leading)
     }
 
     private var networkColor: Color {

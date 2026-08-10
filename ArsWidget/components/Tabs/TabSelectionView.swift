@@ -31,7 +31,6 @@ let trailingTabs = Array(tabs.suffix(tabs.count / 2))
 struct TabSelectionView: View {
     @ObservedObject var coordinator = ArsWidgetViewCoordinator.shared
     @ObservedObject private var gameMonitor = GameSessionMonitor.shared
-    @Namespace var animation
     let tabItems: [TabModel]
 
     init(tabItems: [TabModel] = tabs) {
@@ -49,9 +48,10 @@ struct TabSelectionView: View {
 
     private func tabButton(for tab: TabModel) -> some View {
         TabButton(label: tab.label, icon: tab.icon, selected: coordinator.currentView == tab.view) {
-            withAnimation(.smooth) {
-                coordinator.currentView = tab.view
-            }
+            // Do not animate the state mutation itself. In the right group a
+            // matched-geometry transition could leave the previous selected
+            // capsule above the first tab (Games), swallowing its next click.
+            coordinator.currentView = tab.view
         }
         .frame(height: 26)
         .foregroundStyle(tab.view == coordinator.currentView ? .white : .gray)
@@ -65,7 +65,7 @@ struct TabSelectionView: View {
     private func selectionCapsule(selected: Bool) -> some View {
         Capsule()
             .fill(selected ? Color(nsColor: .secondarySystemFill) : Color.clear)
-            .matchedGeometryEffect(id: "capsule", in: animation)
+            .animation(.smooth, value: selected)
     }
 
     @ViewBuilder
