@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.1.6</title>
-            <pubDate>Thu, 06 Aug 2026 05:08:26 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.1.6</link>
-            <sparkle:version>1007</sparkle:version>
-            <sparkle:shortVersionString>0.1.6</sparkle:shortVersionString>
+            <title>0.1.8</title>
+            <pubDate>Mon, 10 Aug 2026 04:49:45 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.1.8</link>
+            <sparkle:version>1009</sparkle:version>
+            <sparkle:shortVersionString>0.1.8</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[Улучшена инструкция подключения расширения Chrome: держи страницы Usage открытыми (можно закрепить), уточнение о безопасности и кнопка установки расширения.
+            <description sparkle:format="markdown"><![CDATA[Лимиты AI: понятное подключение и переподключение; английский и индонезийский словари; обновлённая иконка расширения.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.1.6/ArsWidget-0.1.6.dmg" length="9360015" type="application/octet-stream" sparkle:edSignature="TPWiPhvFoDjPFFs2ULFA3rxS2ewynUXt8N0EdYHY4WwOYDZdSMVb2xBX04Z2a+67YAxAWHp6uxRLb0qNKqbRBQ=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.1.8/ArsWidget-0.1.8.dmg" length="9571295" type="application/octet-stream" sparkle:edSignature="OierjOLJO0KIxSEDu3w3jLVD4tX41+7oANz/JPZAYCt/u6htx8ePOdWfi9rtyDIhGDpyY+B2wh3uqUD0+BDyAQ=="/>
         </item>
     </channel>
 </rss>
