@@ -36,6 +36,10 @@ struct ArsWidgetHeader: View {
                     .mask {
                         NotchShape()
                     }
+                    // This is purely the visual bridge around the physical
+                    // notch. It must never cover the first button of the
+                    // right-hand tab group (Games).
+                    .allowsHitTesting(false)
             }
 
             HStack(spacing: 8) {

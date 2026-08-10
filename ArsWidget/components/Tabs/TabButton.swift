@@ -16,8 +16,11 @@ struct TabButton: View {
     var body: some View {
         Button(action: onClick) {
             Image(systemName: icon)
-                .padding(.horizontal, 10)
-                .contentShape(Capsule())
+                .frame(minWidth: 38, minHeight: 26)
+                // The whole tab cell is clickable, not just the drawn pixels
+                // of the SF Symbol. This matters for the Games button beside
+                // the notch edge.
+                .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }
