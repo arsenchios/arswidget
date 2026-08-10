@@ -112,14 +112,46 @@ struct VocabView: View {
                 Spacer(minLength: 0)
             }
 
+            HStack(spacing: 10) {
+                Picker("Уровень", selection: Binding(
+                    get: { vocab.selectedLevel(for: vocab.languagePack) },
+                    set: { vocab.setSelectedLevel($0, for: vocab.languagePack) }
+                )) {
+                    ForEach(VocabLevel.allCases) { level in
+                        Text("\(level.rawValue) — \(level.subtitle)").tag(level)
+                    }
+                }
+                .pickerStyle(.menu)
+                .frame(width: 190)
+
+                Toggle("Пополнять автоматически", isOn: $vocab.autoFillEnabled)
+                    .toggleStyle(.checkbox)
+                    .controlSize(.small)
+                    .font(.caption)
+
+                Spacer(minLength: 0)
+            }
+
+            HStack(spacing: 6) {
+                Text("\(vocab.activeCount) из \(vocab.activeTarget) в очереди")
+                Text("·")
+                Text("в базе \(vocab.totalPackCount(for: vocab.languagePack))")
+                if vocab.reviewCount(for: vocab.languagePack) > 0 {
+                    Text("·")
+                    Text("на повторении \(vocab.reviewCount(for: vocab.languagePack))")
+                }
+            }
+            .font(.caption2)
+            .foregroundStyle(.white.opacity(0.5))
+
             HStack {
-                Stepper(
-                    "Каждые \(vocab.intervalMinutes) мин",
-                    value: $vocab.intervalMinutes, in: 1...120, step: 1
-                )
+                Stepper("Очередь: \(vocab.activeTarget)", value: $vocab.activeTarget, in: 3...20)
                 .font(.caption)
 
                 Spacer()
+
+                Stepper("Каждые \(vocab.intervalMinutes) мин", value: $vocab.intervalMinutes, in: 1...120)
+                    .font(.caption)
 
                 Picker("", selection: Binding(get: { vocab.direction }, set: { vocab.direction = $0 })) {
                     ForEach(VocabDirection.allCases) { direction in

@@ -679,6 +679,8 @@ struct VocabSettings: View {
             Section {
                 Toggle("Включить карточки слов", isOn: $vocab.isEnabled)
                 Stepper("Показывать каждые \(vocab.intervalMinutes) мин", value: $vocab.intervalMinutes, in: 1...120)
+                Toggle("Автоматически пополнять очередь", isOn: $vocab.autoFillEnabled)
+                Stepper("Слов в очереди каждого языка: \(vocab.activeTarget)", value: $vocab.activeTarget, in: 3...20)
                 Picker("Направление", selection: Binding(get: { vocab.direction }, set: { vocab.direction = $0 })) {
                     ForEach(VocabDirection.allCases) { direction in
                         Text(vocab.directionLabel(direction)).tag(direction)
@@ -690,14 +692,30 @@ struct VocabSettings: View {
                         .font(.headline)
 
                     ForEach(VocabLanguagePack.allCases) { pack in
-                        Toggle(isOn: Binding(
-                            get: { vocab.isPackEnabled(pack) },
-                            set: { vocab.setPackEnabled(pack, enabled: $0) }
-                        )) {
-                            HStack {
-                                Text(vocab.title(for: pack))
-                                Spacer()
-                                Text("\(vocab.activeCount(for: pack)) слов")
+                        VStack(alignment: .leading, spacing: 4) {
+                            Toggle(isOn: Binding(
+                                get: { vocab.isPackEnabled(pack) },
+                                set: { vocab.setPackEnabled(pack, enabled: $0) }
+                            )) {
+                                HStack {
+                                    Text(vocab.title(for: pack))
+                                    Spacer()
+                                    Text("\(vocab.activeCount(for: pack)) из \(vocab.activeTarget) в очереди")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            if pack != .custom {
+                                Picker("Уровень", selection: Binding(
+                                    get: { vocab.selectedLevel(for: pack) },
+                                    set: { vocab.setSelectedLevel($0, for: pack) }
+                                )) {
+                                    ForEach(VocabLevel.allCases) { level in
+                                        Text("\(level.rawValue) — \(level.subtitle)").tag(level)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                Text("В базе \(vocab.totalPackCount(for: pack)) слов · на повторении \(vocab.reviewCount(for: pack))")
+                                    .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -706,7 +724,7 @@ struct VocabSettings: View {
             } header: {
                 Text("Словарь")
             } footer: {
-                Text("Если все языки выключены, карточки перестанут всплывать. Прогресс хранится отдельно по каждому языку.")
+                Text("Очередь пополняется следующими словами выбранного уровня. Выученное слово возвращается на повторение через 3 дня или после 10 новых слов — что наступит раньше.")
             }
 
             Section {

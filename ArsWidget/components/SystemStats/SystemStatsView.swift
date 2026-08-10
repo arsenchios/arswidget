@@ -26,9 +26,17 @@ struct SystemStatsView: View {
 
     private enum FeedbackState { case idle, sending, sent, failed }
     @State private var showLinkSetupMessage = false
+    @State private var showChromeRequiredMessage = false
     @State private var showCleaningPermissionMessage = false
     @State private var showCleaningStartFailure = false
     @State private var showAILimitsSetup = false
+    @State private var expandedProcessMetric: ProcessMetric?
+
+    private enum ProcessMetric {
+        case cpu, memory
+
+        var title: String { self == .cpu ? "Больше всего нагружают ЦП" : "Больше всего занимают памяти" }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -49,24 +57,51 @@ struct SystemStatsView: View {
             }
 
             if stats.isEnabled {
-                statRow(
-                    label: String(localized: "ЦП"),
-                    icon: "cpu",
-                    valueText: String(format: "%.0f%%", stats.usage.cpuPercent),
-                    fraction: stats.usage.cpuPercent / 100,
-                    color: color(for: stats.usage.cpuPercent)
-                )
+                Button { toggleProcessPanel(.cpu) } label: {
+                    statRow(
+                        label: String(localized: "ЦП"),
+                        icon: "cpu",
+                        valueText: String(format: "%.0f%%", stats.usage.cpuPercent),
+                        fraction: stats.usage.cpuPercent / 100,
+                        color: color(for: stats.usage.cpuPercent),
+                        isExpanded: expandedProcessMetric == .cpu
+                    )
+                }
+                .buttonStyle(.plain)
+                .help(Text("Нажмите, чтобы увидеть приложения с наибольшей нагрузкой"))
+
+                if expandedProcessMetric == .cpu {
+                    processPanel(title: ProcessMetric.cpu.title, processes: stats.topCPUProcesses, metric: .cpu)
+                }
+
+                Button { toggleProcessPanel(.memory) } label: {
+                    statRow(
+                        label: String(localized: "Память"),
+                        icon: "memorychip",
+                        valueText: String(
+                            format: String(localized: "%.1f / %.0f ГБ"),
+                            stats.usage.memoryUsedGB, stats.usage.memoryTotalGB
+                        ),
+                        fraction: stats.usage.memoryUsedPercent / 100,
+                        color: color(for: stats.usage.memoryUsedPercent),
+                        isExpanded: expandedProcessMetric == .memory
+                    )
+                }
+                .buttonStyle(.plain)
+                .help(Text("Нажмите, чтобы увидеть приложения с наибольшей нагрузкой"))
+
+                if expandedProcessMetric == .memory {
+                    processPanel(title: ProcessMetric.memory.title, processes: stats.topMemoryProcesses, metric: .memory)
+                }
 
                 statRow(
-                    label: String(localized: "Память"),
-                    icon: "memorychip",
-                    valueText: String(
-                        format: String(localized: "%.1f / %.0f ГБ"),
-                        stats.usage.memoryUsedGB, stats.usage.memoryTotalGB
-                    ),
-                    fraction: stats.usage.memoryUsedPercent / 100,
-                    color: color(for: stats.usage.memoryUsedPercent)
+                    label: stats.isNetworkAvailable ? "Сеть онлайн" : "Нет интернета",
+                    icon: stats.isNetworkAvailable ? "network" : "wifi.slash",
+                    valueText: "↓ \(formatRate(stats.usage.downloadBytesPerSecond))  ↑ \(formatRate(stats.usage.uploadBytesPerSecond))",
+                    fraction: max(stats.usage.downloadBytesPerSecond, stats.usage.uploadBytesPerSecond) / (25 * 1_024 * 1_024),
+                    color: networkColor
                 )
+                .help(Text("Шкала заполняется до 25 МБ/с. Это общая скорость Wi-Fi или Ethernet, без разбивки по приложениям."))
             } else {
                 Text("Мониторинг выключен")
                     .font(.caption2)
@@ -133,6 +168,9 @@ struct SystemStatsView: View {
             // A limit that appears (or drops out) changes how tall the tab is.
             vm.updateOpenSizeIfNeeded()
         }
+        .onChange(of: expandedProcessMetric) {
+            vm.updateOpenSizeIfNeeded()
+        }
         .onChange(of: showFeedback) { _, isPresented in
             vm.isModalInteractionActive = isPresented
             if isPresented {
@@ -143,6 +181,7 @@ struct SystemStatsView: View {
         .onDisappear {
             vm.isModalInteractionActive = false
             stats.isAILimitsSetupVisible = false
+            stats.isProcessDetailsVisible = false
         }
         .popover(isPresented: $showFeedback, arrowEdge: .bottom) {
             feedbackPopover
@@ -151,6 +190,11 @@ struct SystemStatsView: View {
             Button("Понятно", role: .cancel) {}
         } message: {
             Text("Сначала подключим публичные ссылки LavaTop и услуг автора.")
+        }
+        .alert("Нужен Google Chrome", isPresented: $showChromeRequiredMessage) {
+            Button("Понятно", role: .cancel) {}
+        } message: {
+            Text("Расширение ArsWidget работает в Google Chrome. Установите или откройте Chrome и повторите попытку.")
         }
         .alert("Нужен доступ к управлению компьютером", isPresented: $showCleaningPermissionMessage) {
             Button("Понятно", role: .cancel) {}
@@ -331,7 +375,63 @@ struct SystemStatsView: View {
         }
     }
 
-    private func statRow(label: String, icon: String, valueText: String, fraction: Double, color: Color) -> some View {
+    private var networkColor: Color {
+        guard stats.isNetworkAvailable else { return .red }
+        let peak = max(stats.usage.downloadBytesPerSecond, stats.usage.uploadBytesPerSecond)
+        switch peak {
+        case 0..<1_048_576.0: return .green
+        case 1_048_576.0..<8_388_608.0: return .yellow
+        default: return .orange
+        }
+    }
+
+    private func toggleProcessPanel(_ metric: ProcessMetric) {
+        withAnimation(.smooth) {
+            expandedProcessMetric = expandedProcessMetric == metric ? nil : metric
+            stats.isProcessDetailsVisible = expandedProcessMetric != nil
+        }
+    }
+
+    private func processPanel(title: String, processes: [ProcessUsage], metric: ProcessMetric) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.62))
+
+            if processes.isEmpty {
+                Text("Собираю данные…")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(processes) { process in
+                    HStack(spacing: 7) {
+                        Text(process.name)
+                            .font(.caption2)
+                            .lineLimit(1)
+                        Spacer(minLength: 8)
+                        Text(metric == .cpu
+                             ? String(format: "%.1f%% ЦП", process.cpuPercent)
+                             : String(format: "%.0f МБ", process.memoryMB))
+                            .font(.caption2.monospacedDigit())
+                            .foregroundStyle(.white.opacity(0.72))
+                    }
+                }
+            }
+        }
+        .padding(8)
+        .background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func formatRate(_ bytesPerSecond: Double) -> String {
+        let value = max(0, bytesPerSecond)
+        switch value {
+        case 0..<1_024.0: return "\(Int(value)) Б/с"
+        case 1_024.0..<1_048_576.0: return String(format: "%.0f КБ/с", value / 1_024.0)
+        default: return String(format: "%.1f МБ/с", value / (1_024.0 * 1_024.0))
+        }
+    }
+
+    private func statRow(label: String, icon: String, valueText: String, fraction: Double, color: Color, isExpanded: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack {
                 Image(systemName: icon)
@@ -345,6 +445,11 @@ struct SystemStatsView: View {
                     .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundStyle(.white)
                     .monospacedDigit()
+                if isExpanded {
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.45))
+                }
             }
 
             GeometryReader { geo in
@@ -551,7 +656,21 @@ struct SystemStatsView: View {
         guard let url = URL(string: "https://chromewebstore.google.com/search/ArsWidget%20AI%20Limits"),
               url.scheme?.lowercased() == "https"
         else { return }
-        NSWorkspace.shared.open(url)
+        guard let chromeURL = NSWorkspace.shared.urlForApplication(
+            withBundleIdentifier: "com.google.Chrome"
+        ) else {
+            showChromeRequiredMessage = true
+            return
+        }
+
+        let configuration = NSWorkspace.OpenConfiguration()
+        Task {
+            do {
+                try await NSWorkspace.shared.open([url], withApplicationAt: chromeURL, configuration: configuration)
+            } catch {
+                showChromeRequiredMessage = true
+            }
+        }
     }
 
     private var supportPanel: some View {

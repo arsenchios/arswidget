@@ -12,6 +12,34 @@
 import Foundation
 import SwiftUI
 
+enum HabitColor: String, CaseIterable, Codable, Identifiable {
+    case green, blue, purple, orange, pink, teal
+
+    var id: String { rawValue }
+
+    var color: Color {
+        switch self {
+        case .green: .green
+        case .blue: .blue
+        case .purple: .purple
+        case .orange: .orange
+        case .pink: .pink
+        case .teal: .teal
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .green: "Зелёный"
+        case .blue: "Синий"
+        case .purple: "Фиолетовый"
+        case .orange: "Оранжевый"
+        case .pink: "Розовый"
+        case .teal: "Бирюзовый"
+        }
+    }
+}
+
 struct Habit: Identifiable, Codable, Equatable {
     var id: UUID = UUID()
     var title: String
@@ -21,6 +49,37 @@ struct Habit: Identifiable, Codable, Equatable {
     /// времени: отметка в 23:59 и в 00:01 не должны попадать в один день.
     var doneDays: Set<String> = []
     var createdAt: Date = Date()
+    var color: HabitColor = .green
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, goalDays, doneDays, createdAt, color
+    }
+
+    init(
+        id: UUID = UUID(),
+        title: String,
+        goalDays: Int = 21,
+        doneDays: Set<String> = [],
+        createdAt: Date = Date(),
+        color: HabitColor = .green
+    ) {
+        self.id = id
+        self.title = title
+        self.goalDays = goalDays
+        self.doneDays = doneDays
+        self.createdAt = createdAt
+        self.color = color
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        goalDays = try container.decodeIfPresent(Int.self, forKey: .goalDays) ?? 21
+        doneDays = try container.decodeIfPresent(Set<String>.self, forKey: .doneDays) ?? []
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        color = try container.decodeIfPresent(HabitColor.self, forKey: .color) ?? .green
+    }
 }
 
 @MainActor
@@ -32,6 +91,7 @@ final class HabitsManager: ObservableObject {
     static let goalOptions = [7, 14, 21, 30, 66]
 
     @Published private(set) var habits: [Habit] = []
+    @Published var expandedMonthHabitID: Habit.ID?
 
     private let storageKey = "arswidgetHabitsV1"
 
@@ -53,12 +113,17 @@ final class HabitsManager: ObservableObject {
         dayFormatter.string(from: date)
     }
 
-    /// Последние дни, от старого к сегодняшнему.
-    var recentDays: [Date] {
+    /// Текущая неделя всегда начинается в понедельник, независимо от региона
+    /// macOS. Так буквы, кружки и недельная статистика совпадают.
+    var weekDays: [Date] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        return (0..<Self.visibleDays).reversed().compactMap {
-            calendar.date(byAdding: .day, value: -$0, to: today)
+        let weekday = calendar.component(.weekday, from: today)
+        // Calendar: 1 = воскресенье, 2 = понедельник.
+        let daysSinceMonday = (weekday + 5) % Self.visibleDays
+        guard let monday = calendar.date(byAdding: .day, value: -daysSinceMonday, to: today) else { return [] }
+        return (0..<Self.visibleDays).compactMap {
+            calendar.date(byAdding: .day, value: $0, to: monday)
         }
     }
 
@@ -68,11 +133,11 @@ final class HabitsManager: ObservableObject {
 
     // MARK: Изменения
 
-    func add(title: String) {
+    func add(title: String, color: HabitColor = .green) {
         let clean = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !clean.isEmpty else { return }
         guard !habits.contains(where: { $0.title.caseInsensitiveCompare(clean) == .orderedSame }) else { return }
-        habits.append(Habit(title: String(clean.prefix(60))))
+        habits.append(Habit(title: String(clean.prefix(60)), color: color))
         save()
     }
 
@@ -95,6 +160,12 @@ final class HabitsManager: ObservableObject {
     func setGoal(_ habit: Habit, days: Int) {
         guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
         habits[index].goalDays = max(1, days)
+        save()
+    }
+
+    func setColor(_ habit: Habit, color: HabitColor) {
+        guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
+        habits[index].color = color
         save()
     }
 

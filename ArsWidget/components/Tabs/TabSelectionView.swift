@@ -58,6 +58,7 @@ struct TabSelectionView: View {
         .background(selectionCapsule(selected: tab.view == coordinator.currentView))
         .overlay(alignment: .topTrailing) {
             gamesReminderDot(for: tab)
+                .allowsHitTesting(false)
         }
     }
 
@@ -74,8 +75,10 @@ struct TabSelectionView: View {
                 .fill(Color.orange)
                 .frame(width: 7, height: 7)
                 .shadow(color: Color.orange.opacity(0.9), radius: 4)
-                .padding(.top, -2)
-                .padding(.trailing, 2)
+                // Keep the marker inside the header instead of clipping it
+                // against the upper screen edge. It sits beside the icon,
+                // not over the edge of the tab.
+                .offset(x: -4, y: 7)
         }
     }
 }

@@ -236,15 +236,17 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
             }
 
             if systemStats.isAILimitsSetupVisible { height += 190 }
+            if systemStats.isProcessDetailsVisible { height += 96 }
             if systemStats.showSupport { height += 160 }
 
             return .init(width: openNotchSize.width, height: height)
         case .reminders:
             // Список напоминаний стал короче, а снизу добавился трекер
             // привычек — вкладка целиком стала выше.
-            return .init(width: 640, height: 540)
+            let habits = HabitsManager.shared
+            return .init(width: 640, height: habits.expandedMonthHabitID == nil ? 540 : 720)
         case .vocab:
-            return .init(width: 640, height: 470)
+            return .init(width: 640, height: 560)
         case .games:
             return .init(width: 640, height: 880)
         case .pomodoro:

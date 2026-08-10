@@ -22,6 +22,17 @@ struct SystemUsage {
     var memoryUsedPercent: Double = 0
     var memoryUsedGB: Double = 0
     var memoryTotalGB: Double = 0
+    var downloadBytesPerSecond: Double = 0
+    var uploadBytesPerSecond: Double = 0
+}
+
+struct ProcessUsage: Identifiable, Equatable {
+    let pid: Int
+    let name: String
+    let cpuPercent: Double
+    let memoryMB: Double
+
+    var id: Int { pid }
 }
 
 /// The Chrome bridge writes only these derived values. It never needs access to
@@ -448,6 +459,10 @@ final class SystemStatsManager: ObservableObject {
     static let shared = SystemStatsManager()
 
     @Published private(set) var usage = SystemUsage()
+    @Published private(set) var isNetworkAvailable = false
+    @Published private(set) var topCPUProcesses: [ProcessUsage] = []
+    @Published private(set) var topMemoryProcesses: [ProcessUsage] = []
+    @Published var isProcessDetailsVisible = false
     @Published var showSupport = false
     @Published var isAILimitsSetupVisible = false
 
@@ -464,10 +479,21 @@ final class SystemStatsManager: ObservableObject {
 
     private var timerCancellable: AnyCancellable?
     private var previousCPUTicks: [Int32]?
+    private var previousNetworkCounters: NetworkCounters?
+    private var lastNetworkSampleAt: Date?
+    private var lastProcessRefresh = Date.distantPast
+    private var isRefreshingProcesses = false
+    private let networkMonitor = NWPathMonitor()
+    private let networkMonitorQueue = DispatchQueue(label: "com.staroschuk.arswidget.network-path")
     private let totalMemoryBytes = Double(ProcessInfo.processInfo.physicalMemory)
 
     private init() {
+        startNetworkMonitor()
         restart()
+    }
+
+    deinit {
+        networkMonitor.cancel()
     }
 
     private func restart() {
@@ -491,7 +517,20 @@ final class SystemStatsManager: ObservableObject {
         if let cpu = currentCPUUsage() {
             updated.cpuPercent = cpu
         }
+        let network = currentNetworkRates()
+        updated.downloadBytesPerSecond = network.download
+        updated.uploadBytesPerSecond = network.upload
         usage = updated
+        refreshTopProcessesIfNeeded()
+    }
+
+    private func startNetworkMonitor() {
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+            Task { @MainActor in
+                self?.isNetworkAvailable = path.status == .satisfied
+            }
+        }
+        networkMonitor.start(queue: networkMonitorQueue)
     }
 
     // MARK: CPU
@@ -569,5 +608,113 @@ final class SystemStatsManager: ObservableObject {
         let usedGB = used / 1_073_741_824
         let percent = totalMemoryBytes > 0 ? (used / totalMemoryBytes) * 100 : 0
         return (usedGB, percent)
+    }
+
+    // MARK: Network
+
+    private struct NetworkCounters {
+        let received: UInt64
+        let sent: UInt64
+    }
+
+    /// Aggregates physical Wi-Fi/Ethernet interfaces. Tunnel and loopback
+    /// adapters are omitted so VPN bookkeeping cannot inflate the visible rate.
+    private func currentNetworkCounters() -> NetworkCounters? {
+        var interfaces: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&interfaces) == 0, let first = interfaces else { return nil }
+        defer { freeifaddrs(first) }
+
+        var received: UInt64 = 0
+        var sent: UInt64 = 0
+        var cursor: UnsafeMutablePointer<ifaddrs>? = first
+        while let interface = cursor {
+            defer { cursor = interface.pointee.ifa_next }
+            guard let address = interface.pointee.ifa_addr,
+                  address.pointee.sa_family == UInt8(AF_LINK),
+                  let rawData = interface.pointee.ifa_data,
+                  let namePointer = interface.pointee.ifa_name
+            else { continue }
+
+            let name = String(cString: namePointer)
+            guard name.hasPrefix("en") else { continue }
+            let data = rawData.assumingMemoryBound(to: if_data.self).pointee
+            received += UInt64(data.ifi_ibytes)
+            sent += UInt64(data.ifi_obytes)
+        }
+        return NetworkCounters(received: received, sent: sent)
+    }
+
+    private func currentNetworkRates() -> (download: Double, upload: Double) {
+        guard let counters = currentNetworkCounters() else { return (0, 0) }
+        let now = Date()
+        defer {
+            previousNetworkCounters = counters
+            lastNetworkSampleAt = now
+        }
+        guard let previous = previousNetworkCounters,
+              let previousAt = lastNetworkSampleAt
+        else { return (0, 0) }
+
+        let elapsed = now.timeIntervalSince(previousAt)
+        guard elapsed > 0 else { return (0, 0) }
+        return (
+            download: Double(counters.received >= previous.received ? counters.received - previous.received : 0) / elapsed,
+            upload: Double(counters.sent >= previous.sent ? counters.sent - previous.sent : 0) / elapsed
+        )
+    }
+
+    // MARK: Process hotspots
+
+    /// `ps` is available on every supported macOS release and lets us show a
+    /// useful top-three without private APIs or elevated rights. It runs off
+    /// the main thread and at most once every five seconds.
+    private func refreshTopProcessesIfNeeded() {
+        guard !isRefreshingProcesses, Date().timeIntervalSince(lastProcessRefresh) >= 5 else { return }
+        isRefreshingProcesses = true
+        lastProcessRefresh = Date()
+
+        Task.detached { [weak self] in
+            let processes = Self.readProcessUsage()
+            let cpu = processes.sorted { $0.cpuPercent > $1.cpuPercent }.prefix(3)
+            let memory = processes.sorted { $0.memoryMB > $1.memoryMB }.prefix(3)
+            await MainActor.run {
+                guard let self else { return }
+                self.topCPUProcesses = Array(cpu)
+                self.topMemoryProcesses = Array(memory)
+                self.isRefreshingProcesses = false
+            }
+        }
+    }
+
+    nonisolated private static func readProcessUsage() -> [ProcessUsage] {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/ps")
+        process.arguments = ["-axo", "pid=,pcpu=,rss=,comm="]
+        process.environment = ["LC_ALL": "C"]
+        let output = Pipe()
+        process.standardOutput = output
+
+        do {
+            try process.run()
+            let data = output.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            guard process.terminationStatus == 0,
+                  let text = String(data: data, encoding: .utf8)
+            else { return [] }
+
+            return text.split(whereSeparator: \.isNewline).compactMap { line in
+                let fields = line.split(maxSplits: 3, whereSeparator: { $0 == " " || $0 == "\t" })
+                guard fields.count == 4,
+                      let pid = Int(fields[0]),
+                      let cpu = Double(fields[1]),
+                      let rssKB = Double(fields[2])
+                else { return nil }
+                let command = String(fields[3])
+                let name = URL(fileURLWithPath: command).lastPathComponent
+                return ProcessUsage(pid: pid, name: name.isEmpty ? command : name, cpuPercent: cpu, memoryMB: rssKB / 1024)
+            }
+        } catch {
+            return []
+        }
     }
 }

@@ -29,6 +29,10 @@ struct VocabWord: Identifiable, Codable, Equatable {
     var box: Int = 0
     var timesShown: Int = 0
     var timesKnown: Int = 0
+    /// A mastered word leaves the daily queue, then comes back as a review.
+    /// Optional fields keep all existing on-device progress decodable.
+    var reviewDueAt: Date?
+    var reviewAfterNewWords: Int?
 }
 
 enum VocabDirection: String, CaseIterable, Identifiable {
@@ -117,6 +121,7 @@ final class VocabManager: ObservableObject {
         willSet { objectWillChange.send() }
         didSet {
             dismissPrompt()
+            ensureStudyQueueIfNeeded(for: languagePack)
             loadWords()
             restartTimer()
         }
@@ -131,6 +136,14 @@ final class VocabManager: ObservableObject {
     }
     @AppStorage("vocabCustomPackName") var customPackName: String = "Свой набор" {
         didSet { objectWillChange.send() }
+    }
+    @AppStorage("vocabAutoFill") var autoFillEnabled: Bool = true {
+        willSet { objectWillChange.send() }
+        didSet { ensureStudyQueuesIfNeeded() }
+    }
+    @AppStorage("vocabActiveTarget") var activeTarget: Int = 6 {
+        willSet { objectWillChange.send() }
+        didSet { ensureStudyQueuesIfNeeded() }
     }
 
     var direction: VocabDirection {
@@ -237,6 +250,32 @@ final class VocabManager: ObservableObject {
 
     var activeCount: Int { words.filter { $0.isActive }.count }
 
+    func selectedLevel(for pack: VocabLanguagePack) -> VocabLevel {
+        let key = selectedLevelKey(for: pack)
+        return VocabLevel(rawValue: UserDefaults.standard.string(forKey: key) ?? "") ?? .a1
+    }
+
+    func setSelectedLevel(_ level: VocabLevel, for pack: VocabLanguagePack) {
+        UserDefaults.standard.set(level.rawValue, forKey: selectedLevelKey(for: pack))
+        objectWillChange.send()
+        ensureStudyQueueIfNeeded(for: pack)
+    }
+
+    func availableCount(level: VocabLevel, for pack: VocabLanguagePack) -> Int {
+        let existing = Set(loadWords(for: pack).map(\.id))
+        return Self.levelPack(for: pack)
+            .filter { $0.level == level.rawValue && !existing.contains($0.ru) }
+            .count
+    }
+
+    func totalPackCount(for pack: VocabLanguagePack) -> Int {
+        Self.levelPack(for: pack).count
+    }
+
+    func reviewCount(for pack: VocabLanguagePack) -> Int {
+        loadWords(for: pack).filter { $0.reviewDueAt != nil || $0.reviewAfterNewWords != nil }.count
+    }
+
     /// Выученные раньше просто исчезали из списка: «Уже знаю» ставит box = 4 и
     /// снимает активность, а список показывал только неизученные — вернуть
     /// слово было нечем. Теперь видно всё, выученное уходит вниз.
@@ -271,6 +310,9 @@ final class VocabManager: ObservableObject {
             packs.removeAll { $0 == pack }
         }
         enabledLanguagePacksRaw = packs.map(\.rawValue).joined(separator: ",")
+        if enabled {
+            ensureStudyQueueIfNeeded(for: pack)
+        }
     }
 
     // MARK: Word list management
@@ -297,6 +339,7 @@ final class VocabManager: ObservableObject {
             VocabWord(ru: ru, uk: uk, isActive: true, isCustom: true),
             at: 0
         )
+        noteIntroducedWords(1, for: languagePack)
         saveWords()
     }
 
@@ -307,6 +350,7 @@ final class VocabManager: ObservableObject {
         packWords[idx].box = 4
         packWords[idx].timesKnown += 1
         packWords[idx].isActive = false
+        scheduleReview(for: &packWords[idx], in: pack)
         saveWords(packWords, for: pack)
         if pack == languagePack {
             words = packWords
@@ -314,6 +358,7 @@ final class VocabManager: ObservableObject {
         if currentPrompt?.id == word.id {
             dismissPrompt()
         }
+        ensureStudyQueueIfNeeded(for: pack)
     }
 
     func resetProgress(for word: VocabWord) {
@@ -321,6 +366,8 @@ final class VocabManager: ObservableObject {
         words[idx].box = 0
         words[idx].timesShown = 0
         words[idx].timesKnown = 0
+        words[idx].reviewDueAt = nil
+        words[idx].reviewAfterNewWords = nil
         saveWords()
     }
 
@@ -396,11 +443,15 @@ final class VocabManager: ObservableObject {
 
     private func ensureStarterWordsIfNeeded() {
         for pack in enabledPacks {
-            ensureStarterWordsIfNeeded(for: pack)
+            ensureStudyQueueIfNeeded(for: pack)
         }
     }
 
     private func ensureStarterWordsIfNeeded(for pack: VocabLanguagePack) {
+        guard !autoFillEnabled else {
+            ensureStudyQueueIfNeeded(for: pack)
+            return
+        }
         var packWords = loadWords(for: pack)
         guard packWords.contains(where: \.isActive) == false else { return }
 
@@ -446,6 +497,7 @@ final class VocabManager: ObservableObject {
             let word: VocabWord
         }
 
+        ensureStudyQueuesIfNeeded()
         let candidates: [PromptCandidate] = enabledPacks.flatMap { pack in
             loadWords(for: pack)
                 .filter { $0.isActive && $0.box < 4 }
@@ -490,6 +542,10 @@ final class VocabManager: ObservableObject {
         if knew {
             packWords[idx].timesKnown += 1
             packWords[idx].box = min(4, packWords[idx].box + 1)
+            if packWords[idx].box >= 4 {
+                packWords[idx].isActive = false
+                scheduleReview(for: &packWords[idx], in: pack)
+            }
         } else {
             packWords[idx].box = max(0, packWords[idx].box - 1)
         }
@@ -498,6 +554,7 @@ final class VocabManager: ObservableObject {
             words = packWords
         }
         dismissPrompt()
+        ensureStudyQueueIfNeeded(for: pack)
     }
 
     func dismissPrompt() {
@@ -550,6 +607,88 @@ final class VocabManager: ObservableObject {
         ]
         guard let stressed = marked[text] else { return text }
         return Self.withStressMark(stressed)
+    }
+
+    // MARK: Automatic study queue and reviews
+
+    private func selectedLevelKey(for pack: VocabLanguagePack) -> String {
+        "vocabSelectedLevelV1_\(pack.rawValue)"
+    }
+
+    private func introducedWordCount(for pack: VocabLanguagePack) -> Int {
+        UserDefaults.standard.integer(forKey: "vocabIntroducedWordCountV1_\(pack.rawValue)")
+    }
+
+    private func noteIntroducedWords(_ count: Int, for pack: VocabLanguagePack) {
+        guard count > 0 else { return }
+        let key = "vocabIntroducedWordCountV1_\(pack.rawValue)"
+        UserDefaults.standard.set(introducedWordCount(for: pack) + count, forKey: key)
+    }
+
+    /// A word returns after three days, or sooner after ten newly introduced
+    /// words in the same language — whichever happens first.
+    private func scheduleReview(for word: inout VocabWord, in pack: VocabLanguagePack) {
+        word.reviewDueAt = Date().addingTimeInterval(3 * 24 * 60 * 60)
+        word.reviewAfterNewWords = introducedWordCount(for: pack) + 10
+    }
+
+    private func ensureStudyQueuesIfNeeded() {
+        for pack in enabledPacks {
+            ensureStudyQueueIfNeeded(for: pack)
+        }
+    }
+
+    private func ensureStudyQueueIfNeeded(for pack: VocabLanguagePack) {
+        guard isEnabled, isPackEnabled(pack) else { return }
+        var packWords = loadWords(for: pack)
+        let now = Date()
+        let introducedCount = introducedWordCount(for: pack)
+        var changed = false
+
+        // Return only scheduled repetitions. Older mastered words with no
+        // schedule remain completed, so an app update never floods the queue.
+        for index in packWords.indices where packWords[index].box >= 4 {
+            let dueByDate = packWords[index].reviewDueAt.map { $0 <= now } ?? false
+            let dueByNewWords = packWords[index].reviewAfterNewWords.map { introducedCount >= $0 } ?? false
+            guard dueByDate || dueByNewWords else { continue }
+            packWords[index].box = 3
+            packWords[index].isActive = true
+            packWords[index].reviewDueAt = nil
+            packWords[index].reviewAfterNewWords = nil
+            changed = true
+        }
+
+        guard autoFillEnabled, pack != .custom else {
+            if changed { saveWords(packWords, for: pack) }
+            if pack == languagePack { words = packWords }
+            return
+        }
+
+        let active = packWords.filter { $0.isActive && $0.box < 4 }.count
+        let needed = max(0, activeTarget - active)
+        guard needed > 0 else {
+            if changed { saveWords(packWords, for: pack) }
+            if pack == languagePack { words = packWords }
+            return
+        }
+
+        let existing = Set(packWords.map(\.id))
+        let level = selectedLevel(for: pack)
+        let additions = Self.levelPack(for: pack)
+            .filter { $0.level == level.rawValue && !existing.contains($0.ru) }
+            .prefix(needed)
+            .map { VocabWord(ru: $0.ru, uk: $0.target, isActive: true, isCustom: true) }
+
+        guard additions.isEmpty == false else {
+            if changed { saveWords(packWords, for: pack) }
+            if pack == languagePack { words = packWords }
+            return
+        }
+
+        packWords.insert(contentsOf: additions, at: 0)
+        noteIntroducedWords(additions.count, for: pack)
+        saveWords(packWords, for: pack)
+        if pack == languagePack { words = packWords }
     }
 
     private func storageKey(for pack: VocabLanguagePack) -> String {
@@ -911,6 +1050,7 @@ final class VocabManager: ObservableObject {
         guard !added.isEmpty else { return 0 }
         saveDeletedIDs(deleted, for: languagePack)
         words.insert(contentsOf: added, at: 0)
+        noteIntroducedWords(added.count, for: languagePack)
         saveWords()
         return added.count
     }
@@ -937,6 +1077,7 @@ final class VocabManager: ObservableObject {
         guard !added.isEmpty else { return }
         saveDeletedIDs(deleted, for: languagePack)
         words.insert(contentsOf: added, at: 0)
+        noteIntroducedWords(added.count, for: languagePack)
         saveWords()
     }
 }

@@ -187,8 +187,13 @@ struct ContentView: View {
                             .padding(.horizontal, topCornerRadius)
                     }
                     .shadow(
-                        color: ((vm.notchState == .open || isHovering) && Defaults[.enableShadow])
-                            ? .black.opacity(0.7) : .clear, radius: Defaults[.cornerRadiusScaling] ? 6 : 4
+                        // System values refresh independently of the view.
+                        // A shadow on the open panel was redrawn with each
+                        // refresh and flashed at the bottom edge; retain it
+                        // only for the small closed hover state.
+                        color: (vm.notchState == .closed && isHovering && Defaults[.enableShadow])
+                            ? .black.opacity(0.7) : .clear,
+                        radius: Defaults[.cornerRadiusScaling] ? 6 : 4
                     )
                     .padding(
                         .bottom,

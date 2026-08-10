@@ -1,5 +1,6 @@
 import Foundation
 import Cocoa
+import ApplicationServices
 import AsyncXPCConnection
 
 final class XPCHelperClient: NSObject {
@@ -98,52 +99,27 @@ final class XPCHelperClient: NSObject {
     // MARK: - Accessibility
 
     nonisolated func requestAccessibilityAuthorization() {
-        Task {
-            let service = await MainActor.run {
-                ensureRemoteService()
-            }
-            try? await service.withService { service in
-                service.requestAccessibilityAuthorization()
-            }
-        }
+        // The event tap which blocks keyboard input lives in ArsWidget itself,
+        // not in the XPC helper. TCC therefore has to authorise this process;
+        // checking the helper made a granted ArsWidget entry look unavailable.
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
+        _ = AXIsProcessTrustedWithOptions(options)
     }
 
     nonisolated func isAccessibilityAuthorized() async -> Bool {
-        do {
-            let service = await MainActor.run {
-                ensureRemoteService()
-            }
-            let result: Bool = try await service.withContinuation { service, continuation in
-                service.isAccessibilityAuthorized { authorized in
-                    continuation.resume(returning: authorized)
-                }
-            }
-            await MainActor.run {
-                notifyAuthorizationChange(result)
-            }
-            return result
-        } catch {
-            return false
-        }
+        let result = AXIsProcessTrusted()
+        await MainActor.run { notifyAuthorizationChange(result) }
+        return result
     }
 
     nonisolated func ensureAccessibilityAuthorization(promptIfNeeded: Bool) async -> Bool {
-        do {
-            let service = await MainActor.run {
-                ensureRemoteService()
-            }
-            let result: Bool = try await service.withContinuation { service, continuation in
-                service.ensureAccessibilityAuthorization(promptIfNeeded) { authorized in
-                    continuation.resume(returning: authorized)
-                }
-            }
-            await MainActor.run {
-                notifyAuthorizationChange(result)
-            }
-            return result
-        } catch {
-            return false
-        }
+        if await isAccessibilityAuthorized() { return true }
+        if promptIfNeeded { requestAccessibilityAuthorization() }
+
+        // System Settings can appear asynchronously. Recheck the same process
+        // after the prompt is requested instead of querying the XPC service.
+        try? await Task.sleep(for: .milliseconds(500))
+        return await isAccessibilityAuthorized()
     }
 
     // MARK: - Keyboard Brightness
