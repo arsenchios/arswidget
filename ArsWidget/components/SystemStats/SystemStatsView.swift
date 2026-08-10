@@ -203,6 +203,17 @@ struct SystemStatsView: View {
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                 }
+
+                Button {
+                    withAnimation(.smooth) {
+                        showAILimitsSetup.toggle()
+                    }
+                } label: {
+                    Label("Настроить или переподключить", systemImage: "arrow.triangle.2.circlepath")
+                        .font(.caption2.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.white.opacity(0.62))
             }
 
             if showAILimitsSetup {
@@ -500,7 +511,8 @@ struct SystemStatsView: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 setupStep(1, "Поставь расширение ArsWidget для Chrome")
-                setupStep(2, "Открой страницы Usage и закрепи вкладки")
+                setupStep(2, "В окне расширения нажми «Включить показ лимитов»")
+                setupStep(3, "Открой страницы Usage - лимиты появятся здесь автоматически")
             }
 
             Button {

@@ -869,7 +869,9 @@ final class VocabManager: ObservableObject {
         let fileName: String?
         switch pack {
         case .ukrainian: fileName = "vocab-ukrainian"
-        case .english, .indonesian, .custom: fileName = nil
+        case .english: fileName = "vocab-english"
+        case .indonesian: fileName = "vocab-indonesian"
+        case .custom: fileName = nil
         }
 
         var words: [VocabLevelWord] = []

@@ -1,0 +1,10006 @@
+{
+ "language": "english",
+ "source": "OpenRussian.org dictionary data (CC BY-SA)",
+ "words": [
+  {
+   "ru": "я",
+   "target": "Í",
+   "level": "A1"
+  },
+  {
+   "ru": "не",
+   "target": "nót",
+   "level": "A1"
+  },
+  {
+   "ru": "что",
+   "target": "whát",
+   "level": "A1"
+  },
+  {
+   "ru": "в",
+   "target": "ín",
+   "level": "A1"
+  },
+  {
+   "ru": "и",
+   "target": "ánd",
+   "level": "A1"
+  },
+  {
+   "ru": "ты",
+   "target": "ýou",
+   "level": "A1"
+  },
+  {
+   "ru": "это",
+   "target": "thís ís",
+   "level": "A1"
+  },
+  {
+   "ru": "с",
+   "target": "wíth",
+   "level": "A1"
+  },
+  {
+   "ru": "он",
+   "target": "hé",
+   "level": "A1"
+  },
+  {
+   "ru": "мы",
+   "target": "wé",
+   "level": "A1"
+  },
+  {
+   "ru": "как",
+   "target": "hów",
+   "level": "A1"
+  },
+  {
+   "ru": "да",
+   "target": "ýes",
+   "level": "A1"
+  },
+  {
+   "ru": "нет",
+   "target": "nó",
+   "level": "A1"
+  },
+  {
+   "ru": "меня",
+   "target": "génitive óf Í",
+   "level": "A1"
+  },
+  {
+   "ru": "так",
+   "target": "só",
+   "level": "A1"
+  },
+  {
+   "ru": "но",
+   "target": "bút",
+   "level": "A1"
+  },
+  {
+   "ru": "а",
+   "target": "ánd",
+   "level": "A1"
+  },
+  {
+   "ru": "все",
+   "target": "éverybody",
+   "level": "A1"
+  },
+  {
+   "ru": "она",
+   "target": "shé",
+   "level": "A1"
+  },
+  {
+   "ru": "о",
+   "target": "abóut",
+   "level": "A1"
+  },
+  {
+   "ru": "если",
+   "target": "íf",
+   "level": "A1"
+  },
+  {
+   "ru": "за",
+   "target": "behínd",
+   "level": "A1"
+  },
+  {
+   "ru": "бы",
+   "target": "wóuld",
+   "level": "A1"
+  },
+  {
+   "ru": "они",
+   "target": "théy",
+   "level": "A1"
+  },
+  {
+   "ru": "чтобы",
+   "target": "só thát",
+   "level": "A1"
+  },
+  {
+   "ru": "же",
+   "target": "ánd",
+   "level": "A1"
+  },
+  {
+   "ru": "есть",
+   "target": "thére ís",
+   "level": "A1"
+  },
+  {
+   "ru": "просто",
+   "target": "ít ís símple",
+   "level": "A1"
+  },
+  {
+   "ru": "из",
+   "target": "fróm",
+   "level": "A1"
+  },
+  {
+   "ru": "к",
+   "target": "towárds",
+   "level": "A1"
+  },
+  {
+   "ru": "для",
+   "target": "fór",
+   "level": "A1"
+  },
+  {
+   "ru": "ну",
+   "target": "wéll",
+   "level": "A1"
+  },
+  {
+   "ru": "когда",
+   "target": "whén",
+   "level": "A1"
+  },
+  {
+   "ru": "хорошо",
+   "target": "ít ís góod",
+   "level": "A1"
+  },
+  {
+   "ru": "здесь",
+   "target": "hére",
+   "level": "A1"
+  },
+  {
+   "ru": "по",
+   "target": "alóng",
+   "level": "A1"
+  },
+  {
+   "ru": "то",
+   "target": "thén",
+   "level": "A1"
+  },
+  {
+   "ru": "только",
+   "target": "ónly",
+   "level": "A1"
+  },
+  {
+   "ru": "всё",
+   "target": "álways",
+   "level": "A1"
+  },
+  {
+   "ru": "вас",
+   "target": "ýou",
+   "level": "A1"
+  },
+  {
+   "ru": "вот",
+   "target": "thére",
+   "level": "A1"
+  },
+  {
+   "ru": "быть",
+   "target": "bé",
+   "level": "A1"
+  },
+  {
+   "ru": "кто",
+   "target": "whó",
+   "level": "A1"
+  },
+  {
+   "ru": "почему",
+   "target": "whý",
+   "level": "A1"
+  },
+  {
+   "ru": "их",
+   "target": "théir",
+   "level": "A1"
+  },
+  {
+   "ru": "очень",
+   "target": "véry",
+   "level": "A1"
+  },
+  {
+   "ru": "уже",
+   "target": "alréady",
+   "level": "A1"
+  },
+  {
+   "ru": "спасибо",
+   "target": "thánks",
+   "level": "A1"
+  },
+  {
+   "ru": "или",
+   "target": "ór",
+   "level": "A1"
+  },
+  {
+   "ru": "там",
+   "target": "thére",
+   "level": "A1"
+  },
+  {
+   "ru": "нужно",
+   "target": "ít ís nécessary",
+   "level": "A1"
+  },
+  {
+   "ru": "сейчас",
+   "target": "nów",
+   "level": "A1"
+  },
+  {
+   "ru": "где",
+   "target": "whére",
+   "level": "A1"
+  },
+  {
+   "ru": "ничего",
+   "target": "nót bádly",
+   "level": "A1"
+  },
+  {
+   "ru": "мой",
+   "target": "mý",
+   "level": "A1"
+  },
+  {
+   "ru": "ладно",
+   "target": "wéll",
+   "level": "A1"
+  },
+  {
+   "ru": "потому",
+   "target": "becáuse",
+   "level": "A1"
+  },
+  {
+   "ru": "теперь",
+   "target": "nów",
+   "level": "A1"
+  },
+  {
+   "ru": "больше",
+   "target": "bígger",
+   "level": "A1"
+  },
+  {
+   "ru": "раз",
+   "target": "tíme",
+   "level": "A1"
+  },
+  {
+   "ru": "надо",
+   "target": "ít ís nécessary",
+   "level": "A1"
+  },
+  {
+   "ru": "время",
+   "target": "tíme",
+   "level": "A1"
+  },
+  {
+   "ru": "этот",
+   "target": "thís",
+   "level": "A1"
+  },
+  {
+   "ru": "ли",
+   "target": "whéther",
+   "level": "A1"
+  },
+  {
+   "ru": "ещё",
+   "target": "stíll",
+   "level": "A1"
+  },
+  {
+   "ru": "даже",
+   "target": "éven",
+   "level": "A1"
+  },
+  {
+   "ru": "себя",
+   "target": "oursélves",
+   "level": "A1"
+  },
+  {
+   "ru": "тоже",
+   "target": "álso",
+   "level": "A1"
+  },
+  {
+   "ru": "давай",
+   "target": "lét ús",
+   "level": "A1"
+  },
+  {
+   "ru": "что-то",
+   "target": "sómething",
+   "level": "A1"
+  },
+  {
+   "ru": "никогда",
+   "target": "néver",
+   "level": "A1"
+  },
+  {
+   "ru": "эй",
+   "target": "héy",
+   "level": "A1"
+  },
+  {
+   "ru": "тогда",
+   "target": "thén",
+   "level": "A1"
+  },
+  {
+   "ru": "ни",
+   "target": "néither",
+   "level": "A1"
+  },
+  {
+   "ru": "тут",
+   "target": "hére",
+   "level": "A1"
+  },
+  {
+   "ru": "конечно",
+   "target": "cértainly",
+   "level": "A1"
+  },
+  {
+   "ru": "правда",
+   "target": "trúth",
+   "level": "A1"
+  },
+  {
+   "ru": "об",
+   "target": "abóut",
+   "level": "A1"
+  },
+  {
+   "ru": "пожалуйста",
+   "target": "pléase",
+   "level": "A1"
+  },
+  {
+   "ru": "сказать",
+   "target": "sáy",
+   "level": "A1"
+  },
+  {
+   "ru": "сегодня",
+   "target": "todáy",
+   "level": "A1"
+  },
+  {
+   "ru": "один",
+   "target": "óne",
+   "level": "A1"
+  },
+  {
+   "ru": "лучше",
+   "target": "bétter",
+   "level": "A1"
+  },
+  {
+   "ru": "сюда",
+   "target": "hére",
+   "level": "A1"
+  },
+  {
+   "ru": "сделать",
+   "target": "máke",
+   "level": "A1"
+  },
+  {
+   "ru": "всегда",
+   "target": "álways",
+   "level": "A1"
+  },
+  {
+   "ru": "дело",
+   "target": "búsiness",
+   "level": "A1"
+  },
+  {
+   "ru": "можно",
+   "target": "óne cán",
+   "level": "A1"
+  },
+  {
+   "ru": "без",
+   "target": "withóut",
+   "level": "A1"
+  },
+  {
+   "ru": "день",
+   "target": "dáy",
+   "level": "A1"
+  },
+  {
+   "ru": "том",
+   "target": "vólume",
+   "level": "A1"
+  },
+  {
+   "ru": "делать",
+   "target": "máke",
+   "level": "A1"
+  },
+  {
+   "ru": "чего",
+   "target": "whát",
+   "level": "A1"
+  },
+  {
+   "ru": "много",
+   "target": "á lót óf",
+   "level": "A1"
+  },
+  {
+   "ru": "после",
+   "target": "áfter",
+   "level": "A1"
+  },
+  {
+   "ru": "всего",
+   "target": "ín áll",
+   "level": "A1"
+  },
+  {
+   "ru": "твой",
+   "target": "ýour",
+   "level": "A1"
+  },
+  {
+   "ru": "боже",
+   "target": "mý gód",
+   "level": "A1"
+  },
+  {
+   "ru": "сэр",
+   "target": "sír",
+   "level": "A1"
+  },
+  {
+   "ru": "ведь",
+   "target": "ýou knów",
+   "level": "A1"
+  },
+  {
+   "ru": "мистер",
+   "target": "míster",
+   "level": "A1"
+  },
+  {
+   "ru": "жизнь",
+   "target": "lífe",
+   "level": "A1"
+  },
+  {
+   "ru": "потом",
+   "target": "áfterwards",
+   "level": "A1"
+  },
+  {
+   "ru": "такой",
+   "target": "súch",
+   "level": "A1"
+  },
+  {
+   "ru": "который",
+   "target": "whích",
+   "level": "A1"
+  },
+  {
+   "ru": "через",
+   "target": "acróss",
+   "level": "A1"
+  },
+  {
+   "ru": "возможно",
+   "target": "ít ís póssible",
+   "level": "A1"
+  },
+  {
+   "ru": "немного",
+   "target": "á líttle",
+   "level": "A1"
+  },
+  {
+   "ru": "зачем",
+   "target": "whát fór",
+   "level": "A1"
+  },
+  {
+   "ru": "точно",
+   "target": "exáct",
+   "level": "A1"
+  },
+  {
+   "ru": "человек",
+   "target": "pérson",
+   "level": "A1"
+  },
+  {
+   "ru": "под",
+   "target": "únder",
+   "level": "A1"
+  },
+  {
+   "ru": "назад",
+   "target": "agó",
+   "level": "A1"
+  },
+  {
+   "ru": "из-за",
+   "target": "becáuse óf",
+   "level": "A1"
+  },
+  {
+   "ru": "мама",
+   "target": "móm",
+   "level": "A1"
+  },
+  {
+   "ru": "вместе",
+   "target": "togéther",
+   "level": "A1"
+  },
+  {
+   "ru": "отец",
+   "target": "fáther",
+   "level": "A1"
+  },
+  {
+   "ru": "друг",
+   "target": "fríend",
+   "level": "A1"
+  },
+  {
+   "ru": "куда",
+   "target": "wheréver",
+   "level": "A1"
+  },
+  {
+   "ru": "никто",
+   "target": "nóbody",
+   "level": "A1"
+  },
+  {
+   "ru": "поэтому",
+   "target": "só",
+   "level": "A1"
+  },
+  {
+   "ru": "два",
+   "target": "twó",
+   "level": "A1"
+  },
+  {
+   "ru": "тот",
+   "target": "thát",
+   "level": "A1"
+  },
+  {
+   "ru": "сколько",
+   "target": "hów múch",
+   "level": "A1"
+  },
+  {
+   "ru": "снова",
+   "target": "agáin",
+   "level": "A1"
+  },
+  {
+   "ru": "помочь",
+   "target": "hélp",
+   "level": "A1"
+  },
+  {
+   "ru": "место",
+   "target": "pláce",
+   "level": "A1"
+  },
+  {
+   "ru": "знать",
+   "target": "nobílity",
+   "level": "A1"
+  },
+  {
+   "ru": "кто-то",
+   "target": "sómebody",
+   "level": "A1"
+  },
+  {
+   "ru": "отлично",
+   "target": "éxcellently",
+   "level": "A1"
+  },
+  {
+   "ru": "похоже",
+   "target": "próbably",
+   "level": "A1"
+  },
+  {
+   "ru": "парень",
+   "target": "bóy",
+   "level": "A1"
+  },
+  {
+   "ru": "домой",
+   "target": "hómeward",
+   "level": "A1"
+  },
+  {
+   "ru": "деньги",
+   "target": "móney",
+   "level": "A1"
+  },
+  {
+   "ru": "дома",
+   "target": "át hóme",
+   "level": "A1"
+  },
+  {
+   "ru": "именно",
+   "target": "exáctly",
+   "level": "A1"
+  },
+  {
+   "ru": "доктор",
+   "target": "dóctor óf Philósophy",
+   "level": "A1"
+  },
+  {
+   "ru": "прямо",
+   "target": "stráight",
+   "level": "A1"
+  },
+  {
+   "ru": "поговорить",
+   "target": "háve á tálk",
+   "level": "A1"
+  },
+  {
+   "ru": "найти",
+   "target": "fínd",
+   "level": "A1"
+  },
+  {
+   "ru": "разве",
+   "target": "perháps",
+   "level": "A1"
+  },
+  {
+   "ru": "лишь",
+   "target": "ónly",
+   "level": "A1"
+  },
+  {
+   "ru": "ага",
+   "target": "cáne tóad",
+   "level": "A1"
+  },
+  {
+   "ru": "простите",
+   "target": "forgíve mé",
+   "level": "A1"
+  },
+  {
+   "ru": "сам",
+   "target": "oursélves",
+   "level": "A1"
+  },
+  {
+   "ru": "что-нибудь",
+   "target": "ánything",
+   "level": "A1"
+  },
+  {
+   "ru": "тем",
+   "target": "thé",
+   "level": "A1"
+  },
+  {
+   "ru": "три",
+   "target": "thrée",
+   "level": "A1"
+  },
+  {
+   "ru": "говорить",
+   "target": "spéak",
+   "level": "A1"
+  },
+  {
+   "ru": "совсем",
+   "target": "complétely",
+   "level": "A1"
+  },
+  {
+   "ru": "какой",
+   "target": "whích",
+   "level": "A1"
+  },
+  {
+   "ru": "дом",
+   "target": "hóuse",
+   "level": "A1"
+  },
+  {
+   "ru": "ж",
+   "target": "thén",
+   "level": "A1"
+  },
+  {
+   "ru": "несколько",
+   "target": "sóme",
+   "level": "A1"
+  },
+  {
+   "ru": "про",
+   "target": "abóut",
+   "level": "A1"
+  },
+  {
+   "ru": "жаль",
+   "target": "ít ís á píty",
+   "level": "A1"
+  },
+  {
+   "ru": "туда",
+   "target": "thére",
+   "level": "A1"
+  },
+  {
+   "ru": "действительно",
+   "target": "réally",
+   "level": "A1"
+  },
+  {
+   "ru": "папа",
+   "target": "dád",
+   "level": "A1"
+  },
+  {
+   "ru": "завтра",
+   "target": "tomórrow",
+   "level": "A1"
+  },
+  {
+   "ru": "оно",
+   "target": "ít",
+   "level": "A1"
+  },
+  {
+   "ru": "перед",
+   "target": "befóre",
+   "level": "A1"
+  },
+  {
+   "ru": "отсюда",
+   "target": "fróm hére",
+   "level": "A1"
+  },
+  {
+   "ru": "свой",
+   "target": "mý",
+   "level": "A1"
+  },
+  {
+   "ru": "верно",
+   "target": "ríghtly",
+   "level": "A1"
+  },
+  {
+   "ru": "каждый",
+   "target": "éach",
+   "level": "A1"
+  },
+  {
+   "ru": "уж",
+   "target": "réally",
+   "level": "A1"
+  },
+  {
+   "ru": "имя",
+   "target": "náme",
+   "level": "A1"
+  },
+  {
+   "ru": "против",
+   "target": "agáinst",
+   "level": "A1"
+  },
+  {
+   "ru": "кое-что",
+   "target": "sómething",
+   "level": "A1"
+  },
+  {
+   "ru": "раньше",
+   "target": "befóre",
+   "level": "A1"
+  },
+  {
+   "ru": "более",
+   "target": "móre",
+   "level": "A1"
+  },
+  {
+   "ru": "итак",
+   "target": "thús",
+   "level": "A1"
+  },
+  {
+   "ru": "при",
+   "target": "át",
+   "level": "A1"
+  },
+  {
+   "ru": "вообще",
+   "target": "ín géneral",
+   "level": "A1"
+  },
+  {
+   "ru": "мать",
+   "target": "móther",
+   "level": "A1"
+  },
+  {
+   "ru": "нельзя",
+   "target": "cán't",
+   "level": "A1"
+  },
+  {
+   "ru": "наверное",
+   "target": "Próbably",
+   "level": "A1"
+  },
+  {
+   "ru": "ради",
+   "target": "fór thé sáke óf",
+   "level": "A1"
+  },
+  {
+   "ru": "ребята",
+   "target": "láds",
+   "level": "A1"
+  },
+  {
+   "ru": "ко",
+   "target": "tó",
+   "level": "A1"
+  },
+  {
+   "ru": "хотя",
+   "target": "thóugh",
+   "level": "A1"
+  },
+  {
+   "ru": "идти",
+   "target": "gó",
+   "level": "A1"
+  },
+  {
+   "ru": "откуда",
+   "target": "fróm whére",
+   "level": "A1"
+  },
+  {
+   "ru": "ясно",
+   "target": "cléarly",
+   "level": "A1"
+  },
+  {
+   "ru": "другой",
+   "target": "óther",
+   "level": "A1"
+  },
+  {
+   "ru": "видеть",
+   "target": "sée",
+   "level": "A1"
+  },
+  {
+   "ru": "над",
+   "target": "abóve",
+   "level": "A1"
+  },
+  {
+   "ru": "равно",
+   "target": "ís indífferent",
+   "level": "A1"
+  },
+  {
+   "ru": "мисс",
+   "target": "Míss",
+   "level": "A1"
+  },
+  {
+   "ru": "скоро",
+   "target": "qúickly",
+   "level": "A1"
+  },
+  {
+   "ru": "будто",
+   "target": "ás íf",
+   "level": "A1"
+  },
+  {
+   "ru": "зовут",
+   "target": "tó bé cálled",
+   "level": "A1"
+  },
+  {
+   "ru": "между",
+   "target": "betwéen",
+   "level": "A1"
+  },
+  {
+   "ru": "вопрос",
+   "target": "qúestion",
+   "level": "A1"
+  },
+  {
+   "ru": "почти",
+   "target": "álmost",
+   "level": "A1"
+  },
+  {
+   "ru": "нормально",
+   "target": "nórmally",
+   "level": "A1"
+  },
+  {
+   "ru": "хоть",
+   "target": "thóugh",
+   "level": "A1"
+  },
+  {
+   "ru": "работа",
+   "target": "wórk",
+   "level": "A1"
+  },
+  {
+   "ru": "сын",
+   "target": "són",
+   "level": "A1"
+  },
+  {
+   "ru": "пора",
+   "target": "tíme",
+   "level": "A1"
+  },
+  {
+   "ru": "жить",
+   "target": "líve",
+   "level": "A1"
+  },
+  {
+   "ru": "достаточно",
+   "target": "ít ís enóugh",
+   "level": "A1"
+  },
+  {
+   "ru": "господи",
+   "target": "lórd",
+   "level": "A1"
+  },
+  {
+   "ru": "быстро",
+   "target": "fást",
+   "level": "A1"
+  },
+  {
+   "ru": "весь",
+   "target": "áll",
+   "level": "A1"
+  },
+  {
+   "ru": "убить",
+   "target": "kíll",
+   "level": "A1"
+  },
+  {
+   "ru": "ночь",
+   "target": "níght",
+   "level": "A1"
+  },
+  {
+   "ru": "первый",
+   "target": "fírst",
+   "level": "A1"
+  },
+  {
+   "ru": "пусть",
+   "target": "Lét bé",
+   "level": "A1"
+  },
+  {
+   "ru": "плохо",
+   "target": "ít ís bád",
+   "level": "A1"
+  },
+  {
+   "ru": "рад",
+   "target": "ám",
+   "level": "A1"
+  },
+  {
+   "ru": "миссис",
+   "target": "míssis",
+   "level": "A1"
+  },
+  {
+   "ru": "иногда",
+   "target": "sométimes",
+   "level": "A1"
+  },
+  {
+   "ru": "брат",
+   "target": "bróther",
+   "level": "A1"
+  },
+  {
+   "ru": "вроде",
+   "target": "sórt óf",
+   "level": "A1"
+  },
+  {
+   "ru": "рядом",
+   "target": "néar",
+   "level": "A1"
+  },
+  {
+   "ru": "мир",
+   "target": "wórld",
+   "level": "A1"
+  },
+  {
+   "ru": "помощь",
+   "target": "hélp",
+   "level": "A1"
+  },
+  {
+   "ru": "вчера",
+   "target": "ýesterday",
+   "level": "A1"
+  },
+  {
+   "ru": "увидеть",
+   "target": "sée",
+   "level": "A1"
+  },
+  {
+   "ru": "правильно",
+   "target": "ríght",
+   "level": "A1"
+  },
+  {
+   "ru": "пойти",
+   "target": "gó",
+   "level": "A1"
+  },
+  {
+   "ru": "долго",
+   "target": "á lóng tíme",
+   "level": "A1"
+  },
+  {
+   "ru": "работать",
+   "target": "wórk",
+   "level": "A1"
+  },
+  {
+   "ru": "дверь",
+   "target": "dóor",
+   "level": "A1"
+  },
+  {
+   "ru": "женщина",
+   "target": "wóman",
+   "level": "A1"
+  },
+  {
+   "ru": "важно",
+   "target": "ít ís impórtant",
+   "level": "A1"
+  },
+  {
+   "ru": "кроме",
+   "target": "excépt",
+   "level": "A1"
+  },
+  {
+   "ru": "здорово",
+   "target": "magníficently",
+   "level": "A1"
+  },
+  {
+   "ru": "номер",
+   "target": "númber",
+   "level": "A1"
+  },
+  {
+   "ru": "проблема",
+   "target": "próblem",
+   "level": "A1"
+  },
+  {
+   "ru": "чёрт",
+   "target": "dévil",
+   "level": "A1"
+  },
+  {
+   "ru": "хороший",
+   "target": "góod",
+   "level": "A1"
+  },
+  {
+   "ru": "дальше",
+   "target": "fárther",
+   "level": "A1"
+  },
+  {
+   "ru": "вернуться",
+   "target": "retúrn",
+   "level": "A1"
+  },
+  {
+   "ru": "давно",
+   "target": "lóng agó",
+   "level": "A1"
+  },
+  {
+   "ru": "последний",
+   "target": "lást",
+   "level": "A1"
+  },
+  {
+   "ru": "узнать",
+   "target": "knów",
+   "level": "A1"
+  },
+  {
+   "ru": "пять",
+   "target": "fíve",
+   "level": "A1"
+  },
+  {
+   "ru": "также",
+   "target": "álso",
+   "level": "A1"
+  },
+  {
+   "ru": "вечером",
+   "target": "ín thé évening",
+   "level": "A1"
+  },
+  {
+   "ru": "опять",
+   "target": "agáin",
+   "level": "A1"
+  },
+  {
+   "ru": "вообще-то",
+   "target": "áctually",
+   "level": "A1"
+  },
+  {
+   "ru": "сначала",
+   "target": "fírstly",
+   "level": "A1"
+  },
+  {
+   "ru": "жена",
+   "target": "wífe",
+   "level": "A1"
+  },
+  {
+   "ru": "взять",
+   "target": "táke",
+   "level": "A1"
+  },
+  {
+   "ru": "сразу",
+   "target": "immédiately",
+   "level": "A1"
+  },
+  {
+   "ru": "утром",
+   "target": "ín thé mórning",
+   "level": "A1"
+  },
+  {
+   "ru": "часть",
+   "target": "párt",
+   "level": "A1"
+  },
+  {
+   "ru": "стать",
+   "target": "fígure",
+   "level": "A1"
+  },
+  {
+   "ru": "идея",
+   "target": "idéa",
+   "level": "A1"
+  },
+  {
+   "ru": "прекрасно",
+   "target": "éxcellently",
+   "level": "A1"
+  },
+  {
+   "ru": "сердце",
+   "target": "héart",
+   "level": "A1"
+  },
+  {
+   "ru": "момент",
+   "target": "móment",
+   "level": "A1"
+  },
+  {
+   "ru": "утро",
+   "target": "mórning",
+   "level": "A1"
+  },
+  {
+   "ru": "здравствуйте",
+   "target": "helló",
+   "level": "A1"
+  },
+  {
+   "ru": "скорее",
+   "target": "ráther",
+   "level": "A1"
+  },
+  {
+   "ru": "ох",
+   "target": "óh",
+   "level": "A1"
+  },
+  {
+   "ru": "большой",
+   "target": "bíg",
+   "level": "A1"
+  },
+  {
+   "ru": "кто-нибудь",
+   "target": "sómebody",
+   "level": "A1"
+  },
+  {
+   "ru": "год",
+   "target": "ýear",
+   "level": "A1"
+  },
+  {
+   "ru": "сильно",
+   "target": "stróngly",
+   "level": "A1"
+  },
+  {
+   "ru": "уйти",
+   "target": "léave",
+   "level": "A1"
+  },
+  {
+   "ru": "капитан",
+   "target": "cáptain",
+   "level": "A1"
+  },
+  {
+   "ru": "любовь",
+   "target": "lóve",
+   "level": "A1"
+  },
+  {
+   "ru": "дочь",
+   "target": "dáughter",
+   "level": "A1"
+  },
+  {
+   "ru": "новый",
+   "target": "néw",
+   "level": "A1"
+  },
+  {
+   "ru": "столько",
+   "target": "só múch",
+   "level": "A1"
+  },
+  {
+   "ru": "понятно",
+   "target": "ít ís cléar",
+   "level": "A1"
+  },
+  {
+   "ru": "дать",
+   "target": "gíve",
+   "level": "A1"
+  },
+  {
+   "ru": "девушка",
+   "target": "gírl",
+   "level": "A1"
+  },
+  {
+   "ru": "довольно",
+   "target": "qúite",
+   "level": "A1"
+  },
+  {
+   "ru": "вечер",
+   "target": "évening",
+   "level": "A1"
+  },
+  {
+   "ru": "оба",
+   "target": "bóth",
+   "level": "A1"
+  },
+  {
+   "ru": "шанс",
+   "target": "chánce",
+   "level": "A1"
+  },
+  {
+   "ru": "прежде",
+   "target": "befóre",
+   "level": "A1"
+  },
+  {
+   "ru": "понять",
+   "target": "understánd",
+   "level": "A1"
+  },
+  {
+   "ru": "рассказать",
+   "target": "sáy",
+   "level": "A1"
+  },
+  {
+   "ru": "бог",
+   "target": "Gód",
+   "level": "A1"
+  },
+  {
+   "ru": "интересно",
+   "target": "ít ís ínteresting",
+   "level": "A1"
+  },
+  {
+   "ru": "затем",
+   "target": "thén",
+   "level": "A1"
+  },
+  {
+   "ru": "самый",
+   "target": "thé móst",
+   "level": "A1"
+  },
+  {
+   "ru": "вон",
+   "target": "óut",
+   "level": "A1"
+  },
+  {
+   "ru": "чтоб",
+   "target": "tó",
+   "level": "A1"
+  },
+  {
+   "ru": "поверить",
+   "target": "tó belíeve",
+   "level": "A1"
+  },
+  {
+   "ru": "слово",
+   "target": "wórd",
+   "level": "A1"
+  },
+  {
+   "ru": "милая",
+   "target": "swéetheart",
+   "level": "A1"
+  },
+  {
+   "ru": "странно",
+   "target": "ít ís stránge",
+   "level": "A1"
+  },
+  {
+   "ru": "ой",
+   "target": "Óh",
+   "level": "A1"
+  },
+  {
+   "ru": "однажды",
+   "target": "óne dáy",
+   "level": "A1"
+  },
+  {
+   "ru": "получить",
+   "target": "recéive",
+   "level": "A1"
+  },
+  {
+   "ru": "обычно",
+   "target": "úsually",
+   "level": "A1"
+  },
+  {
+   "ru": "алло",
+   "target": "helló ón thé phóne",
+   "level": "A1"
+  },
+  {
+   "ru": "посмотреть",
+   "target": "lóok",
+   "level": "A1"
+  },
+  {
+   "ru": "иначе",
+   "target": "ótherwise",
+   "level": "A1"
+  },
+  {
+   "ru": "тело",
+   "target": "bódy",
+   "level": "A1"
+  },
+  {
+   "ru": "лицо",
+   "target": "fáce",
+   "level": "A1"
+  },
+  {
+   "ru": "приятно",
+   "target": "ít ís pléasant",
+   "level": "A1"
+  },
+  {
+   "ru": "обратно",
+   "target": "báck",
+   "level": "A1"
+  },
+  {
+   "ru": "телефон",
+   "target": "télephone",
+   "level": "A1"
+  },
+  {
+   "ru": "честь",
+   "target": "hónor",
+   "level": "A1"
+  },
+  {
+   "ru": "господин",
+   "target": "géntleman",
+   "level": "A1"
+  },
+  {
+   "ru": "план",
+   "target": "plán",
+   "level": "A1"
+  },
+  {
+   "ru": "час",
+   "target": "hóur",
+   "level": "A1"
+  },
+  {
+   "ru": "насколько",
+   "target": "hów múch",
+   "level": "A1"
+  },
+  {
+   "ru": "поздно",
+   "target": "ít ís láte",
+   "level": "A1"
+  },
+  {
+   "ru": "сестра",
+   "target": "síster",
+   "level": "A1"
+  },
+  {
+   "ru": "какой-то",
+   "target": "sóme",
+   "level": "A1"
+  },
+  {
+   "ru": "следующий",
+   "target": "néxt",
+   "level": "A1"
+  },
+  {
+   "ru": "кстати",
+   "target": "bý thé wáy",
+   "level": "A1"
+  },
+  {
+   "ru": "рада",
+   "target": "glád",
+   "level": "A1"
+  },
+  {
+   "ru": "когда-нибудь",
+   "target": "sóme tíme",
+   "level": "A1"
+  },
+  {
+   "ru": "город",
+   "target": "tówn",
+   "level": "A1"
+  },
+  {
+   "ru": "внимание",
+   "target": "atténtion",
+   "level": "A1"
+  },
+  {
+   "ru": "кофе",
+   "target": "cóffee",
+   "level": "A1"
+  },
+  {
+   "ru": "семья",
+   "target": "fámily",
+   "level": "A1"
+  },
+  {
+   "ru": "конец",
+   "target": "énd",
+   "level": "A1"
+  },
+  {
+   "ru": "позже",
+   "target": "láter",
+   "level": "A1"
+  },
+  {
+   "ru": "думать",
+   "target": "thínk",
+   "level": "A1"
+  },
+  {
+   "ru": "спать",
+   "target": "sléep",
+   "level": "A1"
+  },
+  {
+   "ru": "остаться",
+   "target": "remáin",
+   "level": "A1"
+  },
+  {
+   "ru": "кровь",
+   "target": "blóod",
+   "level": "A1"
+  },
+  {
+   "ru": "оружие",
+   "target": "wéapon",
+   "level": "A1"
+  },
+  {
+   "ru": "хуже",
+   "target": "wórse",
+   "level": "A1"
+  },
+  {
+   "ru": "дорогой",
+   "target": "expénsive",
+   "level": "A1"
+  },
+  {
+   "ru": "полиция",
+   "target": "políce",
+   "level": "A1"
+  },
+  {
+   "ru": "четыре",
+   "target": "fóur",
+   "level": "A1"
+  },
+  {
+   "ru": "ужасно",
+   "target": "térribly",
+   "level": "A1"
+  },
+  {
+   "ru": "ждать",
+   "target": "wáit",
+   "level": "A1"
+  },
+  {
+   "ru": "способ",
+   "target": "méthod",
+   "level": "A1"
+  },
+  {
+   "ru": "совершенно",
+   "target": "tótally",
+   "level": "A1"
+  },
+  {
+   "ru": "смотреть",
+   "target": "lóok",
+   "level": "A1"
+  },
+  {
+   "ru": "единственный",
+   "target": "ónly",
+   "level": "A1"
+  },
+  {
+   "ru": "где-то",
+   "target": "sómewhere",
+   "level": "A1"
+  },
+  {
+   "ru": "муж",
+   "target": "húsband",
+   "level": "A1"
+  },
+  {
+   "ru": "машина",
+   "target": "cár",
+   "level": "A1"
+  },
+  {
+   "ru": "смог",
+   "target": "smóg",
+   "level": "A1"
+  },
+  {
+   "ru": "играть",
+   "target": "pláy",
+   "level": "A1"
+  },
+  {
+   "ru": "честно",
+   "target": "hónestly",
+   "level": "A1"
+  },
+  {
+   "ru": "угодно",
+   "target": "wánted",
+   "level": "A1"
+  },
+  {
+   "ru": "как-то",
+   "target": "sómehow",
+   "level": "A1"
+  },
+  {
+   "ru": "перевод",
+   "target": "transférence",
+   "level": "A1"
+  },
+  {
+   "ru": "внутри",
+   "target": "insíde",
+   "level": "A1"
+  },
+  {
+   "ru": "добрый",
+   "target": "góod",
+   "level": "A1"
+  },
+  {
+   "ru": "мальчик",
+   "target": "bóy",
+   "level": "A1"
+  },
+  {
+   "ru": "далеко",
+   "target": "fár",
+   "level": "A1"
+  },
+  {
+   "ru": "вокруг",
+   "target": "aróund",
+   "level": "A1"
+  },
+  {
+   "ru": "двух",
+   "target": "bóth",
+   "level": "A1"
+  },
+  {
+   "ru": "приятель",
+   "target": "fríend",
+   "level": "A1"
+  },
+  {
+   "ru": "мужчина",
+   "target": "mán",
+   "level": "A1"
+  },
+  {
+   "ru": "вернуть",
+   "target": "retúrn",
+   "level": "A1"
+  },
+  {
+   "ru": "смерть",
+   "target": "déath",
+   "level": "A1"
+  },
+  {
+   "ru": "двое",
+   "target": "twó",
+   "level": "A1"
+  },
+  {
+   "ru": "решение",
+   "target": "decísion",
+   "level": "A1"
+  },
+  {
+   "ru": "путь",
+   "target": "wáy",
+   "level": "A1"
+  },
+  {
+   "ru": "неужели",
+   "target": "réally",
+   "level": "A1"
+  },
+  {
+   "ru": "около",
+   "target": "bý",
+   "level": "A1"
+  },
+  {
+   "ru": "круто",
+   "target": "súper cóol",
+   "level": "A1"
+  },
+  {
+   "ru": "история",
+   "target": "hístory",
+   "level": "A1"
+  },
+  {
+   "ru": "вдруг",
+   "target": "súddenly",
+   "level": "A1"
+  },
+  {
+   "ru": "спросить",
+   "target": "ásk",
+   "level": "A1"
+  },
+  {
+   "ru": "второй",
+   "target": "sécond",
+   "level": "A1"
+  },
+  {
+   "ru": "вина",
+   "target": "fáult",
+   "level": "A1"
+  },
+  {
+   "ru": "больно",
+   "target": "ít ís páinful",
+   "level": "A1"
+  },
+  {
+   "ru": "трудно",
+   "target": "dífficult",
+   "level": "A1"
+  },
+  {
+   "ru": "постоянно",
+   "target": "cónstantly",
+   "level": "A1"
+  },
+  {
+   "ru": "например",
+   "target": "fór exámple",
+   "level": "A1"
+  },
+  {
+   "ru": "дерьмо",
+   "target": "Shít",
+   "level": "A1"
+  },
+  {
+   "ru": "начать",
+   "target": "begín",
+   "level": "A1"
+  },
+  {
+   "ru": "лучший",
+   "target": "bétter",
+   "level": "A1"
+  },
+  {
+   "ru": "добро",
+   "target": "góod",
+   "level": "A1"
+  },
+  {
+   "ru": "спасти",
+   "target": "sáve",
+   "level": "A1"
+  },
+  {
+   "ru": "оставить",
+   "target": "léave",
+   "level": "A1"
+  },
+  {
+   "ru": "часто",
+   "target": "óften",
+   "level": "A1"
+  },
+  {
+   "ru": "мило",
+   "target": "níce",
+   "level": "A1"
+  },
+  {
+   "ru": "милый",
+   "target": "cúte",
+   "level": "A1"
+  },
+  {
+   "ru": "полностью",
+   "target": "complétely",
+   "level": "A1"
+  },
+  {
+   "ru": "леди",
+   "target": "lády",
+   "level": "A1"
+  },
+  {
+   "ru": "серьёзно",
+   "target": "sériously",
+   "level": "A1"
+  },
+  {
+   "ru": "случай",
+   "target": "cáse",
+   "level": "A1"
+  },
+  {
+   "ru": "убийство",
+   "target": "múrder",
+   "level": "A1"
+  },
+  {
+   "ru": "неплохо",
+   "target": "nót bád",
+   "level": "A1"
+  },
+  {
+   "ru": "использовать",
+   "target": "úse",
+   "level": "A1"
+  },
+  {
+   "ru": "чуть",
+   "target": "néarly",
+   "level": "A1"
+  },
+  {
+   "ru": "невозможно",
+   "target": "ít ís impóssible",
+   "level": "A1"
+  },
+  {
+   "ru": "господа",
+   "target": "géntlemen",
+   "level": "A1"
+  },
+  {
+   "ru": "свет",
+   "target": "líght",
+   "level": "A1"
+  },
+  {
+   "ru": "иметь",
+   "target": "háve",
+   "level": "A1"
+  },
+  {
+   "ru": "шесть",
+   "target": "síx",
+   "level": "A1"
+  },
+  {
+   "ru": "меньше",
+   "target": "léss",
+   "level": "A1"
+  },
+  {
+   "ru": "легко",
+   "target": "éasy",
+   "level": "A1"
+  },
+  {
+   "ru": "девочка",
+   "target": "gírl",
+   "level": "A1"
+  },
+  {
+   "ru": "мало",
+   "target": "líttle",
+   "level": "A1"
+  },
+  {
+   "ru": "насчёт",
+   "target": "ás regárds",
+   "level": "A1"
+  },
+  {
+   "ru": "сообщение",
+   "target": "méssage",
+   "level": "A1"
+  },
+  {
+   "ru": "агент",
+   "target": "ágent",
+   "level": "A1"
+  },
+  {
+   "ru": "вместо",
+   "target": "instéad óf",
+   "level": "A1"
+  },
+  {
+   "ru": "настолько",
+   "target": "só",
+   "level": "A1"
+  },
+  {
+   "ru": "ответ",
+   "target": "ánswer",
+   "level": "A1"
+  },
+  {
+   "ru": "среди",
+   "target": "amóng",
+   "level": "A2"
+  },
+  {
+   "ru": "месяц",
+   "target": "mónth",
+   "level": "A2"
+  },
+  {
+   "ru": "проверить",
+   "target": "vérify",
+   "level": "A2"
+  },
+  {
+   "ru": "генри",
+   "target": "hénry",
+   "level": "A2"
+  },
+  {
+   "ru": "голос",
+   "target": "vóice",
+   "level": "A2"
+  },
+  {
+   "ru": "вероятно",
+   "target": "véry líkely",
+   "level": "A2"
+  },
+  {
+   "ru": "питер",
+   "target": "Sáint Pétersburg",
+   "level": "A2"
+  },
+  {
+   "ru": "провести",
+   "target": "spénd",
+   "level": "A2"
+  },
+  {
+   "ru": "неважно",
+   "target": "ít ís unimpórtant",
+   "level": "A2"
+  },
+  {
+   "ru": "игра",
+   "target": "pláy",
+   "level": "A2"
+  },
+  {
+   "ru": "познакомиться",
+   "target": "méet",
+   "level": "A2"
+  },
+  {
+   "ru": "корабль",
+   "target": "shíp",
+   "level": "A2"
+  },
+  {
+   "ru": "позволь",
+   "target": "allów mé",
+   "level": "A2"
+  },
+  {
+   "ru": "письмо",
+   "target": "létter",
+   "level": "A2"
+  },
+  {
+   "ru": "вниз",
+   "target": "dówn",
+   "level": "A2"
+  },
+  {
+   "ru": "молодец",
+   "target": "Wéll dóne",
+   "level": "A2"
+  },
+  {
+   "ru": "наверняка",
+   "target": "fór súre",
+   "level": "A2"
+  },
+  {
+   "ru": "нечего",
+   "target": "nóthing",
+   "level": "A2"
+  },
+  {
+   "ru": "вид",
+   "target": "appéarance",
+   "level": "A2"
+  },
+  {
+   "ru": "связь",
+   "target": "connéction",
+   "level": "A2"
+  },
+  {
+   "ru": "список",
+   "target": "líst",
+   "level": "A2"
+  },
+  {
+   "ru": "весело",
+   "target": "fúnny",
+   "level": "A2"
+  },
+  {
+   "ru": "сидеть",
+   "target": "sít",
+   "level": "A2"
+  },
+  {
+   "ru": "гораздо",
+   "target": "múch",
+   "level": "A2"
+  },
+  {
+   "ru": "впервые",
+   "target": "fór thé fírst tíme",
+   "level": "A2"
+  },
+  {
+   "ru": "объяснить",
+   "target": "expláin",
+   "level": "A2"
+  },
+  {
+   "ru": "семью",
+   "target": "séven tímes",
+   "level": "A2"
+  },
+  {
+   "ru": "свидание",
+   "target": "méeting",
+   "level": "A2"
+  },
+  {
+   "ru": "прийти",
+   "target": "cóme",
+   "level": "A2"
+  },
+  {
+   "ru": "чувство",
+   "target": "féeling",
+   "level": "A2"
+  },
+  {
+   "ru": "сынок",
+   "target": "són",
+   "level": "A2"
+  },
+  {
+   "ru": "дядя",
+   "target": "úncle",
+   "level": "A2"
+  },
+  {
+   "ru": "сон",
+   "target": "dréam",
+   "level": "A2"
+  },
+  {
+   "ru": "многие",
+   "target": "mány",
+   "level": "A2"
+  },
+  {
+   "ru": "ехать",
+   "target": "dríve",
+   "level": "A2"
+  },
+  {
+   "ru": "никуда",
+   "target": "nówhere",
+   "level": "A2"
+  },
+  {
+   "ru": "старый",
+   "target": "óld",
+   "level": "A2"
+  },
+  {
+   "ru": "оттуда",
+   "target": "fróm thére",
+   "level": "A2"
+  },
+  {
+   "ru": "фото",
+   "target": "phóto",
+   "level": "A2"
+  },
+  {
+   "ru": "пройти",
+   "target": "páss",
+   "level": "A2"
+  },
+  {
+   "ru": "заниматься",
+   "target": "dó",
+   "level": "A2"
+  },
+  {
+   "ru": "никак",
+   "target": "ín nó wáy",
+   "level": "A2"
+  },
+  {
+   "ru": "недавно",
+   "target": "récently",
+   "level": "A2"
+  },
+  {
+   "ru": "глаз",
+   "target": "éye",
+   "level": "A2"
+  },
+  {
+   "ru": "невероятно",
+   "target": "ít ís incrédible",
+   "level": "A2"
+  },
+  {
+   "ru": "защитить",
+   "target": "defénd",
+   "level": "A2"
+  },
+  {
+   "ru": "благодаря",
+   "target": "thánks tó",
+   "level": "A2"
+  },
+  {
+   "ru": "вперёд",
+   "target": "fórward",
+   "level": "A2"
+  },
+  {
+   "ru": "навсегда",
+   "target": "fór éver",
+   "level": "A2"
+  },
+  {
+   "ru": "вполне",
+   "target": "qúite",
+   "level": "A2"
+  },
+  {
+   "ru": "будущее",
+   "target": "thé fúture",
+   "level": "A2"
+  },
+  {
+   "ru": "семь",
+   "target": "séven",
+   "level": "A2"
+  },
+  {
+   "ru": "идиот",
+   "target": "ídiot",
+   "level": "A2"
+  },
+  {
+   "ru": "слава",
+   "target": "glóry",
+   "level": "A2"
+  },
+  {
+   "ru": "команда",
+   "target": "téam",
+   "level": "A2"
+  },
+  {
+   "ru": "главное",
+   "target": "chíefly",
+   "level": "A2"
+  },
+  {
+   "ru": "огонь",
+   "target": "fíre",
+   "level": "A2"
+  },
+  {
+   "ru": "замуж",
+   "target": "márry",
+   "level": "A2"
+  },
+  {
+   "ru": "шеф",
+   "target": "chíef",
+   "level": "A2"
+  },
+  {
+   "ru": "суд",
+   "target": "láw-cóurt",
+   "level": "A2"
+  },
+  {
+   "ru": "попробовать",
+   "target": "attémpt",
+   "level": "A2"
+  },
+  {
+   "ru": "черта",
+   "target": "líne",
+   "level": "A2"
+  },
+  {
+   "ru": "страшно",
+   "target": "ít ís térrible",
+   "level": "A2"
+  },
+  {
+   "ru": "услышать",
+   "target": "héar",
+   "level": "A2"
+  },
+  {
+   "ru": "близко",
+   "target": "néar",
+   "level": "A2"
+  },
+  {
+   "ru": "смысл",
+   "target": "sénse",
+   "level": "A2"
+  },
+  {
+   "ru": "неправильно",
+   "target": "wróng",
+   "level": "A2"
+  },
+  {
+   "ru": "стоять",
+   "target": "stánd",
+   "level": "A2"
+  },
+  {
+   "ru": "плевать",
+   "target": "spít",
+   "level": "A2"
+  },
+  {
+   "ru": "ключ",
+   "target": "kéy",
+   "level": "A2"
+  },
+  {
+   "ru": "верить",
+   "target": "belíeve",
+   "level": "A2"
+  },
+  {
+   "ru": "лично",
+   "target": "pérsonally",
+   "level": "A2"
+  },
+  {
+   "ru": "слышать",
+   "target": "héar",
+   "level": "A2"
+  },
+  {
+   "ru": "пить",
+   "target": "drínk",
+   "level": "A2"
+  },
+  {
+   "ru": "заставить",
+   "target": "fórce",
+   "level": "A2"
+  },
+  {
+   "ru": "рот",
+   "target": "móuth",
+   "level": "A2"
+  },
+  {
+   "ru": "очередь",
+   "target": "qúeue",
+   "level": "A2"
+  },
+  {
+   "ru": "разговор",
+   "target": "conversátion",
+   "level": "A2"
+  },
+  {
+   "ru": "видимо",
+   "target": "appárently",
+   "level": "A2"
+  },
+  {
+   "ru": "менее",
+   "target": "léss",
+   "level": "A2"
+  },
+  {
+   "ru": "подальше",
+   "target": "sómewhat",
+   "level": "A2"
+  },
+  {
+   "ru": "необходимо",
+   "target": "ít ís nécessary",
+   "level": "A2"
+  },
+  {
+   "ru": "адвокат",
+   "target": "ádvocate",
+   "level": "A2"
+  },
+  {
+   "ru": "стоп",
+   "target": "stóp",
+   "level": "A2"
+  },
+  {
+   "ru": "оставаться",
+   "target": "remáin",
+   "level": "A2"
+  },
+  {
+   "ru": "ходить",
+   "target": "gó",
+   "level": "A2"
+  },
+  {
+   "ru": "изменить",
+   "target": "chánge",
+   "level": "A2"
+  },
+  {
+   "ru": "король",
+   "target": "kíng",
+   "level": "A2"
+  },
+  {
+   "ru": "народ",
+   "target": "péople",
+   "level": "A2"
+  },
+  {
+   "ru": "секс",
+   "target": "séx",
+   "level": "A2"
+  },
+  {
+   "ru": "попасть",
+   "target": "gét",
+   "level": "A2"
+  },
+  {
+   "ru": "случайно",
+   "target": "bý chánce",
+   "level": "A2"
+  },
+  {
+   "ru": "цель",
+   "target": "áim",
+   "level": "A2"
+  },
+  {
+   "ru": "выше",
+   "target": "abóve",
+   "level": "A2"
+  },
+  {
+   "ru": "однако",
+   "target": "howéver",
+   "level": "A2"
+  },
+  {
+   "ru": "выход",
+   "target": "éxit",
+   "level": "A2"
+  },
+  {
+   "ru": "платье",
+   "target": "dréss",
+   "level": "A2"
+  },
+  {
+   "ru": "вовсе",
+   "target": "Át áll",
+   "level": "A2"
+  },
+  {
+   "ru": "осторожно",
+   "target": "cárefully",
+   "level": "A2"
+  },
+  {
+   "ru": "поехать",
+   "target": "gó sómewhere ín á véhicle",
+   "level": "A2"
+  },
+  {
+   "ru": "отличный",
+   "target": "áwesome",
+   "level": "A2"
+  },
+  {
+   "ru": "ребёнок",
+   "target": "chíld",
+   "level": "A2"
+  },
+  {
+   "ru": "ого",
+   "target": "wów",
+   "level": "A2"
+  },
+  {
+   "ru": "ха",
+   "target": "há",
+   "level": "A2"
+  },
+  {
+   "ru": "нечто",
+   "target": "sómething",
+   "level": "A2"
+  },
+  {
+   "ru": "первое",
+   "target": "fírst cóurse",
+   "level": "A2"
+  },
+  {
+   "ru": "выяснить",
+   "target": "fínd óut",
+   "level": "A2"
+  },
+  {
+   "ru": "офис",
+   "target": "óffice",
+   "level": "A2"
+  },
+  {
+   "ru": "течение",
+   "target": "cúrrent",
+   "level": "A2"
+  },
+  {
+   "ru": "забыть",
+   "target": "forgét",
+   "level": "A2"
+  },
+  {
+   "ru": "совет",
+   "target": "advíce",
+   "level": "A2"
+  },
+  {
+   "ru": "целый",
+   "target": "whóle",
+   "level": "A2"
+  },
+  {
+   "ru": "адрес",
+   "target": "áddress",
+   "level": "A2"
+  },
+  {
+   "ru": "сержант",
+   "target": "sérgeant",
+   "level": "A2"
+  },
+  {
+   "ru": "разница",
+   "target": "dífference",
+   "level": "A2"
+  },
+  {
+   "ru": "открыть",
+   "target": "ópen",
+   "level": "A2"
+  },
+  {
+   "ru": "доверять",
+   "target": "entrúst",
+   "level": "A2"
+  },
+  {
+   "ru": "встреча",
+   "target": "méeting",
+   "level": "A2"
+  },
+  {
+   "ru": "убивать",
+   "target": "kíll",
+   "level": "A2"
+  },
+  {
+   "ru": "наверно",
+   "target": "próbably",
+   "level": "A2"
+  },
+  {
+   "ru": "обед",
+   "target": "lúnch",
+   "level": "A2"
+  },
+  {
+   "ru": "видео",
+   "target": "vídeo",
+   "level": "A2"
+  },
+  {
+   "ru": "подождать",
+   "target": "wáit",
+   "level": "A2"
+  },
+  {
+   "ru": "вечно",
+   "target": "foréver",
+   "level": "A2"
+  },
+  {
+   "ru": "поскольку",
+   "target": "sínce",
+   "level": "A2"
+  },
+  {
+   "ru": "блядь",
+   "target": "fúck",
+   "level": "A2"
+  },
+  {
+   "ru": "лейтенант",
+   "target": "liéutenant",
+   "level": "A2"
+  },
+  {
+   "ru": "глупо",
+   "target": "ít ís fóolish",
+   "level": "A2"
+  },
+  {
+   "ru": "сезон",
+   "target": "séason",
+   "level": "A2"
+  },
+  {
+   "ru": "снаружи",
+   "target": "óutside",
+   "level": "A2"
+  },
+  {
+   "ru": "голова",
+   "target": "héad",
+   "level": "A2"
+  },
+  {
+   "ru": "заняться",
+   "target": "sét - búsy onéself",
+   "level": "A2"
+  },
+  {
+   "ru": "кино",
+   "target": "cínema",
+   "level": "A2"
+  },
+  {
+   "ru": "восемь",
+   "target": "éight",
+   "level": "A2"
+  },
+  {
+   "ru": "магазин",
+   "target": "shóp",
+   "level": "A2"
+  },
+  {
+   "ru": "слушать",
+   "target": "lísten",
+   "level": "A2"
+  },
+  {
+   "ru": "бизнес",
+   "target": "búsiness",
+   "level": "A2"
+  },
+  {
+   "ru": "примерно",
+   "target": "aróund",
+   "level": "A2"
+  },
+  {
+   "ru": "уехать",
+   "target": "léave",
+   "level": "A2"
+  },
+  {
+   "ru": "когда-либо",
+   "target": "éver",
+   "level": "A2"
+  },
+  {
+   "ru": "шаг",
+   "target": "stép",
+   "level": "A2"
+  },
+  {
+   "ru": "плохой",
+   "target": "bád",
+   "level": "A2"
+  },
+  {
+   "ru": "офицер",
+   "target": "ófficer",
+   "level": "A2"
+  },
+  {
+   "ru": "сюрприз",
+   "target": "surpríse",
+   "level": "A2"
+  },
+  {
+   "ru": "вода",
+   "target": "wáter",
+   "level": "A2"
+  },
+  {
+   "ru": "полный",
+   "target": "ís fúll óf",
+   "level": "A2"
+  },
+  {
+   "ru": "доказать",
+   "target": "próve",
+   "level": "A2"
+  },
+  {
+   "ru": "война",
+   "target": "wár",
+   "level": "A2"
+  },
+  {
+   "ru": "мысль",
+   "target": "thóught",
+   "level": "A2"
+  },
+  {
+   "ru": "видно",
+   "target": "évidently",
+   "level": "A2"
+  },
+  {
+   "ru": "большинство",
+   "target": "móst óf thé",
+   "level": "A2"
+  },
+  {
+   "ru": "продолжать",
+   "target": "contínue",
+   "level": "A2"
+  },
+  {
+   "ru": "ранее",
+   "target": "befóre",
+   "level": "A2"
+  },
+  {
+   "ru": "ближе",
+   "target": "néarer",
+   "level": "A2"
+  },
+  {
+   "ru": "двигаться",
+   "target": "tó móve",
+   "level": "A2"
+  },
+  {
+   "ru": "чувствовать",
+   "target": "féel",
+   "level": "A2"
+  },
+  {
+   "ru": "любить",
+   "target": "lóve",
+   "level": "A2"
+  },
+  {
+   "ru": "величество",
+   "target": "májesty",
+   "level": "A2"
+  },
+  {
+   "ru": "попросить",
+   "target": "reqúest",
+   "level": "A2"
+  },
+  {
+   "ru": "забавно",
+   "target": "ít ís fún",
+   "level": "A2"
+  },
+  {
+   "ru": "главный",
+   "target": "máin",
+   "level": "A2"
+  },
+  {
+   "ru": "внизу",
+   "target": "belów",
+   "level": "A2"
+  },
+  {
+   "ru": "мнение",
+   "target": "opínion",
+   "level": "A2"
+  },
+  {
+   "ru": "часы",
+   "target": "wátch",
+   "level": "A2"
+  },
+  {
+   "ru": "вряд",
+   "target": "unlíkely",
+   "level": "A2"
+  },
+  {
+   "ru": "постой",
+   "target": "wáit",
+   "level": "A2"
+  },
+  {
+   "ru": "вечеринка",
+   "target": "párty",
+   "level": "A2"
+  },
+  {
+   "ru": "ошибка",
+   "target": "mistáke",
+   "level": "A2"
+  },
+  {
+   "ru": "профессор",
+   "target": "proféssor",
+   "level": "A2"
+  },
+  {
+   "ru": "ничто",
+   "target": "nóthing",
+   "level": "A2"
+  },
+  {
+   "ru": "поле",
+   "target": "fíeld",
+   "level": "A2"
+  },
+  {
+   "ru": "музыка",
+   "target": "músic",
+   "level": "A2"
+  },
+  {
+   "ru": "бабушка",
+   "target": "grándmother",
+   "level": "A2"
+  },
+  {
+   "ru": "несмотря",
+   "target": "despíte",
+   "level": "A2"
+  },
+  {
+   "ru": "госпожа",
+   "target": "lády",
+   "level": "A2"
+  },
+  {
+   "ru": "отдать",
+   "target": "tó gíve báck",
+   "level": "A2"
+  },
+  {
+   "ru": "комната",
+   "target": "róom",
+   "level": "A2"
+  },
+  {
+   "ru": "закончить",
+   "target": "fínish",
+   "level": "A2"
+  },
+  {
+   "ru": "врач",
+   "target": "physícian",
+   "level": "A2"
+  },
+  {
+   "ru": "пожалуй",
+   "target": "perháps",
+   "level": "A2"
+  },
+  {
+   "ru": "роль",
+   "target": "róle",
+   "level": "A2"
+  },
+  {
+   "ru": "порядок",
+   "target": "Ín órder",
+   "level": "A2"
+  },
+  {
+   "ru": "группа",
+   "target": "gróup",
+   "level": "A2"
+  },
+  {
+   "ru": "кольцо",
+   "target": "ríng",
+   "level": "A2"
+  },
+  {
+   "ru": "вверх",
+   "target": "úp",
+   "level": "A2"
+  },
+  {
+   "ru": "разговаривать",
+   "target": "spéak",
+   "level": "A2"
+  },
+  {
+   "ru": "закон",
+   "target": "láw",
+   "level": "A2"
+  },
+  {
+   "ru": "член",
+   "target": "mémber",
+   "level": "A2"
+  },
+  {
+   "ru": "такси",
+   "target": "táxi",
+   "level": "A2"
+  },
+  {
+   "ru": "серия",
+   "target": "séries",
+   "level": "A2"
+  },
+  {
+   "ru": "получше",
+   "target": "á líttle bétter",
+   "level": "A2"
+  },
+  {
+   "ru": "молодой",
+   "target": "ýoung",
+   "level": "A2"
+  },
+  {
+   "ru": "шутка",
+   "target": "jóke",
+   "level": "A2"
+  },
+  {
+   "ru": "уходить",
+   "target": "léave",
+   "level": "A2"
+  },
+  {
+   "ru": "снять",
+   "target": "táke óff",
+   "level": "A2"
+  },
+  {
+   "ru": "недостаточно",
+   "target": "ít ís insuffícient",
+   "level": "A2"
+  },
+  {
+   "ru": "разобраться",
+   "target": "fígure ít óut",
+   "level": "A2"
+  },
+  {
+   "ru": "язык",
+   "target": "lánguage",
+   "level": "A2"
+  },
+  {
+   "ru": "директор",
+   "target": "diréctor",
+   "level": "A2"
+  },
+  {
+   "ru": "сто",
+   "target": "húndred",
+   "level": "A2"
+  },
+  {
+   "ru": "чего-то",
+   "target": "sómething",
+   "level": "A2"
+  },
+  {
+   "ru": "когда-то",
+   "target": "ónce",
+   "level": "A2"
+  },
+  {
+   "ru": "наверху",
+   "target": "abóve",
+   "level": "A2"
+  },
+  {
+   "ru": "сигнал",
+   "target": "sígnal",
+   "level": "A2"
+  },
+  {
+   "ru": "едва",
+   "target": "hárdly",
+   "level": "A2"
+  },
+  {
+   "ru": "ответить",
+   "target": "ánswer",
+   "level": "A2"
+  },
+  {
+   "ru": "спустя",
+   "target": "áfter",
+   "level": "A2"
+  },
+  {
+   "ru": "секрет",
+   "target": "sécret",
+   "level": "A2"
+  },
+  {
+   "ru": "приказ",
+   "target": "órder",
+   "level": "A2"
+  },
+  {
+   "ru": "опасно",
+   "target": "dángerously",
+   "level": "A2"
+  },
+  {
+   "ru": "бросить",
+   "target": "tó thrów",
+   "level": "A2"
+  },
+  {
+   "ru": "господь",
+   "target": "Gód",
+   "level": "A2"
+  },
+  {
+   "ru": "внутрь",
+   "target": "insíde",
+   "level": "A2"
+  },
+  {
+   "ru": "компания",
+   "target": "cómpany",
+   "level": "A2"
+  },
+  {
+   "ru": "прекрасный",
+   "target": "béautiful",
+   "level": "A2"
+  },
+  {
+   "ru": "память",
+   "target": "mémory",
+   "level": "A2"
+  },
+  {
+   "ru": "старик",
+   "target": "óld mán",
+   "level": "A2"
+  },
+  {
+   "ru": "избавиться",
+   "target": "gét ríd",
+   "level": "A2"
+  },
+  {
+   "ru": "информация",
+   "target": "informátion",
+   "level": "A2"
+  },
+  {
+   "ru": "встречаться",
+   "target": "méet",
+   "level": "A2"
+  },
+  {
+   "ru": "мозг",
+   "target": "bráin",
+   "level": "A2"
+  },
+  {
+   "ru": "читать",
+   "target": "réad",
+   "level": "A2"
+  },
+  {
+   "ru": "чертовски",
+   "target": "dévilishly",
+   "level": "A2"
+  },
+  {
+   "ru": "стол",
+   "target": "táble",
+   "level": "A2"
+  },
+  {
+   "ru": "ублюдок",
+   "target": "cúr",
+   "level": "A2"
+  },
+  {
+   "ru": "дон",
+   "target": "dón",
+   "level": "A2"
+  },
+  {
+   "ru": "боб",
+   "target": "béan",
+   "level": "A2"
+  },
+  {
+   "ru": "ложь",
+   "target": "líe",
+   "level": "A2"
+  },
+  {
+   "ru": "взглянуть",
+   "target": "tó glánce",
+   "level": "A2"
+  },
+  {
+   "ru": "писать",
+   "target": "wríte",
+   "level": "A2"
+  },
+  {
+   "ru": "передать",
+   "target": "delíver",
+   "level": "A2"
+  },
+  {
+   "ru": "войти",
+   "target": "énter",
+   "level": "A2"
+  },
+  {
+   "ru": "везде",
+   "target": "éverywhere",
+   "level": "A2"
+  },
+  {
+   "ru": "солнце",
+   "target": "sún",
+   "level": "A2"
+  },
+  {
+   "ru": "настоящее",
+   "target": "thé présent",
+   "level": "A2"
+  },
+  {
+   "ru": "класс",
+   "target": "cláss",
+   "level": "A2"
+  },
+  {
+   "ru": "убедиться",
+   "target": "máke súre",
+   "level": "A2"
+  },
+  {
+   "ru": "факт",
+   "target": "fáct",
+   "level": "A2"
+  },
+  {
+   "ru": "уничтожить",
+   "target": "anníhilate",
+   "level": "A2"
+  },
+  {
+   "ru": "учитель",
+   "target": "téacher",
+   "level": "A2"
+  },
+  {
+   "ru": "полно",
+   "target": "fúlly",
+   "level": "A2"
+  },
+  {
+   "ru": "бежать",
+   "target": "rún",
+   "level": "A2"
+  },
+  {
+   "ru": "данные",
+   "target": "repórt",
+   "level": "A2"
+  },
+  {
+   "ru": "запах",
+   "target": "sméll",
+   "level": "A2"
+  },
+  {
+   "ru": "придурок",
+   "target": "Fóol",
+   "level": "A2"
+  },
+  {
+   "ru": "окно",
+   "target": "wíndow",
+   "level": "A2"
+  },
+  {
+   "ru": "костюм",
+   "target": "costúme",
+   "level": "A2"
+  },
+  {
+   "ru": "обсудить",
+   "target": "discúss",
+   "level": "A2"
+  },
+  {
+   "ru": "принимать",
+   "target": "táke",
+   "level": "A2"
+  },
+  {
+   "ru": "море",
+   "target": "séa",
+   "level": "A2"
+  },
+  {
+   "ru": "штука",
+   "target": "thíng",
+   "level": "A2"
+  },
+  {
+   "ru": "ситуация",
+   "target": "situátion",
+   "level": "A2"
+  },
+  {
+   "ru": "генерал",
+   "target": "géneral",
+   "level": "A2"
+  },
+  {
+   "ru": "рождество",
+   "target": "Chrístmas",
+   "level": "A2"
+  },
+  {
+   "ru": "платить",
+   "target": "páy",
+   "level": "A2"
+  },
+  {
+   "ru": "великолепно",
+   "target": "spléndidly",
+   "level": "A2"
+  },
+  {
+   "ru": "помогать",
+   "target": "hélp",
+   "level": "A2"
+  },
+  {
+   "ru": "по-прежнему",
+   "target": "ás befóre",
+   "level": "A2"
+  },
+  {
+   "ru": "новость",
+   "target": "néws",
+   "level": "A2"
+  },
+  {
+   "ru": "жертва",
+   "target": "sácrifice",
+   "level": "A2"
+  },
+  {
+   "ru": "достать",
+   "target": "réach",
+   "level": "A2"
+  },
+  {
+   "ru": "вовремя",
+   "target": "ón tíme",
+   "level": "A2"
+  },
+  {
+   "ru": "расследование",
+   "target": "investigátion",
+   "level": "A2"
+  },
+  {
+   "ru": "зато",
+   "target": "bút",
+   "level": "A2"
+  },
+  {
+   "ru": "согласно",
+   "target": "accórding tó",
+   "level": "A2"
+  },
+  {
+   "ru": "предложить",
+   "target": "óffer",
+   "level": "A2"
+  },
+  {
+   "ru": "уровень",
+   "target": "lével",
+   "level": "A2"
+  },
+  {
+   "ru": "собака",
+   "target": "dóg",
+   "level": "A2"
+  },
+  {
+   "ru": "знак",
+   "target": "sígn",
+   "level": "A2"
+  },
+  {
+   "ru": "чисто",
+   "target": "ít ís cléan",
+   "level": "A2"
+  },
+  {
+   "ru": "срочно",
+   "target": "qúickly",
+   "level": "A2"
+  },
+  {
+   "ru": "начало",
+   "target": "begínning",
+   "level": "A2"
+  },
+  {
+   "ru": "вне",
+   "target": "óut óf",
+   "level": "A2"
+  },
+  {
+   "ru": "клуб",
+   "target": "clúb",
+   "level": "A2"
+  },
+  {
+   "ru": "неправда",
+   "target": "untrúth",
+   "level": "A2"
+  },
+  {
+   "ru": "доступ",
+   "target": "áccess",
+   "level": "A2"
+  },
+  {
+   "ru": "куча",
+   "target": "á lót",
+   "level": "A2"
+  },
+  {
+   "ru": "туалет",
+   "target": "tóilet",
+   "level": "A2"
+  },
+  {
+   "ru": "сука",
+   "target": "bítch",
+   "level": "A2"
+  },
+  {
+   "ru": "слегка",
+   "target": "sómewhat",
+   "level": "A2"
+  },
+  {
+   "ru": "песня",
+   "target": "sóng",
+   "level": "A2"
+  },
+  {
+   "ru": "наверх",
+   "target": "úp",
+   "level": "A2"
+  },
+  {
+   "ru": "небольшой",
+   "target": "smáll",
+   "level": "A2"
+  },
+  {
+   "ru": "красиво",
+   "target": "béautifully",
+   "level": "A2"
+  },
+  {
+   "ru": "запись",
+   "target": "recórd",
+   "level": "A2"
+  },
+  {
+   "ru": "состояние",
+   "target": "condítion",
+   "level": "A2"
+  },
+  {
+   "ru": "белый",
+   "target": "whíte",
+   "level": "A2"
+  },
+  {
+   "ru": "зайти",
+   "target": "gó ín",
+   "level": "A2"
+  },
+  {
+   "ru": "дважды",
+   "target": "twíce",
+   "level": "A2"
+  },
+  {
+   "ru": "центр",
+   "target": "cénter",
+   "level": "A2"
+  },
+  {
+   "ru": "дружище",
+   "target": "óld cháp",
+   "level": "A2"
+  },
+  {
+   "ru": "исправить",
+   "target": "corréct",
+   "level": "A2"
+  },
+  {
+   "ru": "желание",
+   "target": "wíshes",
+   "level": "A2"
+  },
+  {
+   "ru": "книга",
+   "target": "bóok",
+   "level": "A2"
+  },
+  {
+   "ru": "полковник",
+   "target": "cólonel",
+   "level": "A2"
+  },
+  {
+   "ru": "добраться",
+   "target": "réach",
+   "level": "A2"
+  },
+  {
+   "ru": "нос",
+   "target": "nóse",
+   "level": "A2"
+  },
+  {
+   "ru": "каково",
+   "target": "hów",
+   "level": "A2"
+  },
+  {
+   "ru": "сила",
+   "target": "pówer",
+   "level": "A2"
+  },
+  {
+   "ru": "рука",
+   "target": "hánd",
+   "level": "A2"
+  },
+  {
+   "ru": "повсюду",
+   "target": "éverywhere",
+   "level": "A2"
+  },
+  {
+   "ru": "взгляд",
+   "target": "lóok",
+   "level": "A2"
+  },
+  {
+   "ru": "судья",
+   "target": "júdge",
+   "level": "A2"
+  },
+  {
+   "ru": "чушь",
+   "target": "nónsense",
+   "level": "A2"
+  },
+  {
+   "ru": "система",
+   "target": "sýstem",
+   "level": "A2"
+  },
+  {
+   "ru": "практически",
+   "target": "álmost",
+   "level": "A2"
+  },
+  {
+   "ru": "выходные",
+   "target": "wéekend",
+   "level": "A2"
+  },
+  {
+   "ru": "еда",
+   "target": "fóod",
+   "level": "A2"
+  },
+  {
+   "ru": "док",
+   "target": "dóck",
+   "level": "A2"
+  },
+  {
+   "ru": "нож",
+   "target": "knífe",
+   "level": "A2"
+  },
+  {
+   "ru": "написать",
+   "target": "wríte",
+   "level": "A2"
+  },
+  {
+   "ru": "чай",
+   "target": "téa",
+   "level": "A2"
+  },
+  {
+   "ru": "остальное",
+   "target": "Éverything thát's léft",
+   "level": "A2"
+  },
+  {
+   "ru": "брак",
+   "target": "márriage",
+   "level": "A2"
+  },
+  {
+   "ru": "мимо",
+   "target": "pást",
+   "level": "A2"
+  },
+  {
+   "ru": "потерять",
+   "target": "lóse",
+   "level": "A2"
+  },
+  {
+   "ru": "звук",
+   "target": "sóund",
+   "level": "A2"
+  },
+  {
+   "ru": "выглядеть",
+   "target": "lóok líke",
+   "level": "A2"
+  },
+  {
+   "ru": "вкус",
+   "target": "táste",
+   "level": "A2"
+  },
+  {
+   "ru": "поезд",
+   "target": "tráin",
+   "level": "A2"
+  },
+  {
+   "ru": "пиво",
+   "target": "béer",
+   "level": "A2"
+  },
+  {
+   "ru": "устроить",
+   "target": "arránge",
+   "level": "A2"
+  },
+  {
+   "ru": "радио",
+   "target": "rádio",
+   "level": "A2"
+  },
+  {
+   "ru": "безумие",
+   "target": "fólly",
+   "level": "A2"
+  },
+  {
+   "ru": "решить",
+   "target": "decíde",
+   "level": "A2"
+  },
+  {
+   "ru": "солдат",
+   "target": "sóldier",
+   "level": "A2"
+  },
+  {
+   "ru": "проще",
+   "target": "símplest",
+   "level": "A2"
+  },
+  {
+   "ru": "особо",
+   "target": "réally",
+   "level": "A2"
+  },
+  {
+   "ru": "дедушка",
+   "target": "grándfather",
+   "level": "A2"
+  },
+  {
+   "ru": "отправить",
+   "target": "sénd",
+   "level": "A2"
+  },
+  {
+   "ru": "здание",
+   "target": "búilding",
+   "level": "A2"
+  },
+  {
+   "ru": "возле",
+   "target": "néar",
+   "level": "A2"
+  },
+  {
+   "ru": "защищать",
+   "target": "protéct",
+   "level": "A2"
+  },
+  {
+   "ru": "называть",
+   "target": "náme",
+   "level": "A2"
+  },
+  {
+   "ru": "третий",
+   "target": "thírd",
+   "level": "A2"
+  },
+  {
+   "ru": "удивительно",
+   "target": "wónderfully",
+   "level": "A2"
+  },
+  {
+   "ru": "долг",
+   "target": "débt",
+   "level": "A2"
+  },
+  {
+   "ru": "стыдно",
+   "target": "ít ís á sháme",
+   "level": "A2"
+  },
+  {
+   "ru": "случиться",
+   "target": "háppen",
+   "level": "A2"
+  },
+  {
+   "ru": "счёт",
+   "target": "bíll",
+   "level": "A2"
+  },
+  {
+   "ru": "возвращаться",
+   "target": "retúrn",
+   "level": "A2"
+  },
+  {
+   "ru": "инспектор",
+   "target": "inspéctor",
+   "level": "A2"
+  },
+  {
+   "ru": "земля",
+   "target": "éarth",
+   "level": "A2"
+  },
+  {
+   "ru": "сходить",
+   "target": "descénd",
+   "level": "A2"
+  },
+  {
+   "ru": "плюс",
+   "target": "plús",
+   "level": "A2"
+  },
+  {
+   "ru": "явно",
+   "target": "évidently",
+   "level": "A2"
+  },
+  {
+   "ru": "стрелять",
+   "target": "shóot",
+   "level": "A2"
+  },
+  {
+   "ru": "столь",
+   "target": "só",
+   "level": "A2"
+  },
+  {
+   "ru": "решать",
+   "target": "decíde",
+   "level": "A2"
+  },
+  {
+   "ru": "по-настоящему",
+   "target": "ín thé ríght wáy",
+   "level": "A2"
+  },
+  {
+   "ru": "заплатить",
+   "target": "páy",
+   "level": "A2"
+  },
+  {
+   "ru": "сообщить",
+   "target": "repórt",
+   "level": "A2"
+  },
+  {
+   "ru": "справиться",
+   "target": "cópe",
+   "level": "A2"
+  },
+  {
+   "ru": "поцелуй",
+   "target": "kíss",
+   "level": "A2"
+  },
+  {
+   "ru": "по-другому",
+   "target": "dífferently",
+   "level": "A2"
+  },
+  {
+   "ru": "тест",
+   "target": "tést",
+   "level": "A2"
+  },
+  {
+   "ru": "прошлое",
+   "target": "thé pást",
+   "level": "A2"
+  },
+  {
+   "ru": "код",
+   "target": "códe",
+   "level": "A2"
+  },
+  {
+   "ru": "выбраться",
+   "target": "gét óut",
+   "level": "A2"
+  },
+  {
+   "ru": "продать",
+   "target": "séll",
+   "level": "A2"
+  },
+  {
+   "ru": "поставить",
+   "target": "pút",
+   "level": "A2"
+  },
+  {
+   "ru": "клиент",
+   "target": "clíent",
+   "level": "A2"
+  },
+  {
+   "ru": "здоровье",
+   "target": "héalth",
+   "level": "A2"
+  },
+  {
+   "ru": "прочь",
+   "target": "awáy",
+   "level": "A2"
+  },
+  {
+   "ru": "рассказывать",
+   "target": "téll",
+   "level": "A2"
+  },
+  {
+   "ru": "по-твоему",
+   "target": "ín",
+   "level": "A2"
+  },
+  {
+   "ru": "сбежать",
+   "target": "escápe",
+   "level": "A2"
+  },
+  {
+   "ru": "прекратить",
+   "target": "stóp",
+   "level": "A2"
+  },
+  {
+   "ru": "впереди",
+   "target": "ín frónt",
+   "level": "A2"
+  },
+  {
+   "ru": "реально",
+   "target": "réally",
+   "level": "A2"
+  },
+  {
+   "ru": "двадцать",
+   "target": "twénty",
+   "level": "A2"
+  },
+  {
+   "ru": "бар",
+   "target": "bár",
+   "level": "A2"
+  },
+  {
+   "ru": "завтрак",
+   "target": "bréakfast",
+   "level": "A2"
+  },
+  {
+   "ru": "зря",
+   "target": "tó nó púrpose",
+   "level": "A2"
+  },
+  {
+   "ru": "полицейский",
+   "target": "políceman",
+   "level": "A2"
+  },
+  {
+   "ru": "заявление",
+   "target": "státement",
+   "level": "A2"
+  },
+  {
+   "ru": "поймать",
+   "target": "cátch",
+   "level": "A2"
+  },
+  {
+   "ru": "ответственность",
+   "target": "responsibílity",
+   "level": "A2"
+  },
+  {
+   "ru": "девять",
+   "target": "níne",
+   "level": "A2"
+  },
+  {
+   "ru": "наедине",
+   "target": "ín prívate",
+   "level": "A2"
+  },
+  {
+   "ru": "выбрать",
+   "target": "chóose",
+   "level": "A2"
+  },
+  {
+   "ru": "преступление",
+   "target": "críme",
+   "level": "A2"
+  },
+  {
+   "ru": "кусок",
+   "target": "píece",
+   "level": "A2"
+  },
+  {
+   "ru": "медленно",
+   "target": "slówly",
+   "level": "A2"
+  },
+  {
+   "ru": "сохранить",
+   "target": "kéep",
+   "level": "A2"
+  },
+  {
+   "ru": "холодно",
+   "target": "ít ís cóld",
+   "level": "A2"
+  },
+  {
+   "ru": "отношение",
+   "target": "relátion",
+   "level": "A2"
+  },
+  {
+   "ru": "операция",
+   "target": "operátion",
+   "level": "A2"
+  },
+  {
+   "ru": "судьба",
+   "target": "fáte",
+   "level": "A2"
+  },
+  {
+   "ru": "любимый",
+   "target": "fávorite",
+   "level": "A2"
+  },
+  {
+   "ru": "задать",
+   "target": "gíve",
+   "level": "A2"
+  },
+  {
+   "ru": "папочка",
+   "target": "dáddy",
+   "level": "A2"
+  },
+  {
+   "ru": "внезапно",
+   "target": "súddenly",
+   "level": "A2"
+  },
+  {
+   "ru": "церковь",
+   "target": "chúrch",
+   "level": "A2"
+  },
+  {
+   "ru": "специально",
+   "target": "inténtionally",
+   "level": "A2"
+  },
+  {
+   "ru": "дурак",
+   "target": "fóol",
+   "level": "A2"
+  },
+  {
+   "ru": "ад",
+   "target": "héll",
+   "level": "A2"
+  },
+  {
+   "ru": "компьютер",
+   "target": "compúter",
+   "level": "A2"
+  },
+  {
+   "ru": "урок",
+   "target": "lésson",
+   "level": "A2"
+  },
+  {
+   "ru": "люк",
+   "target": "hátchway",
+   "level": "A2"
+  },
+  {
+   "ru": "брать",
+   "target": "táke",
+   "level": "A2"
+  },
+  {
+   "ru": "давать",
+   "target": "gíve",
+   "level": "A2"
+  },
+  {
+   "ru": "вновь",
+   "target": "agáin",
+   "level": "A2"
+  },
+  {
+   "ru": "вызвать",
+   "target": "tó cáll",
+   "level": "A2"
+  },
+  {
+   "ru": "бороться",
+   "target": "fíght",
+   "level": "A2"
+  },
+  {
+   "ru": "вариант",
+   "target": "óption",
+   "level": "A2"
+  },
+  {
+   "ru": "назвать",
+   "target": "náme",
+   "level": "A2"
+  },
+  {
+   "ru": "ход",
+   "target": "mótion",
+   "level": "A2"
+  },
+  {
+   "ru": "положение",
+   "target": "posítion",
+   "level": "A2"
+  },
+  {
+   "ru": "роман",
+   "target": "nóvel",
+   "level": "A2"
+  },
+  {
+   "ru": "победить",
+   "target": "wín",
+   "level": "A2"
+  },
+  {
+   "ru": "правительство",
+   "target": "góvernment",
+   "level": "A2"
+  },
+  {
+   "ru": "прошлый",
+   "target": "pást",
+   "level": "A2"
+  },
+  {
+   "ru": "герой",
+   "target": "héro",
+   "level": "A2"
+  },
+  {
+   "ru": "воздух",
+   "target": "áir",
+   "level": "A2"
+  },
+  {
+   "ru": "поступить",
+   "target": "énter",
+   "level": "A2"
+  },
+  {
+   "ru": "чудо",
+   "target": "míracle",
+   "level": "A2"
+  },
+  {
+   "ru": "школа",
+   "target": "schóol",
+   "level": "A2"
+  },
+  {
+   "ru": "курс",
+   "target": "cóurse",
+   "level": "A2"
+  },
+  {
+   "ru": "отель",
+   "target": "hotél",
+   "level": "A2"
+  },
+  {
+   "ru": "задание",
+   "target": "tásk",
+   "level": "A2"
+  },
+  {
+   "ru": "приехать",
+   "target": "arríve",
+   "level": "A2"
+  },
+  {
+   "ru": "считать",
+   "target": "consíder",
+   "level": "A2"
+  },
+  {
+   "ru": "вспомнить",
+   "target": "remémber",
+   "level": "A2"
+  },
+  {
+   "ru": "срок",
+   "target": "déadline",
+   "level": "A2"
+  },
+  {
+   "ru": "действовать",
+   "target": "áct",
+   "level": "A2"
+  },
+  {
+   "ru": "извиниться",
+   "target": "apólogise",
+   "level": "A2"
+  },
+  {
+   "ru": "дух",
+   "target": "spírit",
+   "level": "A2"
+  },
+  {
+   "ru": "отдел",
+   "target": "depártment",
+   "level": "A2"
+  },
+  {
+   "ru": "беспокоиться",
+   "target": "wórry",
+   "level": "A2"
+  },
+  {
+   "ru": "интервью",
+   "target": "ínterview",
+   "level": "A2"
+  },
+  {
+   "ru": "болит",
+   "target": "sóre",
+   "level": "A2"
+  },
+  {
+   "ru": "мяч",
+   "target": "báll",
+   "level": "A2"
+  },
+  {
+   "ru": "убедить",
+   "target": "convínce",
+   "level": "A2"
+  },
+  {
+   "ru": "остановиться",
+   "target": "tó stóp",
+   "level": "A2"
+  },
+  {
+   "ru": "королева",
+   "target": "qúeen",
+   "level": "A2"
+  },
+  {
+   "ru": "дождь",
+   "target": "ráin",
+   "level": "A2"
+  },
+  {
+   "ru": "бывший",
+   "target": "fórmer",
+   "level": "A2"
+  },
+  {
+   "ru": "во-первых",
+   "target": "fírst",
+   "level": "A2"
+  },
+  {
+   "ru": "танцевать",
+   "target": "dánce",
+   "level": "A2"
+  },
+  {
+   "ru": "проклятье",
+   "target": "cúrse",
+   "level": "A2"
+  },
+  {
+   "ru": "колледж",
+   "target": "cóllege",
+   "level": "A2"
+  },
+  {
+   "ru": "просить",
+   "target": "reqúest",
+   "level": "A2"
+  },
+  {
+   "ru": "душ",
+   "target": "shówer",
+   "level": "A2"
+  },
+  {
+   "ru": "камень",
+   "target": "stóne",
+   "level": "A2"
+  },
+  {
+   "ru": "проводить",
+   "target": "spénd",
+   "level": "A2"
+  },
+  {
+   "ru": "ура",
+   "target": "hurráh",
+   "level": "A2"
+  },
+  {
+   "ru": "труп",
+   "target": "déad bódy",
+   "level": "A2"
+  },
+  {
+   "ru": "вино",
+   "target": "wíne",
+   "level": "A2"
+  },
+  {
+   "ru": "вкусно",
+   "target": "ít ís tásty",
+   "level": "A2"
+  },
+  {
+   "ru": "правило",
+   "target": "rúle",
+   "level": "A2"
+  },
+  {
+   "ru": "кровать",
+   "target": "béd",
+   "level": "A2"
+  },
+  {
+   "ru": "кабинет",
+   "target": "óffice",
+   "level": "A2"
+  },
+  {
+   "ru": "убрать",
+   "target": "cléan",
+   "level": "A2"
+  },
+  {
+   "ru": "жениться",
+   "target": "márry",
+   "level": "A2"
+  },
+  {
+   "ru": "счастье",
+   "target": "háppiness",
+   "level": "A2"
+  },
+  {
+   "ru": "давление",
+   "target": "préssure",
+   "level": "A2"
+  },
+  {
+   "ru": "душа",
+   "target": "sóul",
+   "level": "A2"
+  },
+  {
+   "ru": "отдохнуть",
+   "target": "rést",
+   "level": "A2"
+  },
+  {
+   "ru": "встать",
+   "target": "gét úp",
+   "level": "A2"
+  },
+  {
+   "ru": "миллион",
+   "target": "míllion",
+   "level": "A2"
+  },
+  {
+   "ru": "глубоко",
+   "target": "ít ís déep",
+   "level": "A2"
+  },
+  {
+   "ru": "сзади",
+   "target": "fróm behínd",
+   "level": "A2"
+  },
+  {
+   "ru": "святой",
+   "target": "sáint",
+   "level": "A2"
+  },
+  {
+   "ru": "значение",
+   "target": "méaning",
+   "level": "A2"
+  },
+  {
+   "ru": "позади",
+   "target": "behínd",
+   "level": "A2"
+  },
+  {
+   "ru": "несчастный",
+   "target": "unháppy",
+   "level": "A2"
+  },
+  {
+   "ru": "мамочка",
+   "target": "múmmy",
+   "level": "A2"
+  },
+  {
+   "ru": "страх",
+   "target": "féar",
+   "level": "A2"
+  },
+  {
+   "ru": "банк",
+   "target": "bánk",
+   "level": "A2"
+  },
+  {
+   "ru": "носить",
+   "target": "wéar",
+   "level": "A2"
+  },
+  {
+   "ru": "приходить",
+   "target": "arríve",
+   "level": "A2"
+  },
+  {
+   "ru": "следить",
+   "target": "wátch",
+   "level": "A2"
+  },
+  {
+   "ru": "лекарство",
+   "target": "médicine",
+   "level": "A2"
+  },
+  {
+   "ru": "тип",
+   "target": "týpe",
+   "level": "A2"
+  },
+  {
+   "ru": "признать",
+   "target": "admít",
+   "level": "A2"
+  },
+  {
+   "ru": "билет",
+   "target": "tícket",
+   "level": "A2"
+  },
+  {
+   "ru": "выиграть",
+   "target": "wín",
+   "level": "A2"
+  },
+  {
+   "ru": "красный",
+   "target": "réd",
+   "level": "A2"
+  },
+  {
+   "ru": "петь",
+   "target": "síng",
+   "level": "A2"
+  },
+  {
+   "ru": "название",
+   "target": "náme",
+   "level": "A2"
+  },
+  {
+   "ru": "вытащить",
+   "target": "táke óut",
+   "level": "A2"
+  },
+  {
+   "ru": "отвечать",
+   "target": "ánswer",
+   "level": "A2"
+  },
+  {
+   "ru": "контролировать",
+   "target": "contról",
+   "level": "A2"
+  },
+  {
+   "ru": "власть",
+   "target": "pówer",
+   "level": "A2"
+  },
+  {
+   "ru": "волноваться",
+   "target": "tó wórry",
+   "level": "A2"
+  },
+  {
+   "ru": "данный",
+   "target": "gíven",
+   "level": "A2"
+  },
+  {
+   "ru": "красивый",
+   "target": "béautiful",
+   "level": "A2"
+  },
+  {
+   "ru": "суть",
+   "target": "éssence",
+   "level": "A2"
+  },
+  {
+   "ru": "связаться",
+   "target": "commúnicate",
+   "level": "A2"
+  },
+  {
+   "ru": "майор",
+   "target": "májor",
+   "level": "A2"
+  },
+  {
+   "ru": "держаться",
+   "target": "kéep",
+   "level": "A2"
+  },
+  {
+   "ru": "штаны",
+   "target": "tróusers",
+   "level": "A2"
+  },
+  {
+   "ru": "цвет",
+   "target": "cólor",
+   "level": "A2"
+  },
+  {
+   "ru": "хозяин",
+   "target": "máster",
+   "level": "A2"
+  },
+  {
+   "ru": "учиться",
+   "target": "léarn",
+   "level": "A2"
+  },
+  {
+   "ru": "поблагодарить",
+   "target": "thánk",
+   "level": "A2"
+  },
+  {
+   "ru": "количество",
+   "target": "qúantity",
+   "level": "A2"
+  },
+  {
+   "ru": "сумасшедший",
+   "target": "lúnatic",
+   "level": "A2"
+  },
+  {
+   "ru": "участок",
+   "target": "lót",
+   "level": "A2"
+  },
+  {
+   "ru": "огромный",
+   "target": "enórmous",
+   "level": "B1"
+  },
+  {
+   "ru": "второе",
+   "target": "sécond cóurse",
+   "level": "B1"
+  },
+  {
+   "ru": "чуть-чуть",
+   "target": "extrémely á líttle bít",
+   "level": "B1"
+  },
+  {
+   "ru": "скорей",
+   "target": "ráther",
+   "level": "B1"
+  },
+  {
+   "ru": "мастер",
+   "target": "fóreman",
+   "level": "B1"
+  },
+  {
+   "ru": "небо",
+   "target": "ský",
+   "level": "B1"
+  },
+  {
+   "ru": "съесть",
+   "target": "éat",
+   "level": "B1"
+  },
+  {
+   "ru": "добиться",
+   "target": "tó achíeve",
+   "level": "B1"
+  },
+  {
+   "ru": "сперва",
+   "target": "át fírst",
+   "level": "B1"
+  },
+  {
+   "ru": "послушать",
+   "target": "lísten",
+   "level": "B1"
+  },
+  {
+   "ru": "личность",
+   "target": "personálity",
+   "level": "B1"
+  },
+  {
+   "ru": "товарищ",
+   "target": "cómrade",
+   "level": "B1"
+  },
+  {
+   "ru": "лес",
+   "target": "wóod",
+   "level": "B1"
+  },
+  {
+   "ru": "гений",
+   "target": "génius",
+   "level": "B1"
+  },
+  {
+   "ru": "сверху",
+   "target": "fróm abóve",
+   "level": "B1"
+  },
+  {
+   "ru": "поиграть",
+   "target": "pláy",
+   "level": "B1"
+  },
+  {
+   "ru": "несомненно",
+   "target": "undóubtedly",
+   "level": "B1"
+  },
+  {
+   "ru": "управление",
+   "target": "administrátion",
+   "level": "B1"
+  },
+  {
+   "ru": "разум",
+   "target": "mínd",
+   "level": "B1"
+  },
+  {
+   "ru": "плакать",
+   "target": "wéep",
+   "level": "B1"
+  },
+  {
+   "ru": "украсть",
+   "target": "stéal",
+   "level": "B1"
+  },
+  {
+   "ru": "лондон",
+   "target": "Lóndon",
+   "level": "B1"
+  },
+  {
+   "ru": "заново",
+   "target": "óver agáin",
+   "level": "B1"
+  },
+  {
+   "ru": "напротив",
+   "target": "ópposite",
+   "level": "B1"
+  },
+  {
+   "ru": "покончить",
+   "target": "fínish",
+   "level": "B1"
+  },
+  {
+   "ru": "охрана",
+   "target": "gúarding",
+   "level": "B1"
+  },
+  {
+   "ru": "сделка",
+   "target": "transáction",
+   "level": "B1"
+  },
+  {
+   "ru": "армия",
+   "target": "ármy",
+   "level": "B1"
+  },
+  {
+   "ru": "выстрел",
+   "target": "shót",
+   "level": "B1"
+  },
+  {
+   "ru": "крутой",
+   "target": "stéep",
+   "level": "B1"
+  },
+  {
+   "ru": "круг",
+   "target": "círcle",
+   "level": "B1"
+  },
+  {
+   "ru": "поделать",
+   "target": "dó abóut ít",
+   "level": "B1"
+  },
+  {
+   "ru": "зло",
+   "target": "évil",
+   "level": "B1"
+  },
+  {
+   "ru": "отправиться",
+   "target": "stárt",
+   "level": "B1"
+  },
+  {
+   "ru": "наружу",
+   "target": "óutside",
+   "level": "B1"
+  },
+  {
+   "ru": "устройство",
+   "target": "devíce",
+   "level": "B1"
+  },
+  {
+   "ru": "лето",
+   "target": "súmmer",
+   "level": "B1"
+  },
+  {
+   "ru": "хан",
+   "target": "khán",
+   "level": "B1"
+  },
+  {
+   "ru": "встретить",
+   "target": "méet",
+   "level": "B1"
+  },
+  {
+   "ru": "вскоре",
+   "target": "sóon",
+   "level": "B1"
+  },
+  {
+   "ru": "враг",
+   "target": "énemy",
+   "level": "B1"
+  },
+  {
+   "ru": "пола",
+   "target": "skírt",
+   "level": "B1"
+  },
+  {
+   "ru": "наблюдать",
+   "target": "obsérve",
+   "level": "B1"
+  },
+  {
+   "ru": "силой",
+   "target": "bý fórce",
+   "level": "B1"
+  },
+  {
+   "ru": "подружка",
+   "target": "gírlfriend",
+   "level": "B1"
+  },
+  {
+   "ru": "бесплатно",
+   "target": "frée óf chárge",
+   "level": "B1"
+  },
+  {
+   "ru": "поиски",
+   "target": "séarch",
+   "level": "B1"
+  },
+  {
+   "ru": "неожиданно",
+   "target": "unexpéctedly",
+   "level": "B1"
+  },
+  {
+   "ru": "собственный",
+   "target": "ówn",
+   "level": "B1"
+  },
+  {
+   "ru": "пожар",
+   "target": "fíre",
+   "level": "B1"
+  },
+  {
+   "ru": "командир",
+   "target": "commánder",
+   "level": "B1"
+  },
+  {
+   "ru": "представление",
+   "target": "presentátion",
+   "level": "B1"
+  },
+  {
+   "ru": "важный",
+   "target": "impórtant",
+   "level": "B1"
+  },
+  {
+   "ru": "псих",
+   "target": "mádman",
+   "level": "B1"
+  },
+  {
+   "ru": "контакт",
+   "target": "cóntact",
+   "level": "B1"
+  },
+  {
+   "ru": "хрен",
+   "target": "hórse-rádish",
+   "level": "B1"
+  },
+  {
+   "ru": "снимать",
+   "target": "táke óff",
+   "level": "B1"
+  },
+  {
+   "ru": "жарко",
+   "target": "ít ís hót",
+   "level": "B1"
+  },
+  {
+   "ru": "цена",
+   "target": "príce",
+   "level": "B1"
+  },
+  {
+   "ru": "животное",
+   "target": "ánimal",
+   "level": "B1"
+  },
+  {
+   "ru": "пенни",
+   "target": "pénny",
+   "level": "B1"
+  },
+  {
+   "ru": "футбол",
+   "target": "fóotball",
+   "level": "B1"
+  },
+  {
+   "ru": "похороны",
+   "target": "búrial",
+   "level": "B1"
+  },
+  {
+   "ru": "тупой",
+   "target": "blúnt",
+   "level": "B1"
+  },
+  {
+   "ru": "обмен",
+   "target": "exchánge",
+   "level": "B1"
+  },
+  {
+   "ru": "безусловно",
+   "target": "undóubtedly",
+   "level": "B1"
+  },
+  {
+   "ru": "торт",
+   "target": "cáke",
+   "level": "B1"
+  },
+  {
+   "ru": "поработать",
+   "target": "wórk",
+   "level": "B1"
+  },
+  {
+   "ru": "взрыв",
+   "target": "explósion",
+   "level": "B1"
+  },
+  {
+   "ru": "отвратительно",
+   "target": "dísgustingly",
+   "level": "B1"
+  },
+  {
+   "ru": "участие",
+   "target": "participátion",
+   "level": "B1"
+  },
+  {
+   "ru": "красавица",
+   "target": "béauty",
+   "level": "B1"
+  },
+  {
+   "ru": "участвовать",
+   "target": "partícipate",
+   "level": "B1"
+  },
+  {
+   "ru": "недалеко",
+   "target": "ít ís nót fár",
+   "level": "B1"
+  },
+  {
+   "ru": "добавить",
+   "target": "ádd",
+   "level": "B1"
+  },
+  {
+   "ru": "общаться",
+   "target": "commúnicate",
+   "level": "B1"
+  },
+  {
+   "ru": "удобно",
+   "target": "ít ís convénient",
+   "level": "B1"
+  },
+  {
+   "ru": "принято",
+   "target": "ít ís accépted",
+   "level": "B1"
+  },
+  {
+   "ru": "подозреваемый",
+   "target": "suspécted",
+   "level": "B1"
+  },
+  {
+   "ru": "дождаться",
+   "target": "wáit tíll",
+   "level": "B1"
+  },
+  {
+   "ru": "направо",
+   "target": "tó thé ríght",
+   "level": "B1"
+  },
+  {
+   "ru": "нога",
+   "target": "lég",
+   "level": "B1"
+  },
+  {
+   "ru": "выбирать",
+   "target": "chóose",
+   "level": "B1"
+  },
+  {
+   "ru": "нападение",
+   "target": "attáck",
+   "level": "B1"
+  },
+  {
+   "ru": "произойти",
+   "target": "háppen",
+   "level": "B1"
+  },
+  {
+   "ru": "хранить",
+   "target": "kéep",
+   "level": "B1"
+  },
+  {
+   "ru": "тратить",
+   "target": "spénd",
+   "level": "B1"
+  },
+  {
+   "ru": "некуда",
+   "target": "nówhere",
+   "level": "B1"
+  },
+  {
+   "ru": "молоко",
+   "target": "mílk",
+   "level": "B1"
+  },
+  {
+   "ru": "служба",
+   "target": "sérvice",
+   "level": "B1"
+  },
+  {
+   "ru": "сыграть",
+   "target": "pláy",
+   "level": "B1"
+  },
+  {
+   "ru": "из-под",
+   "target": "fróm únder",
+   "level": "B1"
+  },
+  {
+   "ru": "лечение",
+   "target": "tréatment",
+   "level": "B1"
+  },
+  {
+   "ru": "продолжить",
+   "target": "contínue",
+   "level": "B1"
+  },
+  {
+   "ru": "радость",
+   "target": "gládness",
+   "level": "B1"
+  },
+  {
+   "ru": "превосходно",
+   "target": "pérfectly",
+   "level": "B1"
+  },
+  {
+   "ru": "хорошенько",
+   "target": "thóroughly",
+   "level": "B1"
+  },
+  {
+   "ru": "преступник",
+   "target": "críminal",
+   "level": "B1"
+  },
+  {
+   "ru": "пирог",
+   "target": "píe",
+   "level": "B1"
+  },
+  {
+   "ru": "карта",
+   "target": "máp",
+   "level": "B1"
+  },
+  {
+   "ru": "лорд",
+   "target": "lórd",
+   "level": "B1"
+  },
+  {
+   "ru": "сок",
+   "target": "júice",
+   "level": "B1"
+  },
+  {
+   "ru": "установить",
+   "target": "instáll",
+   "level": "B1"
+  },
+  {
+   "ru": "мари",
+   "target": "Mári",
+   "level": "B1"
+  },
+  {
+   "ru": "модель",
+   "target": "módel",
+   "level": "B1"
+  },
+  {
+   "ru": "следующее",
+   "target": "thé fóllowing",
+   "level": "B1"
+  },
+  {
+   "ru": "мусор",
+   "target": "gárbage",
+   "level": "B1"
+  },
+  {
+   "ru": "доказательство",
+   "target": "próof",
+   "level": "B1"
+  },
+  {
+   "ru": "мак",
+   "target": "póppy",
+   "level": "B1"
+  },
+  {
+   "ru": "призрак",
+   "target": "spéctre",
+   "level": "B1"
+  },
+  {
+   "ru": "вот-вот",
+   "target": "júst ón thé póint",
+   "level": "B1"
+  },
+  {
+   "ru": "далее",
+   "target": "fúrther",
+   "level": "B1"
+  },
+  {
+   "ru": "заказ",
+   "target": "órder",
+   "level": "B1"
+  },
+  {
+   "ru": "определить",
+   "target": "defíne",
+   "level": "B1"
+  },
+  {
+   "ru": "продавать",
+   "target": "séll",
+   "level": "B1"
+  },
+  {
+   "ru": "точка",
+   "target": "dót",
+   "level": "B1"
+  },
+  {
+   "ru": "дружок",
+   "target": "pál",
+   "level": "B1"
+  },
+  {
+   "ru": "дар",
+   "target": "gíft",
+   "level": "B1"
+  },
+  {
+   "ru": "приступ",
+   "target": "assáult",
+   "level": "B1"
+  },
+  {
+   "ru": "ворота",
+   "target": "gáte",
+   "level": "B1"
+  },
+  {
+   "ru": "штат",
+   "target": "státe",
+   "level": "B1"
+  },
+  {
+   "ru": "число",
+   "target": "númber",
+   "level": "B1"
+  },
+  {
+   "ru": "автомобиль",
+   "target": "cár",
+   "level": "B1"
+  },
+  {
+   "ru": "дыхание",
+   "target": "bréathing",
+   "level": "B1"
+  },
+  {
+   "ru": "помнить",
+   "target": "remémber",
+   "level": "B1"
+  },
+  {
+   "ru": "замечательный",
+   "target": "remárkable",
+   "level": "B1"
+  },
+  {
+   "ru": "пример",
+   "target": "exámple",
+   "level": "B1"
+  },
+  {
+   "ru": "пользоваться",
+   "target": "máke úse óf",
+   "level": "B1"
+  },
+  {
+   "ru": "борт",
+   "target": "abóard",
+   "level": "B1"
+  },
+  {
+   "ru": "роза",
+   "target": "róse",
+   "level": "B1"
+  },
+  {
+   "ru": "настроение",
+   "target": "móod",
+   "level": "B1"
+  },
+  {
+   "ru": "судить",
+   "target": "júdge",
+   "level": "B1"
+  },
+  {
+   "ru": "водитель",
+   "target": "dríver",
+   "level": "B1"
+  },
+  {
+   "ru": "собрание",
+   "target": "méeting",
+   "level": "B1"
+  },
+  {
+   "ru": "угол",
+   "target": "córner",
+   "level": "B1"
+  },
+  {
+   "ru": "концерт",
+   "target": "cóncert",
+   "level": "B1"
+  },
+  {
+   "ru": "четверг",
+   "target": "Thúrsday",
+   "level": "B1"
+  },
+  {
+   "ru": "доставить",
+   "target": "delíver",
+   "level": "B1"
+  },
+  {
+   "ru": "задача",
+   "target": "tásk",
+   "level": "B1"
+  },
+  {
+   "ru": "фургон",
+   "target": "ván",
+   "level": "B1"
+  },
+  {
+   "ru": "арестовать",
+   "target": "arrést",
+   "level": "B1"
+  },
+  {
+   "ru": "каков",
+   "target": "whát",
+   "level": "B1"
+  },
+  {
+   "ru": "увидеться",
+   "target": "sée éach óther",
+   "level": "B1"
+  },
+  {
+   "ru": "сан",
+   "target": "dígnity",
+   "level": "B1"
+  },
+  {
+   "ru": "живот",
+   "target": "stómach",
+   "level": "B1"
+  },
+  {
+   "ru": "образ",
+   "target": "shápe",
+   "level": "B1"
+  },
+  {
+   "ru": "вирус",
+   "target": "vírus",
+   "level": "B1"
+  },
+  {
+   "ru": "дьявол",
+   "target": "dévil",
+   "level": "B1"
+  },
+  {
+   "ru": "талант",
+   "target": "tálent",
+   "level": "B1"
+  },
+  {
+   "ru": "наказание",
+   "target": "púnishment",
+   "level": "B1"
+  },
+  {
+   "ru": "владелец",
+   "target": "ówner",
+   "level": "B1"
+  },
+  {
+   "ru": "договор",
+   "target": "agréement",
+   "level": "B1"
+  },
+  {
+   "ru": "безопасность",
+   "target": "sáfety",
+   "level": "B1"
+  },
+  {
+   "ru": "сознание",
+   "target": "cónsciousness",
+   "level": "B1"
+  },
+  {
+   "ru": "самоубийство",
+   "target": "súicide",
+   "level": "B1"
+  },
+  {
+   "ru": "пытаться",
+   "target": "trý tó",
+   "level": "B1"
+  },
+  {
+   "ru": "кричать",
+   "target": "shóut",
+   "level": "B1"
+  },
+  {
+   "ru": "доверие",
+   "target": "trúst",
+   "level": "B1"
+  },
+  {
+   "ru": "следовать",
+   "target": "shóuld",
+   "level": "B1"
+  },
+  {
+   "ru": "изо",
+   "target": "fróm",
+   "level": "B1"
+  },
+  {
+   "ru": "скрывать",
+   "target": "híde",
+   "level": "B1"
+  },
+  {
+   "ru": "фамилия",
+   "target": "lást náme",
+   "level": "B1"
+  },
+  {
+   "ru": "банка",
+   "target": "jár",
+   "level": "B1"
+  },
+  {
+   "ru": "пальто",
+   "target": "cóat",
+   "level": "B1"
+  },
+  {
+   "ru": "эпизод",
+   "target": "épisode",
+   "level": "B1"
+  },
+  {
+   "ru": "тридцать",
+   "target": "thírty",
+   "level": "B1"
+  },
+  {
+   "ru": "защита",
+   "target": "defénce",
+   "level": "B1"
+  },
+  {
+   "ru": "оставлять",
+   "target": "léave",
+   "level": "B1"
+  },
+  {
+   "ru": "повод",
+   "target": "réason",
+   "level": "B1"
+  },
+  {
+   "ru": "послать",
+   "target": "sénd",
+   "level": "B1"
+  },
+  {
+   "ru": "столик",
+   "target": "smáll táble",
+   "level": "B1"
+  },
+  {
+   "ru": "полгода",
+   "target": "hálf á ýear",
+   "level": "B1"
+  },
+  {
+   "ru": "летом",
+   "target": "ín súmmer",
+   "level": "B1"
+  },
+  {
+   "ru": "вера",
+   "target": "fáith",
+   "level": "B1"
+  },
+  {
+   "ru": "ми",
+   "target": "É",
+   "level": "B1"
+  },
+  {
+   "ru": "хлеб",
+   "target": "bréad",
+   "level": "B1"
+  },
+  {
+   "ru": "пари",
+   "target": "bét",
+   "level": "B1"
+  },
+  {
+   "ru": "программа",
+   "target": "prógram",
+   "level": "B1"
+  },
+  {
+   "ru": "должность",
+   "target": "póst",
+   "level": "B1"
+  },
+  {
+   "ru": "танец",
+   "target": "dánce",
+   "level": "B1"
+  },
+  {
+   "ru": "подняться",
+   "target": "tó clímb",
+   "level": "B1"
+  },
+  {
+   "ru": "завести",
+   "target": "tó gét",
+   "level": "B1"
+  },
+  {
+   "ru": "расти",
+   "target": "incréase",
+   "level": "B1"
+  },
+  {
+   "ru": "покупать",
+   "target": "búy",
+   "level": "B1"
+  },
+  {
+   "ru": "дорого",
+   "target": "expénsive",
+   "level": "B1"
+  },
+  {
+   "ru": "прокурор",
+   "target": "públic prósecutor",
+   "level": "B1"
+  },
+  {
+   "ru": "опасность",
+   "target": "dánger",
+   "level": "B1"
+  },
+  {
+   "ru": "нехорошо",
+   "target": "ít ís bád",
+   "level": "B1"
+  },
+  {
+   "ru": "младший",
+   "target": "ýounger",
+   "level": "B1"
+  },
+  {
+   "ru": "пропустить",
+   "target": "skíp",
+   "level": "B1"
+  },
+  {
+   "ru": "редко",
+   "target": "rárely",
+   "level": "B1"
+  },
+  {
+   "ru": "пуля",
+   "target": "búllet",
+   "level": "B1"
+  },
+  {
+   "ru": "освободить",
+   "target": "frée",
+   "level": "B1"
+  },
+  {
+   "ru": "приглашение",
+   "target": "invitátion",
+   "level": "B1"
+  },
+  {
+   "ru": "журнал",
+   "target": "periódical",
+   "level": "B1"
+  },
+  {
+   "ru": "вход",
+   "target": "éntrance",
+   "level": "B1"
+  },
+  {
+   "ru": "теория",
+   "target": "théory",
+   "level": "B1"
+  },
+  {
+   "ru": "глупый",
+   "target": "fóolish",
+   "level": "B1"
+  },
+  {
+   "ru": "навестить",
+   "target": "vísit",
+   "level": "B1"
+  },
+  {
+   "ru": "безопасно",
+   "target": "ít ís sáfe",
+   "level": "B1"
+  },
+  {
+   "ru": "этаж",
+   "target": "flóor",
+   "level": "B1"
+  },
+  {
+   "ru": "самолёт",
+   "target": "áircraft",
+   "level": "B1"
+  },
+  {
+   "ru": "определённо",
+   "target": "définitely",
+   "level": "B1"
+  },
+  {
+   "ru": "молчать",
+   "target": "bé sílent",
+   "level": "B1"
+  },
+  {
+   "ru": "пост",
+   "target": "póst",
+   "level": "B1"
+  },
+  {
+   "ru": "рой",
+   "target": "swárm",
+   "level": "B1"
+  },
+  {
+   "ru": "смех",
+   "target": "láughter",
+   "level": "B1"
+  },
+  {
+   "ru": "поддерживать",
+   "target": "suppórt",
+   "level": "B1"
+  },
+  {
+   "ru": "бить",
+   "target": "tó béat",
+   "level": "B1"
+  },
+  {
+   "ru": "разрушить",
+   "target": "destróy",
+   "level": "B1"
+  },
+  {
+   "ru": "заметить",
+   "target": "nótice",
+   "level": "B1"
+  },
+  {
+   "ru": "обещание",
+   "target": "prómise",
+   "level": "B1"
+  },
+  {
+   "ru": "кусочек",
+   "target": "á píece",
+   "level": "B1"
+  },
+  {
+   "ru": "приготовить",
+   "target": "prepáre",
+   "level": "B1"
+  },
+  {
+   "ru": "лгать",
+   "target": "líe",
+   "level": "B1"
+  },
+  {
+   "ru": "суп",
+   "target": "sóup",
+   "level": "B1"
+  },
+  {
+   "ru": "общество",
+   "target": "socíety",
+   "level": "B1"
+  },
+  {
+   "ru": "победа",
+   "target": "víctory",
+   "level": "B1"
+  },
+  {
+   "ru": "район",
+   "target": "région",
+   "level": "B1"
+  },
+  {
+   "ru": "подряд",
+   "target": "ín á rów",
+   "level": "B1"
+  },
+  {
+   "ru": "приём",
+   "target": "recéption",
+   "level": "B1"
+  },
+  {
+   "ru": "неделя",
+   "target": "wéek",
+   "level": "B1"
+  },
+  {
+   "ru": "успех",
+   "target": "succéss",
+   "level": "B1"
+  },
+  {
+   "ru": "подойти",
+   "target": "appróach",
+   "level": "B1"
+  },
+  {
+   "ru": "годами",
+   "target": "fór ýears",
+   "level": "B1"
+  },
+  {
+   "ru": "смеяться",
+   "target": "tó láugh",
+   "level": "B1"
+  },
+  {
+   "ru": "милорд",
+   "target": "mílord",
+   "level": "B1"
+  },
+  {
+   "ru": "сценарий",
+   "target": "scrípt",
+   "level": "B1"
+  },
+  {
+   "ru": "фактически",
+   "target": "práctically",
+   "level": "B1"
+  },
+  {
+   "ru": "майка",
+   "target": "T-shírt",
+   "level": "B1"
+  },
+  {
+   "ru": "газ",
+   "target": "gás",
+   "level": "B1"
+  },
+  {
+   "ru": "безумно",
+   "target": "mádly",
+   "level": "B1"
+  },
+  {
+   "ru": "слева",
+   "target": "tó thé léft",
+   "level": "B1"
+  },
+  {
+   "ru": "звать",
+   "target": "cáll",
+   "level": "B1"
+  },
+  {
+   "ru": "высоко",
+   "target": "hígh",
+   "level": "B1"
+  },
+  {
+   "ru": "сеть",
+   "target": "wéb",
+   "level": "B1"
+  },
+  {
+   "ru": "вторник",
+   "target": "Túesday",
+   "level": "B1"
+  },
+  {
+   "ru": "поцеловать",
+   "target": "kíss",
+   "level": "B1"
+  },
+  {
+   "ru": "заработать",
+   "target": "éarn",
+   "level": "B1"
+  },
+  {
+   "ru": "отличие",
+   "target": "dífference",
+   "level": "B1"
+  },
+  {
+   "ru": "поспать",
+   "target": "háve á náp",
+   "level": "B1"
+  },
+  {
+   "ru": "зеркало",
+   "target": "lóoking-gláss",
+   "level": "B1"
+  },
+  {
+   "ru": "почувствовать",
+   "target": "féel",
+   "level": "B1"
+  },
+  {
+   "ru": "нравиться",
+   "target": "líke",
+   "level": "B1"
+  },
+  {
+   "ru": "бюро",
+   "target": "búreau",
+   "level": "B1"
+  },
+  {
+   "ru": "фотография",
+   "target": "photógraphy",
+   "level": "B1"
+  },
+  {
+   "ru": "образец",
+   "target": "sámple",
+   "level": "B1"
+  },
+  {
+   "ru": "навредить",
+   "target": "húrt",
+   "level": "B1"
+  },
+  {
+   "ru": "пакет",
+   "target": "bág",
+   "level": "B1"
+  },
+  {
+   "ru": "переговоры",
+   "target": "negotiátions",
+   "level": "B1"
+  },
+  {
+   "ru": "поступать",
+   "target": "áct",
+   "level": "B1"
+  },
+  {
+   "ru": "задница",
+   "target": "áss",
+   "level": "B1"
+  },
+  {
+   "ru": "урод",
+   "target": "fréak",
+   "level": "B1"
+  },
+  {
+   "ru": "классный",
+   "target": "fírst-cláss",
+   "level": "B1"
+  },
+  {
+   "ru": "справедливо",
+   "target": "fáir",
+   "level": "B1"
+  },
+  {
+   "ru": "ибо",
+   "target": "fór",
+   "level": "B1"
+  },
+  {
+   "ru": "подать",
+   "target": "táx",
+   "level": "B1"
+  },
+  {
+   "ru": "слышно",
+   "target": "óne cán héar",
+   "level": "B1"
+  },
+  {
+   "ru": "стиль",
+   "target": "stýle",
+   "level": "B1"
+  },
+  {
+   "ru": "обращаться",
+   "target": "appéal tó",
+   "level": "B1"
+  },
+  {
+   "ru": "искусство",
+   "target": "árt",
+   "level": "B1"
+  },
+  {
+   "ru": "счастливо",
+   "target": "háppily",
+   "level": "B1"
+  },
+  {
+   "ru": "дура",
+   "target": "fóolish wóman",
+   "level": "B1"
+  },
+  {
+   "ru": "хуй",
+   "target": "díck",
+   "level": "B1"
+  },
+  {
+   "ru": "попрощаться",
+   "target": "sáy goódbye",
+   "level": "B1"
+  },
+  {
+   "ru": "переехать",
+   "target": "rún óver",
+   "level": "B1"
+  },
+  {
+   "ru": "прекрасное",
+   "target": "thé béautiful",
+   "level": "B1"
+  },
+  {
+   "ru": "служить",
+   "target": "sérve",
+   "level": "B1"
+  },
+  {
+   "ru": "поблизости",
+   "target": "néar át hánd",
+   "level": "B1"
+  },
+  {
+   "ru": "университет",
+   "target": "univérsity",
+   "level": "B1"
+  },
+  {
+   "ru": "что-либо",
+   "target": "ánything",
+   "level": "B1"
+  },
+  {
+   "ru": "скрыть",
+   "target": "híde",
+   "level": "B1"
+  },
+  {
+   "ru": "рай",
+   "target": "páradise",
+   "level": "B1"
+  },
+  {
+   "ru": "угроза",
+   "target": "thréat",
+   "level": "B1"
+  },
+  {
+   "ru": "горе",
+   "target": "gríef",
+   "level": "B1"
+  },
+  {
+   "ru": "невеста",
+   "target": "bríde",
+   "level": "B1"
+  },
+  {
+   "ru": "заранее",
+   "target": "befórehand",
+   "level": "B1"
+  },
+  {
+   "ru": "ум",
+   "target": "mínd",
+   "level": "B1"
+  },
+  {
+   "ru": "печально",
+   "target": "sádly",
+   "level": "B1"
+  },
+  {
+   "ru": "сенатор",
+   "target": "sénator",
+   "level": "B1"
+  },
+  {
+   "ru": "красавчик",
+   "target": "dándy",
+   "level": "B1"
+  },
+  {
+   "ru": "мадемуазель",
+   "target": "mademoíselle",
+   "level": "B1"
+  },
+  {
+   "ru": "подтвердить",
+   "target": "confírm",
+   "level": "B1"
+  },
+  {
+   "ru": "яд",
+   "target": "póison",
+   "level": "B1"
+  },
+  {
+   "ru": "отследить",
+   "target": "tráck",
+   "level": "B1"
+  },
+  {
+   "ru": "напарник",
+   "target": "féllow wórker",
+   "level": "B1"
+  },
+  {
+   "ru": "период",
+   "target": "périod",
+   "level": "B1"
+  },
+  {
+   "ru": "существо",
+   "target": "créature",
+   "level": "B1"
+  },
+  {
+   "ru": "любопытно",
+   "target": "ít ís ínteresting",
+   "level": "B1"
+  },
+  {
+   "ru": "чудовище",
+   "target": "mónster",
+   "level": "B1"
+  },
+  {
+   "ru": "непросто",
+   "target": "nót éasy",
+   "level": "B1"
+  },
+  {
+   "ru": "построить",
+   "target": "búild",
+   "level": "B1"
+  },
+  {
+   "ru": "пережить",
+   "target": "survíve",
+   "level": "B1"
+  },
+  {
+   "ru": "вред",
+   "target": "hárm",
+   "level": "B1"
+  },
+  {
+   "ru": "тема",
+   "target": "subjéct",
+   "level": "B1"
+  },
+  {
+   "ru": "интерес",
+   "target": "ínterest",
+   "level": "B1"
+  },
+  {
+   "ru": "красота",
+   "target": "béauty",
+   "level": "B1"
+  },
+  {
+   "ru": "справа",
+   "target": "tó thé ríght",
+   "level": "B1"
+  },
+  {
+   "ru": "кожа",
+   "target": "skín",
+   "level": "B1"
+  },
+  {
+   "ru": "подписать",
+   "target": "sígn",
+   "level": "B1"
+  },
+  {
+   "ru": "менеджер",
+   "target": "mánager",
+   "level": "B1"
+  },
+  {
+   "ru": "товар",
+   "target": "commódity",
+   "level": "B1"
+  },
+  {
+   "ru": "выражение",
+   "target": "expréssion",
+   "level": "B1"
+  },
+  {
+   "ru": "летать",
+   "target": "flý",
+   "level": "B1"
+  },
+  {
+   "ru": "получать",
+   "target": "recéive",
+   "level": "B1"
+  },
+  {
+   "ru": "аэропорт",
+   "target": "áirport",
+   "level": "B1"
+  },
+  {
+   "ru": "повторять",
+   "target": "repéat",
+   "level": "B1"
+  },
+  {
+   "ru": "прочитать",
+   "target": "réad",
+   "level": "B1"
+  },
+  {
+   "ru": "вправду",
+   "target": "réally",
+   "level": "B1"
+  },
+  {
+   "ru": "рыба",
+   "target": "físh",
+   "level": "B1"
+  },
+  {
+   "ru": "форма",
+   "target": "fórm",
+   "level": "B1"
+  },
+  {
+   "ru": "поделиться",
+   "target": "divíde",
+   "level": "B1"
+  },
+  {
+   "ru": "относительно",
+   "target": "rélatively",
+   "level": "B1"
+  },
+  {
+   "ru": "расслабиться",
+   "target": "reláx",
+   "level": "B1"
+  },
+  {
+   "ru": "винить",
+   "target": "bláme",
+   "level": "B1"
+  },
+  {
+   "ru": "мешок",
+   "target": "bág",
+   "level": "B1"
+  },
+  {
+   "ru": "восстановить",
+   "target": "restóre",
+   "level": "B1"
+  },
+  {
+   "ru": "сеньор",
+   "target": "séignior",
+   "level": "B1"
+  },
+  {
+   "ru": "сволочь",
+   "target": "Bástard",
+   "level": "B1"
+  },
+  {
+   "ru": "пораньше",
+   "target": "á bít éarlier",
+   "level": "B1"
+  },
+  {
+   "ru": "фигня",
+   "target": "Íssue",
+   "level": "B1"
+  },
+  {
+   "ru": "гость",
+   "target": "vísitor",
+   "level": "B1"
+  },
+  {
+   "ru": "монстр",
+   "target": "mónster",
+   "level": "B1"
+  },
+  {
+   "ru": "сосед",
+   "target": "néighbour",
+   "level": "B1"
+  },
+  {
+   "ru": "громко",
+   "target": "lóud",
+   "level": "B1"
+  },
+  {
+   "ru": "сад",
+   "target": "gárden",
+   "level": "B1"
+  },
+  {
+   "ru": "правильный",
+   "target": "corréct",
+   "level": "B1"
+  },
+  {
+   "ru": "отомстить",
+   "target": "revénge onéself",
+   "level": "B1"
+  },
+  {
+   "ru": "менять",
+   "target": "chánge",
+   "level": "B1"
+  },
+  {
+   "ru": "наиболее",
+   "target": "móst",
+   "level": "B1"
+  },
+  {
+   "ru": "бум",
+   "target": "sensátion",
+   "level": "B1"
+  },
+  {
+   "ru": "счастливый",
+   "target": "háppy",
+   "level": "B1"
+  },
+  {
+   "ru": "стакан",
+   "target": "gláss",
+   "level": "B1"
+  },
+  {
+   "ru": "чёрный",
+   "target": "bláck",
+   "level": "B1"
+  },
+  {
+   "ru": "масло",
+   "target": "bútter",
+   "level": "B1"
+  },
+  {
+   "ru": "министр",
+   "target": "Mínister",
+   "level": "B1"
+  },
+  {
+   "ru": "обратиться",
+   "target": "appéal tó",
+   "level": "B1"
+  },
+  {
+   "ru": "отменить",
+   "target": "cáncel",
+   "level": "B1"
+  },
+  {
+   "ru": "жалко",
+   "target": "pítifully",
+   "level": "B1"
+  },
+  {
+   "ru": "нету",
+   "target": "thére ís nó",
+   "level": "B1"
+  },
+  {
+   "ru": "миссия",
+   "target": "míssion",
+   "level": "B1"
+  },
+  {
+   "ru": "размер",
+   "target": "diménsions",
+   "level": "B1"
+  },
+  {
+   "ru": "ограбление",
+   "target": "róbbery",
+   "level": "B1"
+  },
+  {
+   "ru": "лежать",
+   "target": "láy",
+   "level": "B1"
+  },
+  {
+   "ru": "прелесть",
+   "target": "chárm",
+   "level": "B1"
+  },
+  {
+   "ru": "больной",
+   "target": "pátient",
+   "level": "B1"
+  },
+  {
+   "ru": "повторить",
+   "target": "repéat",
+   "level": "B1"
+  },
+  {
+   "ru": "курить",
+   "target": "smóke",
+   "level": "B1"
+  },
+  {
+   "ru": "поездка",
+   "target": "jóurney",
+   "level": "B1"
+  },
+  {
+   "ru": "отсутствие",
+   "target": "lácking óf",
+   "level": "B1"
+  },
+  {
+   "ru": "проверка",
+   "target": "chéck-úp",
+   "level": "B1"
+  },
+  {
+   "ru": "чан",
+   "target": "vát",
+   "level": "B1"
+  },
+  {
+   "ru": "мотив",
+   "target": "túne",
+   "level": "B1"
+  },
+  {
+   "ru": "материал",
+   "target": "matérial",
+   "level": "B1"
+  },
+  {
+   "ru": "напомнить",
+   "target": "remínd",
+   "level": "B1"
+  },
+  {
+   "ru": "учить",
+   "target": "stúdy",
+   "level": "B1"
+  },
+  {
+   "ru": "местечко",
+   "target": "líttle pláce",
+   "level": "B1"
+  },
+  {
+   "ru": "трогать",
+   "target": "tóuch",
+   "level": "B1"
+  },
+  {
+   "ru": "север",
+   "target": "nórth",
+   "level": "B1"
+  },
+  {
+   "ru": "показаться",
+   "target": "séem",
+   "level": "B1"
+  },
+  {
+   "ru": "заполучить",
+   "target": "gét ónes hánds ón",
+   "level": "B1"
+  },
+  {
+   "ru": "вероятность",
+   "target": "probabílity",
+   "level": "B1"
+  },
+  {
+   "ru": "ведьма",
+   "target": "wítch",
+   "level": "B1"
+  },
+  {
+   "ru": "вор",
+   "target": "thíef",
+   "level": "B1"
+  },
+  {
+   "ru": "высокий",
+   "target": "hígh",
+   "level": "B1"
+  },
+  {
+   "ru": "метро",
+   "target": "métro",
+   "level": "B1"
+  },
+  {
+   "ru": "пацан",
+   "target": "bóy",
+   "level": "B1"
+  },
+  {
+   "ru": "взамен",
+   "target": "instéad óf",
+   "level": "B1"
+  },
+  {
+   "ru": "кот",
+   "target": "cát",
+   "level": "B1"
+  },
+  {
+   "ru": "по-вашему",
+   "target": "ín ýour opínion",
+   "level": "B1"
+  },
+  {
+   "ru": "совершить",
+   "target": "accómplish",
+   "level": "B1"
+  },
+  {
+   "ru": "америка",
+   "target": "América",
+   "level": "B1"
+  },
+  {
+   "ru": "пешком",
+   "target": "ón fóot",
+   "level": "B1"
+  },
+  {
+   "ru": "известный",
+   "target": "wéll-knówn",
+   "level": "B1"
+  },
+  {
+   "ru": "разок",
+   "target": "óne tíme",
+   "level": "B1"
+  },
+  {
+   "ru": "реальность",
+   "target": "reálity",
+   "level": "B1"
+  },
+  {
+   "ru": "чей",
+   "target": "whóse",
+   "level": "B1"
+  },
+  {
+   "ru": "вес",
+   "target": "wéight",
+   "level": "B1"
+  },
+  {
+   "ru": "послание",
+   "target": "méssage",
+   "level": "B1"
+  },
+  {
+   "ru": "казино",
+   "target": "casíno",
+   "level": "B1"
+  },
+  {
+   "ru": "мешать",
+   "target": "distúrb",
+   "level": "B1"
+  },
+  {
+   "ru": "мороженое",
+   "target": "íce-créam",
+   "level": "B1"
+  },
+  {
+   "ru": "автор",
+   "target": "áuthor",
+   "level": "B1"
+  },
+  {
+   "ru": "нарушение",
+   "target": "bréach",
+   "level": "B1"
+  },
+  {
+   "ru": "свинья",
+   "target": "píg",
+   "level": "B1"
+  },
+  {
+   "ru": "тётя",
+   "target": "áunt",
+   "level": "B1"
+  },
+  {
+   "ru": "луна",
+   "target": "móon",
+   "level": "B1"
+  },
+  {
+   "ru": "соглашение",
+   "target": "agréement",
+   "level": "B1"
+  },
+  {
+   "ru": "канал",
+   "target": "canál",
+   "level": "B1"
+  },
+  {
+   "ru": "сдать",
+   "target": "rént óut",
+   "level": "B1"
+  },
+  {
+   "ru": "ездить",
+   "target": "gó",
+   "level": "B1"
+  },
+  {
+   "ru": "научить",
+   "target": "téach",
+   "level": "B1"
+  },
+  {
+   "ru": "печенье",
+   "target": "cóokie",
+   "level": "B1"
+  },
+  {
+   "ru": "во-вторых",
+   "target": "sécondly",
+   "level": "B1"
+  },
+  {
+   "ru": "поддержать",
+   "target": "suppórt",
+   "level": "B1"
+  },
+  {
+   "ru": "заменить",
+   "target": "repláce",
+   "level": "B1"
+  },
+  {
+   "ru": "сыр",
+   "target": "chéese",
+   "level": "B1"
+  },
+  {
+   "ru": "взрослый",
+   "target": "adúlt",
+   "level": "B1"
+  },
+  {
+   "ru": "бесполезно",
+   "target": "ít ís úseless",
+   "level": "B1"
+  },
+  {
+   "ru": "лидер",
+   "target": "léader",
+   "level": "B1"
+  },
+  {
+   "ru": "беспокойство",
+   "target": "anxíety",
+   "level": "B1"
+  },
+  {
+   "ru": "отряд",
+   "target": "Sqúad",
+   "level": "B1"
+  },
+  {
+   "ru": "снег",
+   "target": "snów",
+   "level": "B1"
+  },
+  {
+   "ru": "стоить",
+   "target": "cóst",
+   "level": "B1"
+  },
+  {
+   "ru": "развод",
+   "target": "divórce",
+   "level": "B1"
+  },
+  {
+   "ru": "арест",
+   "target": "arrést",
+   "level": "B1"
+  },
+  {
+   "ru": "искренне",
+   "target": "sincérely",
+   "level": "B1"
+  },
+  {
+   "ru": "удержать",
+   "target": "retáin",
+   "level": "B1"
+  },
+  {
+   "ru": "конкретно",
+   "target": "specífically",
+   "level": "B1"
+  },
+  {
+   "ru": "залог",
+   "target": "colláteral",
+   "level": "B1"
+  },
+  {
+   "ru": "бей",
+   "target": "béy",
+   "level": "B1"
+  },
+  {
+   "ru": "крошка",
+   "target": "crúmb",
+   "level": "B1"
+  },
+  {
+   "ru": "поиск",
+   "target": "séarch",
+   "level": "B1"
+  },
+  {
+   "ru": "шоссе",
+   "target": "híghway",
+   "level": "B1"
+  },
+  {
+   "ru": "выступление",
+   "target": "perfórmance",
+   "level": "B1"
+  },
+  {
+   "ru": "личный",
+   "target": "pérsonal",
+   "level": "B1"
+  },
+  {
+   "ru": "спорить",
+   "target": "árgue",
+   "level": "B1"
+  },
+  {
+   "ru": "священник",
+   "target": "príest",
+   "level": "B1"
+  },
+  {
+   "ru": "хвост",
+   "target": "táil",
+   "level": "B1"
+  },
+  {
+   "ru": "специальный",
+   "target": "spécial",
+   "level": "B1"
+  },
+  {
+   "ru": "кит",
+   "target": "whále",
+   "level": "B1"
+  },
+  {
+   "ru": "злой",
+   "target": "wícked",
+   "level": "B1"
+  },
+  {
+   "ru": "перейти",
+   "target": "gét acróss",
+   "level": "B1"
+  },
+  {
+   "ru": "визит",
+   "target": "vísit",
+   "level": "B1"
+  },
+  {
+   "ru": "привлечь",
+   "target": "Tó attráct",
+   "level": "B1"
+  },
+  {
+   "ru": "уважение",
+   "target": "respéct",
+   "level": "B1"
+  },
+  {
+   "ru": "задавать",
+   "target": "tó sét",
+   "level": "B1"
+  },
+  {
+   "ru": "свобода",
+   "target": "fréedom",
+   "level": "B1"
+  },
+  {
+   "ru": "болтать",
+   "target": "chát",
+   "level": "B1"
+  },
+  {
+   "ru": "интернет",
+   "target": "ínternet",
+   "level": "B1"
+  },
+  {
+   "ru": "одиноко",
+   "target": "lónely",
+   "level": "B1"
+  },
+  {
+   "ru": "включить",
+   "target": "túrn ón",
+   "level": "B1"
+  },
+  {
+   "ru": "рейс",
+   "target": "tríp",
+   "level": "B1"
+  },
+  {
+   "ru": "сорок",
+   "target": "fórty",
+   "level": "B1"
+  },
+  {
+   "ru": "попозже",
+   "target": "láter",
+   "level": "B1"
+  },
+  {
+   "ru": "комиссар",
+   "target": "cómmissar",
+   "level": "B1"
+  },
+  {
+   "ru": "трус",
+   "target": "cóward",
+   "level": "B1"
+  },
+  {
+   "ru": "дед",
+   "target": "grándfather",
+   "level": "B1"
+  },
+  {
+   "ru": "убежище",
+   "target": "réfuge",
+   "level": "B1"
+  },
+  {
+   "ru": "убежать",
+   "target": "rún awáy",
+   "level": "B1"
+  },
+  {
+   "ru": "позор",
+   "target": "sháme",
+   "level": "B1"
+  },
+  {
+   "ru": "характер",
+   "target": "cháracter",
+   "level": "B1"
+  },
+  {
+   "ru": "температура",
+   "target": "témperature",
+   "level": "B1"
+  },
+  {
+   "ru": "жестоко",
+   "target": "crúelly",
+   "level": "B1"
+  },
+  {
+   "ru": "предположить",
+   "target": "suppóse",
+   "level": "B1"
+  },
+  {
+   "ru": "херня",
+   "target": "cráp",
+   "level": "B1"
+  },
+  {
+   "ru": "художник",
+   "target": "ártist",
+   "level": "B1"
+  },
+  {
+   "ru": "тревога",
+   "target": "alárm",
+   "level": "B1"
+  },
+  {
+   "ru": "нести",
+   "target": "tó cárry",
+   "level": "B1"
+  },
+  {
+   "ru": "сторона",
+   "target": "síde",
+   "level": "B1"
+  },
+  {
+   "ru": "причинить",
+   "target": "cáuse",
+   "level": "B1"
+  },
+  {
+   "ru": "жутко",
+   "target": "éerily",
+   "level": "B1"
+  },
+  {
+   "ru": "мост",
+   "target": "brídge",
+   "level": "B1"
+  },
+  {
+   "ru": "уволить",
+   "target": "fíre",
+   "level": "B1"
+  },
+  {
+   "ru": "тост",
+   "target": "tóast",
+   "level": "B1"
+  },
+  {
+   "ru": "неизвестно",
+   "target": "ít ís nót knówn",
+   "level": "B1"
+  },
+  {
+   "ru": "подпись",
+   "target": "sígnature",
+   "level": "B1"
+  },
+  {
+   "ru": "набор",
+   "target": "kít",
+   "level": "B1"
+  },
+  {
+   "ru": "обувь",
+   "target": "fóotwear",
+   "level": "B1"
+  },
+  {
+   "ru": "объект",
+   "target": "óbject",
+   "level": "B1"
+  },
+  {
+   "ru": "кровотечение",
+   "target": "bléeding",
+   "level": "B1"
+  },
+  {
+   "ru": "берет",
+   "target": "béret cáp",
+   "level": "B1"
+  },
+  {
+   "ru": "порой",
+   "target": "át tímes",
+   "level": "B1"
+  },
+  {
+   "ru": "неудобно",
+   "target": "ít ís inconvénient",
+   "level": "B1"
+  },
+  {
+   "ru": "реакция",
+   "target": "reáction",
+   "level": "B1"
+  },
+  {
+   "ru": "самостоятельно",
+   "target": "indepéndently",
+   "level": "B1"
+  },
+  {
+   "ru": "картина",
+   "target": "pícture",
+   "level": "B1"
+  },
+  {
+   "ru": "так-то",
+   "target": "só",
+   "level": "B1"
+  },
+  {
+   "ru": "заказать",
+   "target": "órder",
+   "level": "B1"
+  },
+  {
+   "ru": "удача",
+   "target": "góod lúck",
+   "level": "B1"
+  },
+  {
+   "ru": "беда",
+   "target": "misfórtune",
+   "level": "B1"
+  },
+  {
+   "ru": "притворяться",
+   "target": "preténd",
+   "level": "B1"
+  },
+  {
+   "ru": "тень",
+   "target": "shádow",
+   "level": "B1"
+  },
+  {
+   "ru": "недолго",
+   "target": "nót lóng",
+   "level": "B1"
+  },
+  {
+   "ru": "выходной",
+   "target": "wéekend",
+   "level": "B1"
+  },
+  {
+   "ru": "кресло",
+   "target": "ármchair",
+   "level": "B1"
+  },
+  {
+   "ru": "нормальный",
+   "target": "nórmal",
+   "level": "B1"
+  },
+  {
+   "ru": "тина",
+   "target": "slíme",
+   "level": "B1"
+  },
+  {
+   "ru": "умнее",
+   "target": "wíser",
+   "level": "B1"
+  },
+  {
+   "ru": "магия",
+   "target": "mágic",
+   "level": "B1"
+  },
+  {
+   "ru": "двигатель",
+   "target": "mótor",
+   "level": "B1"
+  },
+  {
+   "ru": "вечность",
+   "target": "etérnity",
+   "level": "B1"
+  },
+  {
+   "ru": "кузен",
+   "target": "cóusin",
+   "level": "B1"
+  },
+  {
+   "ru": "глупость",
+   "target": "fóolishness",
+   "level": "B1"
+  },
+  {
+   "ru": "собственность",
+   "target": "próperty",
+   "level": "B1"
+  },
+  {
+   "ru": "таков",
+   "target": "súch",
+   "level": "B1"
+  },
+  {
+   "ru": "оборудование",
+   "target": "eqúipment",
+   "level": "B1"
+  },
+  {
+   "ru": "гнев",
+   "target": "ánger",
+   "level": "B1"
+  },
+  {
+   "ru": "помимо",
+   "target": "besídes",
+   "level": "B1"
+  },
+  {
+   "ru": "парочка",
+   "target": "cóuple",
+   "level": "B1"
+  },
+  {
+   "ru": "бут",
+   "target": "rúbble",
+   "level": "B1"
+  },
+  {
+   "ru": "сосредоточиться",
+   "target": "cóncentrate",
+   "level": "B1"
+  },
+  {
+   "ru": "берегись",
+   "target": "wátch óut",
+   "level": "B1"
+  },
+  {
+   "ru": "пустой",
+   "target": "émpty",
+   "level": "B1"
+  },
+  {
+   "ru": "отделение",
+   "target": "separátion",
+   "level": "B1"
+  },
+  {
+   "ru": "четверо",
+   "target": "fóur",
+   "level": "B1"
+  },
+  {
+   "ru": "тепло",
+   "target": "héat",
+   "level": "B1"
+  },
+  {
+   "ru": "прямой",
+   "target": "stráight",
+   "level": "B1"
+  },
+  {
+   "ru": "эффект",
+   "target": "efféct",
+   "level": "B1"
+  },
+  {
+   "ru": "пульс",
+   "target": "púlse",
+   "level": "B1"
+  },
+  {
+   "ru": "пятьдесят",
+   "target": "fífty",
+   "level": "B1"
+  },
+  {
+   "ru": "ночной",
+   "target": "níght",
+   "level": "B1"
+  },
+  {
+   "ru": "грубо",
+   "target": "róughly",
+   "level": "B1"
+  },
+  {
+   "ru": "опухоль",
+   "target": "swélling",
+   "level": "B1"
+  },
+  {
+   "ru": "выполнять",
+   "target": "ímplement",
+   "level": "B1"
+  },
+  {
+   "ru": "линия",
+   "target": "líne",
+   "level": "B1"
+  },
+  {
+   "ru": "спасать",
+   "target": "sáve",
+   "level": "B1"
+  },
+  {
+   "ru": "беспокоить",
+   "target": "wórry",
+   "level": "B1"
+  },
+  {
+   "ru": "покой",
+   "target": "rést",
+   "level": "B1"
+  },
+  {
+   "ru": "солнышко",
+   "target": "sún",
+   "level": "B1"
+  },
+  {
+   "ru": "бегать",
+   "target": "rún",
+   "level": "B1"
+  },
+  {
+   "ru": "дневник",
+   "target": "díary",
+   "level": "B1"
+  },
+  {
+   "ru": "испортить",
+   "target": "spóil",
+   "level": "B1"
+  },
+  {
+   "ru": "неприятно",
+   "target": "ít ís unpléasant",
+   "level": "B1"
+  },
+  {
+   "ru": "домик",
+   "target": "cóttage",
+   "level": "B1"
+  },
+  {
+   "ru": "стекло",
+   "target": "gláss",
+   "level": "B1"
+  },
+  {
+   "ru": "объяснение",
+   "target": "explanátion",
+   "level": "B1"
+  },
+  {
+   "ru": "допустить",
+   "target": "allów",
+   "level": "B1"
+  },
+  {
+   "ru": "ожидать",
+   "target": "expéct",
+   "level": "B1"
+  },
+  {
+   "ru": "крик",
+   "target": "crý",
+   "level": "B1"
+  },
+  {
+   "ru": "выразить",
+   "target": "expréss",
+   "level": "B1"
+  },
+  {
+   "ru": "успокоиться",
+   "target": "cálm dówn",
+   "level": "B1"
+  },
+  {
+   "ru": "морской",
+   "target": "maríne",
+   "level": "B1"
+  },
+  {
+   "ru": "марш",
+   "target": "márch",
+   "level": "B1"
+  },
+  {
+   "ru": "починить",
+   "target": "repáir",
+   "level": "B1"
+  },
+  {
+   "ru": "крепко",
+   "target": "tíghtly",
+   "level": "B1"
+  },
+  {
+   "ru": "спокойствие",
+   "target": "cálm",
+   "level": "B1"
+  },
+  {
+   "ru": "событие",
+   "target": "evént",
+   "level": "B1"
+  },
+  {
+   "ru": "дама",
+   "target": "lády",
+   "level": "B1"
+  },
+  {
+   "ru": "извиняться",
+   "target": "apólogise",
+   "level": "B1"
+  },
+  {
+   "ru": "нанять",
+   "target": "híre",
+   "level": "B1"
+  },
+  {
+   "ru": "соль",
+   "target": "sált",
+   "level": "B1"
+  },
+  {
+   "ru": "стул",
+   "target": "cháir",
+   "level": "B1"
+  },
+  {
+   "ru": "месть",
+   "target": "véngeance",
+   "level": "B1"
+  },
+  {
+   "ru": "терпение",
+   "target": "pátience",
+   "level": "B1"
+  },
+  {
+   "ru": "приятный",
+   "target": "níce",
+   "level": "B1"
+  },
+  {
+   "ru": "медсестра",
+   "target": "núrse",
+   "level": "B1"
+  },
+  {
+   "ru": "по-английски",
+   "target": "Ín Énglish",
+   "level": "B1"
+  },
+  {
+   "ru": "чёртов",
+   "target": "dévilish",
+   "level": "B1"
+  },
+  {
+   "ru": "дочка",
+   "target": "dáughter",
+   "level": "B1"
+  },
+  {
+   "ru": "исчезнуть",
+   "target": "disappéar",
+   "level": "B1"
+  },
+  {
+   "ru": "остаток",
+   "target": "remáinder",
+   "level": "B1"
+  },
+  {
+   "ru": "птица",
+   "target": "bírd",
+   "level": "B1"
+  },
+  {
+   "ru": "ставить",
+   "target": "tó pút",
+   "level": "B1"
+  },
+  {
+   "ru": "ноль",
+   "target": "níl",
+   "level": "B1"
+  },
+  {
+   "ru": "пространство",
+   "target": "spáce",
+   "level": "B1"
+  },
+  {
+   "ru": "заодно",
+   "target": "át thé sáme tíme",
+   "level": "B1"
+  },
+  {
+   "ru": "сменить",
+   "target": "chánge",
+   "level": "B1"
+  },
+  {
+   "ru": "выполнить",
+   "target": "ímplement",
+   "level": "B1"
+  },
+  {
+   "ru": "ударить",
+   "target": "stríke",
+   "level": "B1"
+  },
+  {
+   "ru": "вывести",
+   "target": "táke óut",
+   "level": "B1"
+  },
+  {
+   "ru": "эх",
+   "target": "éh",
+   "level": "B1"
+  },
+  {
+   "ru": "посадить",
+   "target": "plánt",
+   "level": "B1"
+  },
+  {
+   "ru": "позвать",
+   "target": "cáll",
+   "level": "B1"
+  },
+  {
+   "ru": "показывать",
+   "target": "shów",
+   "level": "B1"
+  },
+  {
+   "ru": "английский",
+   "target": "Énglish lánguage",
+   "level": "B1"
+  },
+  {
+   "ru": "исследование",
+   "target": "reséarch",
+   "level": "B1"
+  },
+  {
+   "ru": "золотой",
+   "target": "góld",
+   "level": "B1"
+  },
+  {
+   "ru": "сойти",
+   "target": "descénd",
+   "level": "B1"
+  },
+  {
+   "ru": "тщательно",
+   "target": "cárefully",
+   "level": "B1"
+  },
+  {
+   "ru": "идеальный",
+   "target": "idéal",
+   "level": "B1"
+  },
+  {
+   "ru": "полезно",
+   "target": "ít ís úseful",
+   "level": "B1"
+  },
+  {
+   "ru": "умно",
+   "target": "ít ís wíse",
+   "level": "B1"
+  },
+  {
+   "ru": "погода",
+   "target": "wéather",
+   "level": "B1"
+  },
+  {
+   "ru": "объяснять",
+   "target": "expláin",
+   "level": "B1"
+  },
+  {
+   "ru": "жених",
+   "target": "fiánce",
+   "level": "B1"
+  },
+  {
+   "ru": "председатель",
+   "target": "cháirman",
+   "level": "B1"
+  },
+  {
+   "ru": "рим",
+   "target": "Róme",
+   "level": "B1"
+  },
+  {
+   "ru": "изнутри",
+   "target": "fróm withín",
+   "level": "B1"
+  },
+  {
+   "ru": "минутка",
+   "target": "mínute",
+   "level": "B1"
+  },
+  {
+   "ru": "юг",
+   "target": "sóuth",
+   "level": "B1"
+  },
+  {
+   "ru": "страсть",
+   "target": "pássion",
+   "level": "B1"
+  },
+  {
+   "ru": "трусы",
+   "target": "únderpants",
+   "level": "B1"
+  },
+  {
+   "ru": "иск",
+   "target": "áction",
+   "level": "B1"
+  },
+  {
+   "ru": "рассчитывать",
+   "target": "cóunt ón",
+   "level": "B1"
+  },
+  {
+   "ru": "эксперт",
+   "target": "éxpert",
+   "level": "B1"
+  },
+  {
+   "ru": "личной",
+   "target": "fáce",
+   "level": "B1"
+  },
+  {
+   "ru": "рынок",
+   "target": "márket",
+   "level": "B1"
+  },
+  {
+   "ru": "поворот",
+   "target": "túrn",
+   "level": "B1"
+  },
+  {
+   "ru": "игрок",
+   "target": "pláyer",
+   "level": "B1"
+  },
+  {
+   "ru": "лодка",
+   "target": "bóat",
+   "level": "B1"
+  },
+  {
+   "ru": "театр",
+   "target": "théatre",
+   "level": "B1"
+  },
+  {
+   "ru": "предупреждение",
+   "target": "nótice",
+   "level": "B1"
+  },
+  {
+   "ru": "океан",
+   "target": "ócean",
+   "level": "B1"
+  },
+  {
+   "ru": "смириться",
+   "target": "déal wíth",
+   "level": "B1"
+  },
+  {
+   "ru": "знакомо",
+   "target": "famíliar",
+   "level": "B1"
+  },
+  {
+   "ru": "судно",
+   "target": "bóat",
+   "level": "B1"
+  },
+  {
+   "ru": "приговор",
+   "target": "séntence",
+   "level": "B1"
+  },
+  {
+   "ru": "секретарь",
+   "target": "sécretary",
+   "level": "B1"
+  },
+  {
+   "ru": "открыто",
+   "target": "ópen",
+   "level": "B1"
+  },
+  {
+   "ru": "паспорт",
+   "target": "pássport",
+   "level": "B1"
+  },
+  {
+   "ru": "экзамен",
+   "target": "examinátion",
+   "level": "B1"
+  },
+  {
+   "ru": "гордиться",
+   "target": "bé próud",
+   "level": "B1"
+  },
+  {
+   "ru": "шампанское",
+   "target": "champágne",
+   "level": "B1"
+  },
+  {
+   "ru": "раскрыть",
+   "target": "ópen",
+   "level": "B1"
+  },
+  {
+   "ru": "возраст",
+   "target": "áge",
+   "level": "B1"
+  },
+  {
+   "ru": "меню",
+   "target": "ménu",
+   "level": "B1"
+  },
+  {
+   "ru": "болван",
+   "target": "blóckhead",
+   "level": "B1"
+  },
+  {
+   "ru": "тишина",
+   "target": "sílence",
+   "level": "B1"
+  },
+  {
+   "ru": "бедняжка",
+   "target": "póor thíng",
+   "level": "B1"
+  },
+  {
+   "ru": "рей",
+   "target": "ýard",
+   "level": "B2"
+  },
+  {
+   "ru": "подонок",
+   "target": "scúmbag",
+   "level": "B2"
+  },
+  {
+   "ru": "чокнутый",
+   "target": "crázy",
+   "level": "B2"
+  },
+  {
+   "ru": "копать",
+   "target": "díg",
+   "level": "B2"
+  },
+  {
+   "ru": "учительница",
+   "target": "téacher",
+   "level": "B2"
+  },
+  {
+   "ru": "близнецы",
+   "target": "Gémini",
+   "level": "B2"
+  },
+  {
+   "ru": "прах",
+   "target": "dúst",
+   "level": "B2"
+  },
+  {
+   "ru": "зрелище",
+   "target": "síght",
+   "level": "B2"
+  },
+  {
+   "ru": "министерство",
+   "target": "mínistry",
+   "level": "B2"
+  },
+  {
+   "ru": "обморок",
+   "target": "fáinting fít",
+   "level": "B2"
+  },
+  {
+   "ru": "трудный",
+   "target": "dífficult",
+   "level": "B2"
+  },
+  {
+   "ru": "четверть",
+   "target": "á qúarter",
+   "level": "B2"
+  },
+  {
+   "ru": "конверт",
+   "target": "énvelope",
+   "level": "B2"
+  },
+  {
+   "ru": "соревнование",
+   "target": "cóntest",
+   "level": "B2"
+  },
+  {
+   "ru": "усердно",
+   "target": "hárd",
+   "level": "B2"
+  },
+  {
+   "ru": "нервничать",
+   "target": "bé nérvous",
+   "level": "B2"
+  },
+  {
+   "ru": "ремень",
+   "target": "stráp",
+   "level": "B2"
+  },
+  {
+   "ru": "курсы",
+   "target": "cóurses",
+   "level": "B2"
+  },
+  {
+   "ru": "местонахождение",
+   "target": "locátion",
+   "level": "B2"
+  },
+  {
+   "ru": "говно",
+   "target": "Shít",
+   "level": "B2"
+  },
+  {
+   "ru": "насквозь",
+   "target": "thróugh",
+   "level": "B2"
+  },
+  {
+   "ru": "использование",
+   "target": "utilizátion",
+   "level": "B2"
+  },
+  {
+   "ru": "состав",
+   "target": "composítion",
+   "level": "B2"
+  },
+  {
+   "ru": "останки",
+   "target": "remáins",
+   "level": "B2"
+  },
+  {
+   "ru": "лука",
+   "target": "pómmel",
+   "level": "B2"
+  },
+  {
+   "ru": "цирк",
+   "target": "círcus",
+   "level": "B2"
+  },
+  {
+   "ru": "обнять",
+   "target": "embráce",
+   "level": "B2"
+  },
+  {
+   "ru": "вскрытие",
+   "target": "ópening",
+   "level": "B2"
+  },
+  {
+   "ru": "любовник",
+   "target": "lóver",
+   "level": "B2"
+  },
+  {
+   "ru": "пламя",
+   "target": "fláme",
+   "level": "B2"
+  },
+  {
+   "ru": "пожертвовать",
+   "target": "endów",
+   "level": "B2"
+  },
+  {
+   "ru": "повидать",
+   "target": "sée",
+   "level": "B2"
+  },
+  {
+   "ru": "уважаемый",
+   "target": "respécted",
+   "level": "B2"
+  },
+  {
+   "ru": "передача",
+   "target": "transmíssion",
+   "level": "B2"
+  },
+  {
+   "ru": "кучка",
+   "target": "smáll gróup",
+   "level": "B2"
+  },
+  {
+   "ru": "малый",
+   "target": "smáll",
+   "level": "B2"
+  },
+  {
+   "ru": "няня",
+   "target": "nánny",
+   "level": "B2"
+  },
+  {
+   "ru": "уход",
+   "target": "léaving",
+   "level": "B2"
+  },
+  {
+   "ru": "обидно",
+   "target": "ít ís á píty",
+   "level": "B2"
+  },
+  {
+   "ru": "область",
+   "target": "óblast",
+   "level": "B2"
+  },
+  {
+   "ru": "пушка",
+   "target": "gún",
+   "level": "B2"
+  },
+  {
+   "ru": "охранять",
+   "target": "gúard",
+   "level": "B2"
+  },
+  {
+   "ru": "профессионал",
+   "target": "proféssional",
+   "level": "B2"
+  },
+  {
+   "ru": "округ",
+   "target": "ókrug",
+   "level": "B2"
+  },
+  {
+   "ru": "вдвое",
+   "target": "twíce",
+   "level": "B2"
+  },
+  {
+   "ru": "заговор",
+   "target": "plót",
+   "level": "B2"
+  },
+  {
+   "ru": "поторопиться",
+   "target": "Húrry úp",
+   "level": "B2"
+  },
+  {
+   "ru": "обдумать",
+   "target": "consíder",
+   "level": "B2"
+  },
+  {
+   "ru": "смирно",
+   "target": "qúietly",
+   "level": "B2"
+  },
+  {
+   "ru": "снизу",
+   "target": "fróm belów",
+   "level": "B2"
+  },
+  {
+   "ru": "заявить",
+   "target": "decláre",
+   "level": "B2"
+  },
+  {
+   "ru": "руководитель",
+   "target": "léader",
+   "level": "B2"
+  },
+  {
+   "ru": "ввести",
+   "target": "bríng ín",
+   "level": "B2"
+  },
+  {
+   "ru": "давненько",
+   "target": "fór qúite á whíle",
+   "level": "B2"
+  },
+  {
+   "ru": "проследить",
+   "target": "spý",
+   "level": "B2"
+  },
+  {
+   "ru": "довериться",
+   "target": "trúst",
+   "level": "B2"
+  },
+  {
+   "ru": "завод",
+   "target": "fáctory",
+   "level": "B2"
+  },
+  {
+   "ru": "стереть",
+   "target": "wípe",
+   "level": "B2"
+  },
+  {
+   "ru": "скотина",
+   "target": "brúte",
+   "level": "B2"
+  },
+  {
+   "ru": "напоминать",
+   "target": "remínd",
+   "level": "B2"
+  },
+  {
+   "ru": "провал",
+   "target": "dównfall",
+   "level": "B2"
+  },
+  {
+   "ru": "причём",
+   "target": "Moréover",
+   "level": "B2"
+  },
+  {
+   "ru": "инцидент",
+   "target": "íncident",
+   "level": "B2"
+  },
+  {
+   "ru": "входить",
+   "target": "énter",
+   "level": "B2"
+  },
+  {
+   "ru": "упасть",
+   "target": "tó fáll",
+   "level": "B2"
+  },
+  {
+   "ru": "пасть",
+   "target": "móuth",
+   "level": "B2"
+  },
+  {
+   "ru": "проститутка",
+   "target": "próstitute",
+   "level": "B2"
+  },
+  {
+   "ru": "низко",
+   "target": "lów",
+   "level": "B2"
+  },
+  {
+   "ru": "извинить",
+   "target": "excúse",
+   "level": "B2"
+  },
+  {
+   "ru": "поначалу",
+   "target": "át fírst",
+   "level": "B2"
+  },
+  {
+   "ru": "отчего",
+   "target": "whý",
+   "level": "B2"
+  },
+  {
+   "ru": "поменьше",
+   "target": "á líttle léss",
+   "level": "B2"
+  },
+  {
+   "ru": "крем",
+   "target": "créam",
+   "level": "B2"
+  },
+  {
+   "ru": "гражданин",
+   "target": "cítizen",
+   "level": "B2"
+  },
+  {
+   "ru": "повелитель",
+   "target": "sóvereign",
+   "level": "B2"
+  },
+  {
+   "ru": "подделка",
+   "target": "fáke",
+   "level": "B2"
+  },
+  {
+   "ru": "воин",
+   "target": "fíghting mán",
+   "level": "B2"
+  },
+  {
+   "ru": "расстройство",
+   "target": "disórder",
+   "level": "B2"
+  },
+  {
+   "ru": "падение",
+   "target": "fáll",
+   "level": "B2"
+  },
+  {
+   "ru": "поток",
+   "target": "stréam",
+   "level": "B2"
+  },
+  {
+   "ru": "заметно",
+   "target": "ít ís nóticeable",
+   "level": "B2"
+  },
+  {
+   "ru": "завещание",
+   "target": "wíll",
+   "level": "B2"
+  },
+  {
+   "ru": "блок",
+   "target": "blóc",
+   "level": "B2"
+  },
+  {
+   "ru": "медаль",
+   "target": "médal",
+   "level": "B2"
+  },
+  {
+   "ru": "повернуть",
+   "target": "túrn",
+   "level": "B2"
+  },
+  {
+   "ru": "погибнуть",
+   "target": "gét kílled",
+   "level": "B2"
+  },
+  {
+   "ru": "адмирал",
+   "target": "ádmiral",
+   "level": "B2"
+  },
+  {
+   "ru": "приезжать",
+   "target": "arríve",
+   "level": "B2"
+  },
+  {
+   "ru": "сидя",
+   "target": "sítting",
+   "level": "B2"
+  },
+  {
+   "ru": "пони",
+   "target": "póny",
+   "level": "B2"
+  },
+  {
+   "ru": "портить",
+   "target": "spóil",
+   "level": "B2"
+  },
+  {
+   "ru": "пятница",
+   "target": "Fríday",
+   "level": "B2"
+  },
+  {
+   "ru": "рискованно",
+   "target": "rísky",
+   "level": "B2"
+  },
+  {
+   "ru": "поклонник",
+   "target": "admírer",
+   "level": "B2"
+  },
+  {
+   "ru": "героин",
+   "target": "héroin",
+   "level": "B2"
+  },
+  {
+   "ru": "дабы",
+   "target": "ín órder",
+   "level": "B2"
+  },
+  {
+   "ru": "баба",
+   "target": "wóman",
+   "level": "B2"
+  },
+  {
+   "ru": "убегать",
+   "target": "rún awáy",
+   "level": "B2"
+  },
+  {
+   "ru": "понимание",
+   "target": "understánding",
+   "level": "B2"
+  },
+  {
+   "ru": "потанцевать",
+   "target": "háve á dánce",
+   "level": "B2"
+  },
+  {
+   "ru": "сюжет",
+   "target": "subjéct",
+   "level": "B2"
+  },
+  {
+   "ru": "пустить",
+   "target": "lét",
+   "level": "B2"
+  },
+  {
+   "ru": "кукла",
+   "target": "dóll",
+   "level": "B2"
+  },
+  {
+   "ru": "деревня",
+   "target": "víllage",
+   "level": "B2"
+  },
+  {
+   "ru": "финал",
+   "target": "finále",
+   "level": "B2"
+  },
+  {
+   "ru": "проиграть",
+   "target": "tó lóse",
+   "level": "B2"
+  },
+  {
+   "ru": "сирена",
+   "target": "síren",
+   "level": "B2"
+  },
+  {
+   "ru": "законно",
+   "target": "ít ís ríght",
+   "level": "B2"
+  },
+  {
+   "ru": "качество",
+   "target": "qúality",
+   "level": "B2"
+  },
+  {
+   "ru": "разбудить",
+   "target": "wáke",
+   "level": "B2"
+  },
+  {
+   "ru": "рамки",
+   "target": "límits",
+   "level": "B2"
+  },
+  {
+   "ru": "слабый",
+   "target": "wéak",
+   "level": "B2"
+  },
+  {
+   "ru": "марсель",
+   "target": "tópsail",
+   "level": "B2"
+  },
+  {
+   "ru": "студент",
+   "target": "stúdent",
+   "level": "B2"
+  },
+  {
+   "ru": "зацепка",
+   "target": "clúe",
+   "level": "B2"
+  },
+  {
+   "ru": "выдержать",
+   "target": "tó hándle",
+   "level": "B2"
+  },
+  {
+   "ru": "осмотр",
+   "target": "examinátion",
+   "level": "B2"
+  },
+  {
+   "ru": "загадка",
+   "target": "ríddle",
+   "level": "B2"
+  },
+  {
+   "ru": "механизм",
+   "target": "méchanism",
+   "level": "B2"
+  },
+  {
+   "ru": "кислород",
+   "target": "óxygen",
+   "level": "B2"
+  },
+  {
+   "ru": "змей",
+   "target": "sérpent",
+   "level": "B2"
+  },
+  {
+   "ru": "усы",
+   "target": "béard betwéen líp ánd nóse",
+   "level": "B2"
+  },
+  {
+   "ru": "вызывать",
+   "target": "cáuse",
+   "level": "B2"
+  },
+  {
+   "ru": "сдаваться",
+   "target": "surrénder",
+   "level": "B2"
+  },
+  {
+   "ru": "угрожать",
+   "target": "thréaten",
+   "level": "B2"
+  },
+  {
+   "ru": "бабки",
+   "target": "móney",
+   "level": "B2"
+  },
+  {
+   "ru": "неверно",
+   "target": "ít ís nót trúe",
+   "level": "B2"
+  },
+  {
+   "ru": "укрытие",
+   "target": "cóver",
+   "level": "B2"
+  },
+  {
+   "ru": "конфликт",
+   "target": "cónflict",
+   "level": "B2"
+  },
+  {
+   "ru": "освобождение",
+   "target": "liberátion",
+   "level": "B2"
+  },
+  {
+   "ru": "трон",
+   "target": "thróne",
+   "level": "B2"
+  },
+  {
+   "ru": "похоронить",
+   "target": "búry",
+   "level": "B2"
+  },
+  {
+   "ru": "женский",
+   "target": "fémale",
+   "level": "B2"
+  },
+  {
+   "ru": "детишки",
+   "target": "kíddies",
+   "level": "B2"
+  },
+  {
+   "ru": "козёл",
+   "target": "hé-góat",
+   "level": "B2"
+  },
+  {
+   "ru": "целовать",
+   "target": "kíss",
+   "level": "B2"
+  },
+  {
+   "ru": "деталь",
+   "target": "detáil",
+   "level": "B2"
+  },
+  {
+   "ru": "подозрительно",
+   "target": "ít ís suspícious",
+   "level": "B2"
+  },
+  {
+   "ru": "кузина",
+   "target": "cóusin",
+   "level": "B2"
+  },
+  {
+   "ru": "потенциал",
+   "target": "poténtial",
+   "level": "B2"
+  },
+  {
+   "ru": "штраф",
+   "target": "fíne",
+   "level": "B2"
+  },
+  {
+   "ru": "зимой",
+   "target": "ín wínter",
+   "level": "B2"
+  },
+  {
+   "ru": "труд",
+   "target": "dífficulty",
+   "level": "B2"
+  },
+  {
+   "ru": "доля",
+   "target": "párt",
+   "level": "B2"
+  },
+  {
+   "ru": "предположительно",
+   "target": "suppósedly",
+   "level": "B2"
+  },
+  {
+   "ru": "получиться",
+   "target": "tó cóme ín",
+   "level": "B2"
+  },
+  {
+   "ru": "проехать",
+   "target": "páss",
+   "level": "B2"
+  },
+  {
+   "ru": "подержать",
+   "target": "hóld fór sóme tíme",
+   "level": "B2"
+  },
+  {
+   "ru": "прокатиться",
+   "target": "gó fór á dríve",
+   "level": "B2"
+  },
+  {
+   "ru": "засунуть",
+   "target": "púsh ín",
+   "level": "B2"
+  },
+  {
+   "ru": "сотрудничество",
+   "target": "cooperátion",
+   "level": "B2"
+  },
+  {
+   "ru": "приносить",
+   "target": "bríng",
+   "level": "B2"
+  },
+  {
+   "ru": "ярость",
+   "target": "fúry",
+   "level": "B2"
+  },
+  {
+   "ru": "вкусный",
+   "target": "tásty",
+   "level": "B2"
+  },
+  {
+   "ru": "рюкзак",
+   "target": "báckpack",
+   "level": "B2"
+  },
+  {
+   "ru": "двести",
+   "target": "twó húndred",
+   "level": "B2"
+  },
+  {
+   "ru": "зала",
+   "target": "háll",
+   "level": "B2"
+  },
+  {
+   "ru": "беременность",
+   "target": "prégnancy",
+   "level": "B2"
+  },
+  {
+   "ru": "подставить",
+   "target": "pút",
+   "level": "B2"
+  },
+  {
+   "ru": "медицинский",
+   "target": "médical",
+   "level": "B2"
+  },
+  {
+   "ru": "фестиваль",
+   "target": "féstival",
+   "level": "B2"
+  },
+  {
+   "ru": "техника",
+   "target": "éngineering",
+   "level": "B2"
+  },
+  {
+   "ru": "бывать",
+   "target": "tó bé át",
+   "level": "B2"
+  },
+  {
+   "ru": "запросто",
+   "target": "unceremóniously",
+   "level": "B2"
+  },
+  {
+   "ru": "обратить",
+   "target": "túrn",
+   "level": "B2"
+  },
+  {
+   "ru": "седьмой",
+   "target": "séventh",
+   "level": "B2"
+  },
+  {
+   "ru": "всерьёз",
+   "target": "sériously",
+   "level": "B2"
+  },
+  {
+   "ru": "уговор",
+   "target": "déal",
+   "level": "B2"
+  },
+  {
+   "ru": "подавать",
+   "target": "gíve",
+   "level": "B2"
+  },
+  {
+   "ru": "поверхность",
+   "target": "súrface",
+   "level": "B2"
+  },
+  {
+   "ru": "вдова",
+   "target": "wídow",
+   "level": "B2"
+  },
+  {
+   "ru": "стоимость",
+   "target": "cóst",
+   "level": "B2"
+  },
+  {
+   "ru": "заведение",
+   "target": "institútion",
+   "level": "B2"
+  },
+  {
+   "ru": "завершить",
+   "target": "compléte",
+   "level": "B2"
+  },
+  {
+   "ru": "радоваться",
+   "target": "rejóice",
+   "level": "B2"
+  },
+  {
+   "ru": "поздравить",
+   "target": "congrátulate",
+   "level": "B2"
+  },
+  {
+   "ru": "трижды",
+   "target": "thrée tímes",
+   "level": "B2"
+  },
+  {
+   "ru": "институт",
+   "target": "ínstitute",
+   "level": "B2"
+  },
+  {
+   "ru": "клоун",
+   "target": "clówn",
+   "level": "B2"
+  },
+  {
+   "ru": "вклад",
+   "target": "contribútion",
+   "level": "B2"
+  },
+  {
+   "ru": "смесь",
+   "target": "míxture",
+   "level": "B2"
+  },
+  {
+   "ru": "выставить",
+   "target": "pút óut",
+   "level": "B2"
+  },
+  {
+   "ru": "даром",
+   "target": "fór nóthing",
+   "level": "B2"
+  },
+  {
+   "ru": "ведущий",
+   "target": "néws repórter",
+   "level": "B2"
+  },
+  {
+   "ru": "волшебник",
+   "target": "magícian",
+   "level": "B2"
+  },
+  {
+   "ru": "частично",
+   "target": "ín párt",
+   "level": "B2"
+  },
+  {
+   "ru": "повлиять",
+   "target": "ínfluence",
+   "level": "B2"
+  },
+  {
+   "ru": "причинять",
+   "target": "cáuse",
+   "level": "B2"
+  },
+  {
+   "ru": "продукт",
+   "target": "próduct",
+   "level": "B2"
+  },
+  {
+   "ru": "отдельно",
+   "target": "séparately",
+   "level": "B2"
+  },
+  {
+   "ru": "позволять",
+   "target": "allów",
+   "level": "B2"
+  },
+  {
+   "ru": "сбросить",
+   "target": "thrów dówn",
+   "level": "B2"
+  },
+  {
+   "ru": "полагается",
+   "target": "óne ís suppósed",
+   "level": "B2"
+  },
+  {
+   "ru": "королевство",
+   "target": "kíngdom",
+   "level": "B2"
+  },
+  {
+   "ru": "секретный",
+   "target": "sécret",
+   "level": "B2"
+  },
+  {
+   "ru": "сумасшествие",
+   "target": "méntal íllness",
+   "level": "B2"
+  },
+  {
+   "ru": "существовать",
+   "target": "exíst",
+   "level": "B2"
+  },
+  {
+   "ru": "гладко",
+   "target": "smóothly",
+   "level": "B2"
+  },
+  {
+   "ru": "покойник",
+   "target": "thé decéased",
+   "level": "B2"
+  },
+  {
+   "ru": "ножницы",
+   "target": "scíssors",
+   "level": "B2"
+  },
+  {
+   "ru": "сего",
+   "target": "thís",
+   "level": "B2"
+  },
+  {
+   "ru": "угостить",
+   "target": "entertáin",
+   "level": "B2"
+  },
+  {
+   "ru": "вероника",
+   "target": "verónica",
+   "level": "B2"
+  },
+  {
+   "ru": "бюджет",
+   "target": "búdget",
+   "level": "B2"
+  },
+  {
+   "ru": "волна",
+   "target": "wáve",
+   "level": "B2"
+  },
+  {
+   "ru": "инфекция",
+   "target": "inféction",
+   "level": "B2"
+  },
+  {
+   "ru": "фраза",
+   "target": "phráse",
+   "level": "B2"
+  },
+  {
+   "ru": "старт",
+   "target": "stárt",
+   "level": "B2"
+  },
+  {
+   "ru": "выносить",
+   "target": "béar",
+   "level": "B2"
+  },
+  {
+   "ru": "аппетит",
+   "target": "áppetite",
+   "level": "B2"
+  },
+  {
+   "ru": "пообщаться",
+   "target": "commúnicate",
+   "level": "B2"
+  },
+  {
+   "ru": "продолжение",
+   "target": "continuátion",
+   "level": "B2"
+  },
+  {
+   "ru": "наличие",
+   "target": "présence",
+   "level": "B2"
+  },
+  {
+   "ru": "обезьяна",
+   "target": "mónkey",
+   "level": "B2"
+  },
+  {
+   "ru": "допросить",
+   "target": "intérrogate",
+   "level": "B2"
+  },
+  {
+   "ru": "местоположение",
+   "target": "locátion",
+   "level": "B2"
+  },
+  {
+   "ru": "сеанс",
+   "target": "séance",
+   "level": "B2"
+  },
+  {
+   "ru": "юноша",
+   "target": "ýoung mán",
+   "level": "B2"
+  },
+  {
+   "ru": "лёд",
+   "target": "íce",
+   "level": "B2"
+  },
+  {
+   "ru": "отыскать",
+   "target": "fínd",
+   "level": "B2"
+  },
+  {
+   "ru": "мошенник",
+   "target": "swíndler",
+   "level": "B2"
+  },
+  {
+   "ru": "честность",
+   "target": "hónesty",
+   "level": "B2"
+  },
+  {
+   "ru": "ненормальный",
+   "target": "abnórmal",
+   "level": "B2"
+  },
+  {
+   "ru": "обманывать",
+   "target": "decéive",
+   "level": "B2"
+  },
+  {
+   "ru": "буря",
+   "target": "stórm",
+   "level": "B2"
+  },
+  {
+   "ru": "бесплатный",
+   "target": "frée",
+   "level": "B2"
+  },
+  {
+   "ru": "экипаж",
+   "target": "cárriage",
+   "level": "B2"
+  },
+  {
+   "ru": "верность",
+   "target": "fáithfulness",
+   "level": "B2"
+  },
+  {
+   "ru": "насладиться",
+   "target": "enjóy",
+   "level": "B2"
+  },
+  {
+   "ru": "прослушивание",
+   "target": "lístening",
+   "level": "B2"
+  },
+  {
+   "ru": "хватать",
+   "target": "bé enóugh",
+   "level": "B2"
+  },
+  {
+   "ru": "тьма",
+   "target": "dárk",
+   "level": "B2"
+  },
+  {
+   "ru": "казнь",
+   "target": "execútion",
+   "level": "B2"
+  },
+  {
+   "ru": "рядовой",
+   "target": "órdinary",
+   "level": "B2"
+  },
+  {
+   "ru": "знаменитый",
+   "target": "fámous",
+   "level": "B2"
+  },
+  {
+   "ru": "зрение",
+   "target": "síght",
+   "level": "B2"
+  },
+  {
+   "ru": "поместить",
+   "target": "pút",
+   "level": "B2"
+  },
+  {
+   "ru": "территория",
+   "target": "térritory",
+   "level": "B2"
+  },
+  {
+   "ru": "церемония",
+   "target": "céremony",
+   "level": "B2"
+  },
+  {
+   "ru": "жидкость",
+   "target": "líquid",
+   "level": "B2"
+  },
+  {
+   "ru": "тихий",
+   "target": "qúiet",
+   "level": "B2"
+  },
+  {
+   "ru": "патруль",
+   "target": "patról",
+   "level": "B2"
+  },
+  {
+   "ru": "христос",
+   "target": "Chríst",
+   "level": "B2"
+  },
+  {
+   "ru": "продавец",
+   "target": "séller",
+   "level": "B2"
+  },
+  {
+   "ru": "вначале",
+   "target": "át fírst",
+   "level": "B2"
+  },
+  {
+   "ru": "прозвище",
+   "target": "níckname",
+   "level": "B2"
+  },
+  {
+   "ru": "всюду",
+   "target": "éverywhere",
+   "level": "B2"
+  },
+  {
+   "ru": "повар",
+   "target": "cóok",
+   "level": "B2"
+  },
+  {
+   "ru": "раунд",
+   "target": "róund",
+   "level": "B2"
+  },
+  {
+   "ru": "привычка",
+   "target": "hábit",
+   "level": "B2"
+  },
+  {
+   "ru": "имущество",
+   "target": "próperty",
+   "level": "B2"
+  },
+  {
+   "ru": "вдали",
+   "target": "ín thé dístance",
+   "level": "B2"
+  },
+  {
+   "ru": "придерживаться",
+   "target": "hóld",
+   "level": "B2"
+  },
+  {
+   "ru": "задний",
+   "target": "báck",
+   "level": "B2"
+  },
+  {
+   "ru": "багажник",
+   "target": "lúggage ráck",
+   "level": "B2"
+  },
+  {
+   "ru": "игрушка",
+   "target": "tóy",
+   "level": "B2"
+  },
+  {
+   "ru": "одеть",
+   "target": "dréss",
+   "level": "B2"
+  },
+  {
+   "ru": "маска",
+   "target": "másk",
+   "level": "B2"
+  },
+  {
+   "ru": "выстрелить",
+   "target": "fíre",
+   "level": "B2"
+  },
+  {
+   "ru": "крупный",
+   "target": "lárge",
+   "level": "B2"
+  },
+  {
+   "ru": "корпус",
+   "target": "bódy",
+   "level": "B2"
+  },
+  {
+   "ru": "послезавтра",
+   "target": "thé dáy áfter tomórrow",
+   "level": "B2"
+  },
+  {
+   "ru": "сбить",
+   "target": "cáuse tó fáll",
+   "level": "B2"
+  },
+  {
+   "ru": "подразделение",
+   "target": "súbdivision",
+   "level": "B2"
+  },
+  {
+   "ru": "телевидение",
+   "target": "télevision",
+   "level": "B2"
+  },
+  {
+   "ru": "ниоткуда",
+   "target": "fróm nówhere",
+   "level": "B2"
+  },
+  {
+   "ru": "несчастье",
+   "target": "misfórtune",
+   "level": "B2"
+  },
+  {
+   "ru": "космический",
+   "target": "cósmic",
+   "level": "B2"
+  },
+  {
+   "ru": "останавливаться",
+   "target": "stóp",
+   "level": "B2"
+  },
+  {
+   "ru": "нажать",
+   "target": "préss",
+   "level": "B2"
+  },
+  {
+   "ru": "одиннадцать",
+   "target": "eléven",
+   "level": "B2"
+  },
+  {
+   "ru": "желать",
+   "target": "wísh",
+   "level": "B2"
+  },
+  {
+   "ru": "приключение",
+   "target": "advénture",
+   "level": "B2"
+  },
+  {
+   "ru": "заткнуться",
+   "target": "Tó shút úp",
+   "level": "B2"
+  },
+  {
+   "ru": "бейсбол",
+   "target": "báseball",
+   "level": "B2"
+  },
+  {
+   "ru": "застрелить",
+   "target": "shóot",
+   "level": "B2"
+  },
+  {
+   "ru": "необходимость",
+   "target": "necéssity",
+   "level": "B2"
+  },
+  {
+   "ru": "квартал",
+   "target": "qúarter",
+   "level": "B2"
+  },
+  {
+   "ru": "питание",
+   "target": "nóurishment",
+   "level": "B2"
+  },
+  {
+   "ru": "наладить",
+   "target": "pút ríght",
+   "level": "B2"
+  },
+  {
+   "ru": "покидать",
+   "target": "léave",
+   "level": "B2"
+  },
+  {
+   "ru": "аборт",
+   "target": "abórtion",
+   "level": "B2"
+  },
+  {
+   "ru": "голосование",
+   "target": "vóting",
+   "level": "B2"
+  },
+  {
+   "ru": "ткань",
+   "target": "clóth",
+   "level": "B2"
+  },
+  {
+   "ru": "роды",
+   "target": "chíldbirth",
+   "level": "B2"
+  },
+  {
+   "ru": "полюбить",
+   "target": "cóme tó lóve",
+   "level": "B2"
+  },
+  {
+   "ru": "строй",
+   "target": "sýstem",
+   "level": "B2"
+  },
+  {
+   "ru": "здоровый",
+   "target": "héalthy",
+   "level": "B2"
+  },
+  {
+   "ru": "крыло",
+   "target": "wíng",
+   "level": "B2"
+  },
+  {
+   "ru": "изнасилование",
+   "target": "rápe",
+   "level": "B2"
+  },
+  {
+   "ru": "исключить",
+   "target": "exclúde",
+   "level": "B2"
+  },
+  {
+   "ru": "профиль",
+   "target": "prófile",
+   "level": "B2"
+  },
+  {
+   "ru": "незаметно",
+   "target": "ít dóes nót shów",
+   "level": "B2"
+  },
+  {
+   "ru": "марс",
+   "target": "Márs",
+   "level": "B2"
+  },
+  {
+   "ru": "штучка",
+   "target": "á thíng",
+   "level": "B2"
+  },
+  {
+   "ru": "ведро",
+   "target": "búcket",
+   "level": "B2"
+  },
+  {
+   "ru": "психиатр",
+   "target": "psychíatrist",
+   "level": "B2"
+  },
+  {
+   "ru": "позиция",
+   "target": "posítion",
+   "level": "B2"
+  },
+  {
+   "ru": "нынче",
+   "target": "nówadays",
+   "level": "B2"
+  },
+  {
+   "ru": "юный",
+   "target": "ýouthful",
+   "level": "B2"
+  },
+  {
+   "ru": "государство",
+   "target": "Státe",
+   "level": "B2"
+  },
+  {
+   "ru": "ритуал",
+   "target": "rítual",
+   "level": "B2"
+  },
+  {
+   "ru": "профессиональный",
+   "target": "proféssional",
+   "level": "B2"
+  },
+  {
+   "ru": "нежели",
+   "target": "thán",
+   "level": "B2"
+  },
+  {
+   "ru": "маэстро",
+   "target": "máster",
+   "level": "B2"
+  },
+  {
+   "ru": "верхом",
+   "target": "astríde",
+   "level": "B2"
+  },
+  {
+   "ru": "кон",
+   "target": "kítty",
+   "level": "B2"
+  },
+  {
+   "ru": "перелом",
+   "target": "bréak",
+   "level": "B2"
+  },
+  {
+   "ru": "залезть",
+   "target": "clímb",
+   "level": "B2"
+  },
+  {
+   "ru": "исполнить",
+   "target": "tó cárry óut",
+   "level": "B2"
+  },
+  {
+   "ru": "опустить",
+   "target": "lówer",
+   "level": "B2"
+  },
+  {
+   "ru": "овощи",
+   "target": "végetables",
+   "level": "B2"
+  },
+  {
+   "ru": "врасплох",
+   "target": "unawáres",
+   "level": "B2"
+  },
+  {
+   "ru": "спутник",
+   "target": "compánion",
+   "level": "B2"
+  },
+  {
+   "ru": "лоб",
+   "target": "fórehead",
+   "level": "B2"
+  },
+  {
+   "ru": "рыцарь",
+   "target": "kníght",
+   "level": "B2"
+  },
+  {
+   "ru": "записка",
+   "target": "nóte",
+   "level": "B2"
+  },
+  {
+   "ru": "штаб",
+   "target": "stáff",
+   "level": "B2"
+  },
+  {
+   "ru": "навстречу",
+   "target": "towárds",
+   "level": "B2"
+  },
+  {
+   "ru": "внешность",
+   "target": "appéarance",
+   "level": "B2"
+  },
+  {
+   "ru": "горничная",
+   "target": "hóusemaid",
+   "level": "B2"
+  },
+  {
+   "ru": "дина",
+   "target": "dýne",
+   "level": "B2"
+  },
+  {
+   "ru": "разряд",
+   "target": "cátegory",
+   "level": "B2"
+  },
+  {
+   "ru": "организм",
+   "target": "órganism",
+   "level": "B2"
+  },
+  {
+   "ru": "истинный",
+   "target": "trúe",
+   "level": "B2"
+  },
+  {
+   "ru": "доклад",
+   "target": "lécture",
+   "level": "B2"
+  },
+  {
+   "ru": "предпринять",
+   "target": "úndertake",
+   "level": "B2"
+  },
+  {
+   "ru": "аплодисменты",
+   "target": "appláuse",
+   "level": "B2"
+  },
+  {
+   "ru": "убирать",
+   "target": "táke awáy",
+   "level": "B2"
+  },
+  {
+   "ru": "подобрать",
+   "target": "píck úp",
+   "level": "B2"
+  },
+  {
+   "ru": "прощение",
+   "target": "forgíveness",
+   "level": "B2"
+  },
+  {
+   "ru": "джерси",
+   "target": "jérsey",
+   "level": "B2"
+  },
+  {
+   "ru": "одинокий",
+   "target": "sólitary",
+   "level": "B2"
+  },
+  {
+   "ru": "порвать",
+   "target": "téar",
+   "level": "B2"
+  },
+  {
+   "ru": "потихоньку",
+   "target": "slówly",
+   "level": "B2"
+  },
+  {
+   "ru": "воевать",
+   "target": "bé át wár",
+   "level": "B2"
+  },
+  {
+   "ru": "прислать",
+   "target": "sénd",
+   "level": "B2"
+  },
+  {
+   "ru": "обыскать",
+   "target": "séarch",
+   "level": "B2"
+  },
+  {
+   "ru": "па",
+   "target": "pás",
+   "level": "B2"
+  },
+  {
+   "ru": "тигр",
+   "target": "tíger",
+   "level": "B2"
+  },
+  {
+   "ru": "конь",
+   "target": "hórse",
+   "level": "B2"
+  },
+  {
+   "ru": "термин",
+   "target": "térm",
+   "level": "B2"
+  },
+  {
+   "ru": "человеческий",
+   "target": "húman",
+   "level": "B2"
+  },
+  {
+   "ru": "ботинок",
+   "target": "bóot",
+   "level": "B2"
+  },
+  {
+   "ru": "править",
+   "target": "góvern",
+   "level": "B2"
+  },
+  {
+   "ru": "следовательно",
+   "target": "cónsequently",
+   "level": "B2"
+  },
+  {
+   "ru": "достойно",
+   "target": "súitably",
+   "level": "B2"
+  },
+  {
+   "ru": "смело",
+   "target": "bóldly",
+   "level": "B2"
+  },
+  {
+   "ru": "ценность",
+   "target": "válue",
+   "level": "B2"
+  },
+  {
+   "ru": "попить",
+   "target": "háve á drínk",
+   "level": "B2"
+  },
+  {
+   "ru": "ассистент",
+   "target": "assístant",
+   "level": "B2"
+  },
+  {
+   "ru": "франция",
+   "target": "Fránce",
+   "level": "B2"
+  },
+  {
+   "ru": "смелый",
+   "target": "bóld",
+   "level": "B2"
+  },
+  {
+   "ru": "чертовщина",
+   "target": "dévilry",
+   "level": "B2"
+  },
+  {
+   "ru": "пирога",
+   "target": "pírogue",
+   "level": "B2"
+  },
+  {
+   "ru": "официант",
+   "target": "wáiter",
+   "level": "B2"
+  },
+  {
+   "ru": "сбор",
+   "target": "colléction",
+   "level": "B2"
+  },
+  {
+   "ru": "предательство",
+   "target": "tréachery",
+   "level": "B2"
+  },
+  {
+   "ru": "атаковать",
+   "target": "attáck",
+   "level": "B2"
+  },
+  {
+   "ru": "сдержать",
+   "target": "hóld ín",
+   "level": "B2"
+  },
+  {
+   "ru": "появляться",
+   "target": "tó appéar",
+   "level": "B2"
+  },
+  {
+   "ru": "возражать",
+   "target": "óbject",
+   "level": "B2"
+  },
+  {
+   "ru": "щит",
+   "target": "shíeld",
+   "level": "B2"
+  },
+  {
+   "ru": "маньяк",
+   "target": "mániac",
+   "level": "B2"
+  },
+  {
+   "ru": "пристрелить",
+   "target": "shóot",
+   "level": "B2"
+  },
+  {
+   "ru": "наркотик",
+   "target": "narcótic",
+   "level": "B2"
+  },
+  {
+   "ru": "пояс",
+   "target": "bélt",
+   "level": "B2"
+  },
+  {
+   "ru": "плащ",
+   "target": "clóak",
+   "level": "B2"
+  },
+  {
+   "ru": "стоя",
+   "target": "upríght",
+   "level": "B2"
+  },
+  {
+   "ru": "полагать",
+   "target": "suppóse",
+   "level": "B2"
+  },
+  {
+   "ru": "солнечный",
+   "target": "sún",
+   "level": "B2"
+  },
+  {
+   "ru": "пугать",
+   "target": "fríghten",
+   "level": "B2"
+  },
+  {
+   "ru": "норма",
+   "target": "stándard",
+   "level": "B2"
+  },
+  {
+   "ru": "средний",
+   "target": "míddle",
+   "level": "B2"
+  },
+  {
+   "ru": "запрет",
+   "target": "prohibítion",
+   "level": "B2"
+  },
+  {
+   "ru": "фига",
+   "target": "fíg",
+   "level": "B2"
+  },
+  {
+   "ru": "жест",
+   "target": "gésture",
+   "level": "B2"
+  },
+  {
+   "ru": "орать",
+   "target": "ýell",
+   "level": "B2"
+  },
+  {
+   "ru": "лета",
+   "target": "Léthe",
+   "level": "B2"
+  },
+  {
+   "ru": "молния",
+   "target": "líghtning",
+   "level": "B2"
+  },
+  {
+   "ru": "смелость",
+   "target": "bóldness",
+   "level": "B2"
+  },
+  {
+   "ru": "репортаж",
+   "target": "repórting",
+   "level": "B2"
+  },
+  {
+   "ru": "синхронизация",
+   "target": "synchronizátion",
+   "level": "B2"
+  },
+  {
+   "ru": "противно",
+   "target": "ÍI",
+   "level": "B2"
+  },
+  {
+   "ru": "крепость",
+   "target": "strónghold",
+   "level": "B2"
+  },
+  {
+   "ru": "родственник",
+   "target": "relátion",
+   "level": "B2"
+  },
+  {
+   "ru": "хлам",
+   "target": "rúbbish",
+   "level": "B2"
+  },
+  {
+   "ru": "чин",
+   "target": "ránk",
+   "level": "B2"
+  },
+  {
+   "ru": "туман",
+   "target": "míst",
+   "level": "B2"
+  },
+  {
+   "ru": "бармен",
+   "target": "bárman",
+   "level": "B2"
+  },
+  {
+   "ru": "перезвонить",
+   "target": "chíme",
+   "level": "B2"
+  },
+  {
+   "ru": "проснуться",
+   "target": "wáke úp",
+   "level": "B2"
+  },
+  {
+   "ru": "спереди",
+   "target": "ín frónt",
+   "level": "B2"
+  },
+  {
+   "ru": "деятельность",
+   "target": "actívity",
+   "level": "B2"
+  },
+  {
+   "ru": "указывать",
+   "target": "téll",
+   "level": "B2"
+  },
+  {
+   "ru": "одиночество",
+   "target": "sólitude",
+   "level": "B2"
+  },
+  {
+   "ru": "невыносимо",
+   "target": "unbéarably",
+   "level": "B2"
+  },
+  {
+   "ru": "поднимать",
+   "target": "tó ráise",
+   "level": "B2"
+  },
+  {
+   "ru": "обслуживание",
+   "target": "sérvice",
+   "level": "B2"
+  },
+  {
+   "ru": "транспорт",
+   "target": "transpórt",
+   "level": "B2"
+  },
+  {
+   "ru": "испытать",
+   "target": "trý",
+   "level": "B2"
+  },
+  {
+   "ru": "прочее",
+   "target": "óther",
+   "level": "B2"
+  },
+  {
+   "ru": "тайный",
+   "target": "sécret",
+   "level": "B2"
+  },
+  {
+   "ru": "отнять",
+   "target": "táke awáy",
+   "level": "B2"
+  },
+  {
+   "ru": "чаевые",
+   "target": "típ",
+   "level": "B2"
+  },
+  {
+   "ru": "кайла",
+   "target": "háck",
+   "level": "B2"
+  },
+  {
+   "ru": "мягко",
+   "target": "sóftly",
+   "level": "B2"
+  },
+  {
+   "ru": "газета",
+   "target": "néwspaper",
+   "level": "B2"
+  },
+  {
+   "ru": "парнишка",
+   "target": "lád",
+   "level": "B2"
+  },
+  {
+   "ru": "запас",
+   "target": "stóck",
+   "level": "B2"
+  },
+  {
+   "ru": "связываться",
+   "target": "commúnicate",
+   "level": "B2"
+  },
+  {
+   "ru": "отрезать",
+   "target": "cút óff",
+   "level": "B2"
+  },
+  {
+   "ru": "навеки",
+   "target": "fór éver",
+   "level": "B2"
+  },
+  {
+   "ru": "упустить",
+   "target": "míss",
+   "level": "B2"
+  },
+  {
+   "ru": "вежливо",
+   "target": "polítely",
+   "level": "B2"
+  },
+  {
+   "ru": "прилично",
+   "target": "décently",
+   "level": "B2"
+  },
+  {
+   "ru": "порт",
+   "target": "pórt",
+   "level": "B2"
+  },
+  {
+   "ru": "автомат",
+   "target": "autómatic machíne",
+   "level": "B2"
+  },
+  {
+   "ru": "биться",
+   "target": "fíght",
+   "level": "B2"
+  },
+  {
+   "ru": "трава",
+   "target": "gráss",
+   "level": "B2"
+  },
+  {
+   "ru": "розовый",
+   "target": "pínk",
+   "level": "B2"
+  },
+  {
+   "ru": "опоздание",
+   "target": "láteness",
+   "level": "B2"
+  },
+  {
+   "ru": "недостаток",
+   "target": "disadvántage",
+   "level": "B2"
+  },
+  {
+   "ru": "утечка",
+   "target": "léakage",
+   "level": "B2"
+  },
+  {
+   "ru": "мина",
+   "target": "míne",
+   "level": "B2"
+  },
+  {
+   "ru": "толком",
+   "target": "pláinly",
+   "level": "B2"
+  },
+  {
+   "ru": "увести",
+   "target": "táke awáy",
+   "level": "B2"
+  },
+  {
+   "ru": "запереть",
+   "target": "lóck",
+   "level": "B2"
+  },
+  {
+   "ru": "янки",
+   "target": "Ýankee",
+   "level": "B2"
+  },
+  {
+   "ru": "ранение",
+   "target": "wóunding",
+   "level": "B2"
+  },
+  {
+   "ru": "ежедневно",
+   "target": "dáily",
+   "level": "B2"
+  },
+  {
+   "ru": "разом",
+   "target": "át thé sáme tíme",
+   "level": "B2"
+  },
+  {
+   "ru": "тянуть",
+   "target": "tó púll",
+   "level": "B2"
+  },
+  {
+   "ru": "герцог",
+   "target": "dúke",
+   "level": "B2"
+  },
+  {
+   "ru": "безумный",
+   "target": "réckless",
+   "level": "B2"
+  },
+  {
+   "ru": "наследство",
+   "target": "inhéritance",
+   "level": "B2"
+  },
+  {
+   "ru": "проведать",
+   "target": "vísit",
+   "level": "B2"
+  },
+  {
+   "ru": "дурь",
+   "target": "fóolishness",
+   "level": "B2"
+  },
+  {
+   "ru": "умник",
+   "target": "cléver mán",
+   "level": "B2"
+  },
+  {
+   "ru": "луч",
+   "target": "ráy",
+   "level": "B2"
+  },
+  {
+   "ru": "лишить",
+   "target": "depríve",
+   "level": "B2"
+  },
+  {
+   "ru": "берлин",
+   "target": "Berlín",
+   "level": "B2"
+  },
+  {
+   "ru": "укол",
+   "target": "príck",
+   "level": "B2"
+  },
+  {
+   "ru": "ирония",
+   "target": "írony",
+   "level": "B2"
+  },
+  {
+   "ru": "ограбить",
+   "target": "rób",
+   "level": "B2"
+  },
+  {
+   "ru": "карточка",
+   "target": "cárd",
+   "level": "B2"
+  },
+  {
+   "ru": "рождение",
+   "target": "bírth",
+   "level": "B2"
+  },
+  {
+   "ru": "весной",
+   "target": "ín spríng",
+   "level": "B2"
+  },
+  {
+   "ru": "скрыться",
+   "target": "híde",
+   "level": "B2"
+  },
+  {
+   "ru": "практика",
+   "target": "práctice",
+   "level": "B2"
+  },
+  {
+   "ru": "направить",
+   "target": "diréct",
+   "level": "B2"
+  },
+  {
+   "ru": "цепь",
+   "target": "cháin",
+   "level": "B2"
+  },
+  {
+   "ru": "улика",
+   "target": "évidence",
+   "level": "B2"
+  },
+  {
+   "ru": "консультант",
+   "target": "consúltant",
+   "level": "B2"
+  },
+  {
+   "ru": "знание",
+   "target": "knówledge",
+   "level": "B2"
+  },
+  {
+   "ru": "плод",
+   "target": "frúit",
+   "level": "B2"
+  },
+  {
+   "ru": "ссора",
+   "target": "árgument",
+   "level": "B2"
+  },
+  {
+   "ru": "местами",
+   "target": "hére ánd thére",
+   "level": "B2"
+  },
+  {
+   "ru": "кайф",
+   "target": "drúgs",
+   "level": "B2"
+  },
+  {
+   "ru": "партнёр",
+   "target": "pártner",
+   "level": "B2"
+  },
+  {
+   "ru": "сообщать",
+   "target": "repórt",
+   "level": "B2"
+  },
+  {
+   "ru": "инженер",
+   "target": "éngineer",
+   "level": "B2"
+  },
+  {
+   "ru": "стрельба",
+   "target": "shóot",
+   "level": "B2"
+  },
+  {
+   "ru": "открытый",
+   "target": "ópen",
+   "level": "B2"
+  },
+  {
+   "ru": "ковбой",
+   "target": "cówboy",
+   "level": "B2"
+  },
+  {
+   "ru": "ракета",
+   "target": "rócket",
+   "level": "B2"
+  },
+  {
+   "ru": "злость",
+   "target": "málice",
+   "level": "B2"
+  },
+  {
+   "ru": "посетитель",
+   "target": "vísitor",
+   "level": "B2"
+  },
+  {
+   "ru": "закончиться",
+   "target": "cóme tó án énd clóse",
+   "level": "B2"
+  },
+  {
+   "ru": "красть",
+   "target": "stéal",
+   "level": "B2"
+  },
+  {
+   "ru": "содержание",
+   "target": "máintenance",
+   "level": "B2"
+  },
+  {
+   "ru": "трусики",
+   "target": "shórts",
+   "level": "B2"
+  },
+  {
+   "ru": "извлечь",
+   "target": "éxtract",
+   "level": "B2"
+  },
+  {
+   "ru": "целоваться",
+   "target": "kíss",
+   "level": "B2"
+  },
+  {
+   "ru": "расследовать",
+   "target": "invéstigate",
+   "level": "B2"
+  },
+  {
+   "ru": "аромат",
+   "target": "aróma",
+   "level": "B2"
+  },
+  {
+   "ru": "внук",
+   "target": "grándson",
+   "level": "B2"
+  },
+  {
+   "ru": "стрелка",
+   "target": "póinter",
+   "level": "B2"
+  },
+  {
+   "ru": "боец",
+   "target": "fíghting-mán",
+   "level": "B2"
+  },
+  {
+   "ru": "влево",
+   "target": "tó thé léft",
+   "level": "B2"
+  },
+  {
+   "ru": "абсурд",
+   "target": "absúrdity",
+   "level": "B2"
+  },
+  {
+   "ru": "ничуть",
+   "target": "nót á bít",
+   "level": "B2"
+  },
+  {
+   "ru": "сектор",
+   "target": "séctor",
+   "level": "B2"
+  },
+  {
+   "ru": "мероприятие",
+   "target": "actívity",
+   "level": "B2"
+  },
+  {
+   "ru": "обещать",
+   "target": "prómise",
+   "level": "B2"
+  },
+  {
+   "ru": "шея",
+   "target": "néck",
+   "level": "B2"
+  },
+  {
+   "ru": "пожелать",
+   "target": "wísh",
+   "level": "B2"
+  },
+  {
+   "ru": "отступить",
+   "target": "stép báck",
+   "level": "B2"
+  },
+  {
+   "ru": "отпускать",
+   "target": "lét gó",
+   "level": "B2"
+  },
+  {
+   "ru": "гнездо",
+   "target": "nést",
+   "level": "B2"
+  },
+  {
+   "ru": "депрессия",
+   "target": "depréssion",
+   "level": "B2"
+  },
+  {
+   "ru": "растить",
+   "target": "ráise",
+   "level": "B2"
+  },
+  {
+   "ru": "касательно",
+   "target": "concérning",
+   "level": "B2"
+  },
+  {
+   "ru": "тачка",
+   "target": "whéelbarrow",
+   "level": "B2"
+  },
+  {
+   "ru": "джинсы",
+   "target": "jéans",
+   "level": "B2"
+  },
+  {
+   "ru": "глухой",
+   "target": "déaf",
+   "level": "B2"
+  },
+  {
+   "ru": "бостон",
+   "target": "Bóston",
+   "level": "B2"
+  },
+  {
+   "ru": "видать",
+   "target": "sée",
+   "level": "B2"
+  },
+  {
+   "ru": "мыть",
+   "target": "wásh",
+   "level": "B2"
+  },
+  {
+   "ru": "жара",
+   "target": "héat",
+   "level": "B2"
+  }
+ ]
+}

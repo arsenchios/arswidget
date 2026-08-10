@@ -1,0 +1,781 @@
+{
+ "language": "indonesian",
+ "source": "Russian-Indonesian Phrase Book (AXMA XDXF, 211 entries; initial curated pack)",
+ "words": [
+  {
+   "ru": "я",
+   "target": "sáya",
+   "level": "A1"
+  },
+  {
+   "ru": "ты",
+   "target": "kámu",
+   "level": "A1"
+  },
+  {
+   "ru": "мы",
+   "target": "kámi",
+   "level": "A1"
+  },
+  {
+   "ru": "вы",
+   "target": "ánda",
+   "level": "A1"
+  },
+  {
+   "ru": "да",
+   "target": "yá",
+   "level": "A1"
+  },
+  {
+   "ru": "нет",
+   "target": "tídak",
+   "level": "A1"
+  },
+  {
+   "ru": "все",
+   "target": "semúa",
+   "level": "A1"
+  },
+  {
+   "ru": "они",
+   "target": "meréka",
+   "level": "A1"
+  },
+  {
+   "ru": "хорошо",
+   "target": "báik",
+   "level": "A1"
+  },
+  {
+   "ru": "спасибо",
+   "target": "teríma kásih",
+   "level": "A1"
+  },
+  {
+   "ru": "пока",
+   "target": "sampái bertému lági",
+   "level": "A1"
+  },
+  {
+   "ru": "пожалуйста",
+   "target": "teríma kásih kembáli",
+   "level": "A1"
+  },
+  {
+   "ru": "сегодня",
+   "target": "hári íni",
+   "level": "A1"
+  },
+  {
+   "ru": "один",
+   "target": "sátu",
+   "level": "A1"
+  },
+  {
+   "ru": "день",
+   "target": "hári",
+   "level": "A1"
+  },
+  {
+   "ru": "много",
+   "target": "bányak",
+   "level": "A1"
+  },
+  {
+   "ru": "отец",
+   "target": "bápak",
+   "level": "A1"
+  },
+  {
+   "ru": "друг",
+   "target": "téman",
+   "level": "A1"
+  },
+  {
+   "ru": "два",
+   "target": "dúa",
+   "level": "A1"
+  },
+  {
+   "ru": "прямо",
+   "target": "lúrus",
+   "level": "A1"
+  },
+  {
+   "ru": "три",
+   "target": "tíga",
+   "level": "A1"
+  },
+  {
+   "ru": "завтра",
+   "target": "bésok",
+   "level": "A1"
+  },
+  {
+   "ru": "мать",
+   "target": "íbu",
+   "level": "A1"
+  },
+  {
+   "ru": "извините",
+   "target": "permísi",
+   "level": "A1"
+  },
+  {
+   "ru": "сын",
+   "target": "ának láki-láki",
+   "level": "A1"
+  },
+  {
+   "ru": "плохо",
+   "target": "jélek",
+   "level": "A1"
+  },
+  {
+   "ru": "вчера",
+   "target": "kemárin",
+   "level": "A1"
+  },
+  {
+   "ru": "пять",
+   "target": "líma",
+   "level": "A1"
+  },
+  {
+   "ru": "жена",
+   "target": "ístri",
+   "level": "A1"
+  },
+  {
+   "ru": "здравствуйте",
+   "target": "hálo",
+   "level": "A1"
+  },
+  {
+   "ru": "год",
+   "target": "táhun",
+   "level": "A1"
+  },
+  {
+   "ru": "дочь",
+   "target": "ának perempúan",
+   "level": "A1"
+  },
+  {
+   "ru": "кофе",
+   "target": "kópi",
+   "level": "A1"
+  },
+  {
+   "ru": "четыре",
+   "target": "émpat",
+   "level": "A1"
+  },
+  {
+   "ru": "муж",
+   "target": "suámi",
+   "level": "A1"
+  },
+  {
+   "ru": "далеко",
+   "target": "jáuh",
+   "level": "A1"
+  },
+  {
+   "ru": "шесть",
+   "target": "énam",
+   "level": "A1"
+  },
+  {
+   "ru": "ужин",
+   "target": "mákan málam",
+   "level": "A1"
+  },
+  {
+   "ru": "десять",
+   "target": "sepúluh",
+   "level": "A1"
+  },
+  {
+   "ru": "месяц",
+   "target": "búlan",
+   "level": "A2"
+  },
+  {
+   "ru": "вниз",
+   "target": "báwah",
+   "level": "A2"
+  },
+  {
+   "ru": "семь",
+   "target": "tújuh",
+   "level": "A2"
+  },
+  {
+   "ru": "близко",
+   "target": "dékat",
+   "level": "A2"
+  },
+  {
+   "ru": "обед",
+   "target": "mákan síang",
+   "level": "A2"
+  },
+  {
+   "ru": "восемь",
+   "target": "delápan",
+   "level": "A2"
+  },
+  {
+   "ru": "магазин",
+   "target": "tóko",
+   "level": "A2"
+  },
+  {
+   "ru": "вода",
+   "target": "áir",
+   "level": "A2"
+  },
+  {
+   "ru": "комната",
+   "target": "kámar",
+   "level": "A2"
+  },
+  {
+   "ru": "вверх",
+   "target": "átas",
+   "level": "A2"
+  },
+  {
+   "ru": "сто",
+   "target": "serátus",
+   "level": "A2"
+  },
+  {
+   "ru": "туалет",
+   "target": "kámar kécil",
+   "level": "A2"
+  },
+  {
+   "ru": "чай",
+   "target": "téh",
+   "level": "A2"
+  },
+  {
+   "ru": "поезд",
+   "target": "keréta ápi",
+   "level": "A2"
+  },
+  {
+   "ru": "пиво",
+   "target": "bír",
+   "level": "A2"
+  },
+  {
+   "ru": "двадцать",
+   "target": "dúa púluh",
+   "level": "A2"
+  },
+  {
+   "ru": "завтрак",
+   "target": "mákan pági",
+   "level": "A2"
+  },
+  {
+   "ru": "девять",
+   "target": "sembílan",
+   "level": "A2"
+  },
+  {
+   "ru": "церковь",
+   "target": "geréja",
+   "level": "A2"
+  },
+  {
+   "ru": "школа",
+   "target": "sekólah",
+   "level": "A2"
+  },
+  {
+   "ru": "вино",
+   "target": "ánggur",
+   "level": "A2"
+  },
+  {
+   "ru": "миллион",
+   "target": "sátu júta",
+   "level": "A2"
+  },
+  {
+   "ru": "банк",
+   "target": "bánk",
+   "level": "A2"
+  },
+  {
+   "ru": "билет",
+   "target": "kárcis",
+   "level": "A2"
+  },
+  {
+   "ru": "ресторан",
+   "target": "rúmah mákan",
+   "level": "A2"
+  },
+  {
+   "ru": "автобус",
+   "target": "bís",
+   "level": "A2"
+  },
+  {
+   "ru": "воскресенье",
+   "target": "hári mínggu",
+   "level": "A2"
+  },
+  {
+   "ru": "мясо",
+   "target": "dáging",
+   "level": "A2"
+  },
+  {
+   "ru": "налево",
+   "target": "kíri",
+   "level": "A2"
+  },
+  {
+   "ru": "понедельник",
+   "target": "sénin",
+   "level": "A2"
+  },
+  {
+   "ru": "лето",
+   "target": "músim pánas",
+   "level": "B1"
+  },
+  {
+   "ru": "направо",
+   "target": "kánan",
+   "level": "B1"
+  },
+  {
+   "ru": "карта",
+   "target": "péta",
+   "level": "B1"
+  },
+  {
+   "ru": "сок",
+   "target": "jús",
+   "level": "B1"
+  },
+  {
+   "ru": "четверг",
+   "target": "kámis",
+   "level": "B1"
+  },
+  {
+   "ru": "тридцать",
+   "target": "tíga púluh",
+   "level": "B1"
+  },
+  {
+   "ru": "хлеб",
+   "target": "róti",
+   "level": "B1"
+  },
+  {
+   "ru": "неделя",
+   "target": "mínggu",
+   "level": "B1"
+  },
+  {
+   "ru": "вторник",
+   "target": "selása",
+   "level": "B1"
+  },
+  {
+   "ru": "аэропорт",
+   "target": "bándar udára",
+   "level": "B1"
+  },
+  {
+   "ru": "рыба",
+   "target": "íkan",
+   "level": "B1"
+  },
+  {
+   "ru": "метро",
+   "target": "keréta báwah tánah",
+   "level": "B1"
+  },
+  {
+   "ru": "мороженое",
+   "target": "és krím",
+   "level": "B1"
+  },
+  {
+   "ru": "закрыто",
+   "target": "tútup",
+   "level": "B1"
+  },
+  {
+   "ru": "сорок",
+   "target": "émpat púluh",
+   "level": "B1"
+  },
+  {
+   "ru": "мост",
+   "target": "jembátan",
+   "level": "B1"
+  },
+  {
+   "ru": "пятьдесят",
+   "target": "líma púluh",
+   "level": "B1"
+  },
+  {
+   "ru": "соль",
+   "target": "gáram",
+   "level": "B1"
+  },
+  {
+   "ru": "птица",
+   "target": "áyam",
+   "level": "B1"
+  },
+  {
+   "ru": "ноль",
+   "target": "nól",
+   "level": "B1"
+  },
+  {
+   "ru": "океан",
+   "target": "láut",
+   "level": "B1"
+  },
+  {
+   "ru": "открыто",
+   "target": "búka",
+   "level": "B1"
+  },
+  {
+   "ru": "паспорт",
+   "target": "páspor",
+   "level": "B1"
+  },
+  {
+   "ru": "бассейн",
+   "target": "kólam rénang",
+   "level": "B1"
+  },
+  {
+   "ru": "салат",
+   "target": "sálad",
+   "level": "B1"
+  },
+  {
+   "ru": "длинный",
+   "target": "pánjang",
+   "level": "B1"
+  },
+  {
+   "ru": "улица",
+   "target": "jálan",
+   "level": "B1"
+  },
+  {
+   "ru": "больница",
+   "target": "rúmah sákit",
+   "level": "B1"
+  },
+  {
+   "ru": "озеро",
+   "target": "danáu",
+   "level": "B1"
+  },
+  {
+   "ru": "напиток",
+   "target": "minúman",
+   "level": "B1"
+  },
+  {
+   "ru": "двенадцать",
+   "target": "dúa bélas",
+   "level": "B1"
+  },
+  {
+   "ru": "десерт",
+   "target": "makánan penútup",
+   "level": "B1"
+  },
+  {
+   "ru": "тысяча",
+   "target": "seríbu",
+   "level": "B1"
+  },
+  {
+   "ru": "пятнадцать",
+   "target": "líma bélas",
+   "level": "B1"
+  },
+  {
+   "ru": "музей",
+   "target": "muséum",
+   "level": "B1"
+  },
+  {
+   "ru": "гора",
+   "target": "gúnung",
+   "level": "B1"
+  },
+  {
+   "ru": "короткий",
+   "target": "péndek",
+   "level": "B1"
+  },
+  {
+   "ru": "почта",
+   "target": "kántor pós",
+   "level": "B1"
+  },
+  {
+   "ru": "река",
+   "target": "sungái",
+   "level": "B1"
+  },
+  {
+   "ru": "пятница",
+   "target": "júmat",
+   "level": "B2"
+  },
+  {
+   "ru": "овощи",
+   "target": "sayúran",
+   "level": "B2"
+  },
+  {
+   "ru": "фрукты",
+   "target": "búah-buáhan",
+   "level": "B2"
+  },
+  {
+   "ru": "марки",
+   "target": "perángko",
+   "level": "B2"
+  },
+  {
+   "ru": "среда",
+   "target": "rábu",
+   "level": "B2"
+  },
+  {
+   "ru": "площадь",
+   "target": "lapángan",
+   "level": "B2"
+  },
+  {
+   "ru": "зима",
+   "target": "músim díngin",
+   "level": "B2"
+  },
+  {
+   "ru": "суббота",
+   "target": "sábtu",
+   "level": "B2"
+  },
+  {
+   "ru": "весна",
+   "target": "músim sémi",
+   "level": "B2"
+  },
+  {
+   "ru": "шестьдесят",
+   "target": "énam púluh",
+   "level": "B2"
+  },
+  {
+   "ru": "башня",
+   "target": "menára",
+   "level": "B2"
+  },
+  {
+   "ru": "вокзал",
+   "target": "stasíun keréta ápi",
+   "level": "B2"
+  },
+  {
+   "ru": "восемьдесят",
+   "target": "delápan púluh",
+   "level": "B2"
+  },
+  {
+   "ru": "перец",
+   "target": "meríca",
+   "level": "B2"
+  },
+  {
+   "ru": "картофель",
+   "target": "kéntang",
+   "level": "B2"
+  },
+  {
+   "ru": "семьдесят",
+   "target": "tújuh púluh",
+   "level": "B2"
+  },
+  {
+   "ru": "холм",
+   "target": "búkit",
+   "level": "B2"
+  },
+  {
+   "ru": "август",
+   "target": "agústus",
+   "level": "B2"
+  },
+  {
+   "ru": "шестнадцать",
+   "target": "énam bélas",
+   "level": "B2"
+  },
+  {
+   "ru": "тринадцать",
+   "target": "tíga bélas",
+   "level": "B2"
+  },
+  {
+   "ru": "семнадцать",
+   "target": "tújuh bélas",
+   "level": "B2"
+  },
+  {
+   "ru": "девяносто",
+   "target": "sembílan púluh",
+   "level": "B2"
+  },
+  {
+   "ru": "четырнадцать",
+   "target": "émpat bélas",
+   "level": "B2"
+  },
+  {
+   "ru": "восемнадцать",
+   "target": "delápan bélas",
+   "level": "B2"
+  },
+  {
+   "ru": "май",
+   "target": "méi",
+   "level": "B2"
+  },
+  {
+   "ru": "осень",
+   "target": "músim gúgur",
+   "level": "B2"
+  },
+  {
+   "ru": "долина",
+   "target": "lémbah",
+   "level": "B2"
+  },
+  {
+   "ru": "открытка",
+   "target": "kártu pós",
+   "level": "B2"
+  },
+  {
+   "ru": "прибытие",
+   "target": "kedatángan",
+   "level": "B2"
+  },
+  {
+   "ru": "говядина",
+   "target": "sápi",
+   "level": "B2"
+  },
+  {
+   "ru": "свинина",
+   "target": "bábi",
+   "level": "B2"
+  },
+  {
+   "ru": "аптека",
+   "target": "apótek",
+   "level": "B2"
+  },
+  {
+   "ru": "июнь",
+   "target": "júni",
+   "level": "B2"
+  },
+  {
+   "ru": "март",
+   "target": "máret",
+   "level": "B2"
+  },
+  {
+   "ru": "ноябрь",
+   "target": "nopémber",
+   "level": "B2"
+  },
+  {
+   "ru": "девятнадцать",
+   "target": "sembílan bélas",
+   "level": "B2"
+  },
+  {
+   "ru": "октябрь",
+   "target": "október",
+   "level": "B2"
+  },
+  {
+   "ru": "апрель",
+   "target": "ápril",
+   "level": "B2"
+  },
+  {
+   "ru": "бронь",
+   "target": "reservási",
+   "level": "B2"
+  },
+  {
+   "ru": "сентябрь",
+   "target": "septémber",
+   "level": "B2"
+  },
+  {
+   "ru": "июль",
+   "target": "júli",
+   "level": "B2"
+  },
+  {
+   "ru": "февраль",
+   "target": "februári",
+   "level": "B2"
+  },
+  {
+   "ru": "стоянка",
+   "target": "témpat párkir",
+   "level": "B2"
+  },
+  {
+   "ru": "английски",
+   "target": "bahása ínggris",
+   "level": "B2"
+  },
+  {
+   "ru": "милиция",
+   "target": "kántor polísi",
+   "level": "B2"
+  },
+  {
+   "ru": "декабрь",
+   "target": "desémber",
+   "level": "B2"
+  },
+  {
+   "ru": "январь",
+   "target": "januári",
+   "level": "B2"
+  }
+ ]
+}
