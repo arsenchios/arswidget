@@ -53,3 +53,7 @@ dist/
 *.ipa
 *.xcarchive
 *.dSYM
+
+# Python
+__pycache__/
+*.pyc
