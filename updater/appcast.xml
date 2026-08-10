@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.2.1</title>
-            <pubDate>Mon, 10 Aug 2026 08:43:31 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.1</link>
-            <sparkle:version>1012</sparkle:version>
-            <sparkle:shortVersionString>0.2.1</sparkle:shortVersionString>
+            <title>0.2.2</title>
+            <pubDate>Mon, 10 Aug 2026 10:08:43 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.2</link>
+            <sparkle:version>1013</sparkle:version>
+            <sparkle:shortVersionString>0.2.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[arsansara ☯: исправлено открытие вкладки Игр из правой группы вкладок.
+            <description sparkle:format="markdown"><![CDATA[arsansara ☯: исправлены переход в Игры и окно разрешения на мониторинг ввода.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.1/ArsWidget-0.2.1.dmg" length="9684526" type="application/octet-stream" sparkle:edSignature="rpkkaYR7Ht83blOF/XQ0jsXidQnKkKhsfQN3yqjaLubZRr+xoJKZcy5hOtoCr0bEim3AiKSFYglW1qpRMbxKCQ=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.2/ArsWidget-0.2.2.dmg" length="9693873" type="application/octet-stream" sparkle:edSignature="RvHZNj+dWjNnkeeS2yvPrG564L9ytM1/ZcmyT1yzCDv4lksj3NeOXk1mnWmgujz4afOvZOhEp3zueCk5ecZqAQ=="/>
         </item>
     </channel>
 </rss>
