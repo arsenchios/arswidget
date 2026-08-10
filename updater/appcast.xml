@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.1.9</title>
-            <pubDate>Mon, 10 Aug 2026 08:03:32 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.1.9</link>
-            <sparkle:version>1010</sparkle:version>
-            <sparkle:shortVersionString>0.1.9</sparkle:shortVersionString>
+            <title>0.2.0</title>
+            <pubDate>Mon, 10 Aug 2026 08:36:44 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.0</link>
+            <sparkle:version>1011</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[Улучшены изучение языков, игры, привычки, мониторинг системы и подключение расширения Chrome.
+            <description sparkle:format="markdown"><![CDATA[arsansara ☯: исправлена очистка клавиатуры, обновлены карточки слов и цвета языков.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.1.9/ArsWidget-0.1.9.dmg" length="9682318" type="application/octet-stream" sparkle:edSignature="Si7DJNKIBA9ELCBNS5hXHhuVW6+LKZ/ZmsMj3XBsMBF1mwlDNEsGGKZofRfgo76GBa5okgpyFLaw+nl38Y8pAQ=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.0/ArsWidget-0.2.0.dmg" length="9682790" type="application/octet-stream" sparkle:edSignature="959JHpZzjrqaPMa3pnd69lNTqigsG6PJ0SOuCVMD+JmdrpVQ7YrvEVGqpAkcCVSjkIbSKmsivLXdclodRU1SDw=="/>
         </item>
     </channel>
 </rss>
