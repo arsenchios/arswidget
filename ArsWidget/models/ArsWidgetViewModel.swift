@@ -213,7 +213,8 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
 
     private func openNotchSizeForView(_ view: NotchViews, pomodoroExpanded: Bool) -> CGSize {
         if coordinator.isFirstRunTourPresented {
-            return .init(width: 640, height: 300)
+            // Карточка тура: заголовок, текст, полоска прогресса и кнопки.
+            return .init(width: 640, height: 330)
         }
 
         switch view {

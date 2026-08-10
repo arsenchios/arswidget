@@ -1208,6 +1208,23 @@ struct Advanced: View {
     var body: some View {
         Form {
             Section {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Знакомство с приложением")
+                        Text("Короткий тур по вкладкам: что где лежит и зачем нужно.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button("Показать") {
+                        ArsWidgetViewCoordinator.shared.replayFirstRunTour()
+                    }
+                }
+            } header: {
+                Text("Знакомство")
+            }
+
+            Section {
                 Toggle(isOn: $telemetry.isEnabled) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Анонимная статистика использования")

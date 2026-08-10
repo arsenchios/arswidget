@@ -198,6 +198,13 @@ class ArsWidgetViewCoordinator: ObservableObject {
         currentView = .home
     }
 
+    /// Показать знакомство ещё раз. Тур пробегает мимо на первом запуске, когда
+    /// разбираться обычно некогда, — без этого вернуться к нему было нельзя.
+    func replayFirstRunTour() {
+        isFirstRunTourPresented = true
+        currentView = .home
+    }
+
     @objc func sneakPeekEvent(_ notification: Notification) {
         let decoder = JSONDecoder()
         guard let data = notification.userInfo?.values.first as? Data,

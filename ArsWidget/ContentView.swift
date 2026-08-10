@@ -817,16 +817,33 @@ private struct FirstRunTourStep {
     let icon: String
     let title: String
     let text: String
+    let accent: Color
 
     static let all: [FirstRunTourStep] = [
-        .init(view: .home, icon: "music.note.list", title: "Музыка и календарь", text: "Здесь музыка и события на сегодня. Календарь можно настроить под себя в настройках приложения."),
-        .init(view: .reminders, icon: "checklist", title: "Напоминания", text: "Выбирайте два списка, добавляйте дела и отмечайте выполненное прямо в виджете."),
-        .init(view: .pomodoro, icon: "timer", title: "Фокус и задачи", text: "Добавьте задачу, запустите фокус и сохраните результат в статистику рабочего дня."),
-        .init(view: .vocab, icon: "textformat.abc", title: "Изучение языков", text: "Слова появляются по расписанию. В настройках можно выбрать языки, интервал и добавить свои слова."),
-        .init(view: .clipboard, icon: "doc.on.clipboard", title: "Буфер обмена", text: "Здесь хранится недавнее скопированное. Нажмите запись, чтобы быстро вставить её снова."),
-        .init(view: .shelf, icon: "tray.fill", title: "Файлы и AirDrop", text: "Перетаскивайте файлы сюда, чтобы быстро отправить или сохранить их."),
-        .init(view: .games, icon: "gamecontroller.fill", title: "Игры", text: "Небольшие игры открываются здесь. Они закрываются после простоя, чтобы не расходовать память."),
-        .init(view: .systemStats, icon: "gauge", title: "Система и настройки", text: "Проверьте нагрузку Mac, откройте настройки и, если виджет полезен, поддержите его или предложите улучшение.")
+        .init(view: .home, icon: "music.note.list", title: "Музыка и календарь",
+              text: "Что играет и что сегодня в календаре — сразу под рукой. Управление музыкой прямо отсюда, без переключения на плеер.",
+              accent: .pink),
+        .init(view: .reminders, icon: "checklist", title: "Напоминания и привычки",
+              text: "Два списка дел из Напоминаний Apple, а снизу — привычки: неделя кружков, план на 21 день и счётчик дней подряд.",
+              accent: .orange),
+        .init(view: .pomodoro, icon: "timer", title: "Фокус и задачи",
+              text: "Запустите отсчёт, поработайте без отвлечений и сохраните результат. Остаток времени виден, даже когда виджет закрыт.",
+              accent: .red),
+        .init(view: .vocab, icon: "textformat.abc", title: "Изучение языков",
+              text: "Слова всплывают сами по расписанию. Две тысячи украинских слов по уровням от A1 до B2 — берите сколько нужно.",
+              accent: .yellow),
+        .init(view: .clipboard, icon: "doc.on.clipboard", title: "Буфер обмена",
+              text: "История скопированного. Нажмите на запись — она снова в буфере. Больше не нужно копировать одно и то же дважды.",
+              accent: .teal),
+        .init(view: .shelf, icon: "tray.fill", title: "Файлы под рукой",
+              text: "Перетащите файл на виджет — он полежит здесь, пока нужен. Удобно перекидывать между приложениями и через AirDrop.",
+              accent: .blue),
+        .init(view: .games, icon: "gamecontroller.fill", title: "Игры на перерыв",
+              text: "Две небольшие игры для паузы. Закрываются сами после простоя, чтобы не занимать память.",
+              accent: .purple),
+        .init(view: .systemStats, icon: "gauge", title: "Система и лимиты AI",
+              text: "Нагрузка на процессор и память. А с расширением для Chrome — сколько осталось у Claude, ChatGPT, Codex и других, прямо в закрытом виджете.",
+              accent: .green)
     ]
 }
 
@@ -834,66 +851,173 @@ private struct FirstRunTourView: View {
     @EnvironmentObject private var vm: ArsWidgetViewModel
     @ObservedObject private var coordinator = ArsWidgetViewCoordinator.shared
     @State private var index = 0
+    @State private var progress: Double = 0
+    @State private var isPaused = false
 
-    private var step: FirstRunTourStep { FirstRunTourStep.all[index] }
-    private var isLastStep: Bool { index == FirstRunTourStep.all.count - 1 }
+    /// Сколько показывать один шаг. Достаточно, чтобы прочитать две строки,
+    /// и не настолько долго, чтобы захотелось нажать «дальше».
+    private static let stepSeconds: Double = 7
+    private static let tick: Double = 0.05
+
+    // В @State, а не в let: вид перерисовывается на каждом тике, и обычное
+    // свойство создавало бы новый таймер по сорок раз в секунду.
+    @State private var timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
+
+    private var steps: [FirstRunTourStep] { FirstRunTourStep.all }
+    private var step: FirstRunTourStep { steps[index] }
+    private var isLastStep: Bool { index == steps.count - 1 }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: step.icon)
-                    .font(.system(size: 25, weight: .semibold))
+        VStack(alignment: .leading, spacing: 0) {
+            headline
+            Spacer(minLength: 10)
+            description
+            Spacer(minLength: 10)
+            footer
+        }
+        .padding(24)
+        .frame(maxWidth: 560, minHeight: 262, alignment: .topLeading)
+        .background(alignment: .topTrailing) {
+            // Мягкое свечение цветом шага — чтобы каждый экран отличался,
+            // а не выглядел одним и тем же окном с другим текстом.
+            Circle()
+                .fill(step.accent)
+                .frame(width: 190, height: 190)
+                .blur(radius: 90)
+                .opacity(0.5)
+                .offset(x: 40, y: -50)
+                .animation(.easeInOut(duration: 0.6), value: index)
+                .allowsHitTesting(false)
+        }
+        .onAppear(perform: selectStep)
+        .onHover { hovering in
+            // Пока читают — отсчёт стоит. Иначе экран уезжает на полуслове.
+            isPaused = hovering
+        }
+        .onReceive(timer) { _ in
+            guard !isPaused else { return }
+            progress += Self.tick / Self.stepSeconds
+            if progress >= 1 { advance() }
+        }
+    }
+
+    private var headline: some View {
+        HStack(alignment: .center, spacing: 14) {
+            Image(systemName: step.icon)
+                .font(.system(size: 24, weight: .semibold))
+                .foregroundStyle(step.accent)
+                .frame(width: 48, height: 48)
+                .background(Circle().fill(step.accent.opacity(0.16)))
+                .overlay(Circle().stroke(step.accent.opacity(0.35), lineWidth: 1))
+                .contentTransition(.symbolEffect)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(index == 0 ? "Добро пожаловать в ArsWidget" : "ArsWidget")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.45))
+                Text(step.title)
+                    .font(.system(size: 21, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 42, height: 42)
-                    .background(Circle().fill(Color.white.opacity(0.12)))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("ArsWidget")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    Text(step.title)
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.white)
-                }
-
-                Spacer()
-                Text("\(index + 1) / \(FirstRunTourStep.all.count)")
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
             }
 
-            Text(step.text)
-                .font(.system(size: 15, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.82))
-                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
 
-            Spacer(minLength: 4)
+            Text("\(index + 1) / \(steps.count)")
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(.white.opacity(0.35))
+        }
+    }
 
-            HStack {
+    private var description: some View {
+        Text(step.text)
+            .font(.system(size: 14.5, weight: .medium, design: .rounded))
+            .foregroundStyle(.white.opacity(0.82))
+            .fixedSize(horizontal: false, vertical: true)
+            .id(index) // новый текст появляется, а не подменяется на месте
+            .transition(.opacity.combined(with: .move(edge: .bottom)))
+    }
+
+    private var footer: some View {
+        VStack(spacing: 12) {
+            progressTrack
+
+            HStack(spacing: 10) {
                 Button("Пропустить") { finishTour() }
                     .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13))
+                    .foregroundStyle(.white.opacity(0.45))
 
-                Spacer()
+                Spacer(minLength: 0)
 
-                Button(isLastStep ? "Начать" : "Далее") {
-                    if isLastStep {
-                        finishTour()
-                    } else {
-                        index += 1
-                        selectStep()
+                if index > 0 {
+                    Button {
+                        goTo(index - 1)
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.6))
+                            .frame(width: 26, height: 26)
+                            .background(Circle().fill(Color.white.opacity(0.08)))
                     }
+                    .buttonStyle(.plain)
+                }
+
+                Button(isLastStep ? "Начать пользоваться" : "Дальше") {
+                    advance()
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.blue)
+                .tint(step.accent)
             }
         }
-        .padding(22)
-        .frame(maxWidth: 520, minHeight: 248, alignment: .topLeading)
-        .onAppear(perform: selectStep)
+    }
+
+    /// Полоска показывает и место в туре, и сколько осталось до автоперехода:
+    /// пройденные шаги залиты целиком, текущий заполняется на глазах.
+    private var progressTrack: some View {
+        HStack(spacing: 4) {
+            ForEach(steps.indices, id: \.self) { position in
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color.white.opacity(0.12))
+                        Capsule()
+                            .fill(step.accent)
+                            .frame(width: geo.size.width * fill(for: position))
+                    }
+                }
+                .frame(height: 3)
+                .contentShape(Rectangle())
+                .onTapGesture { goTo(position) }
+            }
+        }
+        .animation(.linear(duration: Self.tick), value: progress)
+    }
+
+    private func fill(for position: Int) -> Double {
+        if position < index { return 1 }
+        if position > index { return 0 }
+        return min(max(progress, 0), 1)
+    }
+
+    private func advance() {
+        if isLastStep {
+            finishTour()
+        } else {
+            goTo(index + 1)
+        }
+    }
+
+    private func goTo(_ newIndex: Int) {
+        guard steps.indices.contains(newIndex) else { return }
+        withAnimation(.smooth(duration: 0.35)) {
+            index = newIndex
+            progress = 0
+        }
+        selectStep()
     }
 
     private func selectStep() {
+        // Вкладка за спиной карточки переключается вместе с шагом — человек
+        // сразу видит то, о чём читает.
         coordinator.currentView = step.view
         vm.updateOpenSizeIfNeeded()
     }
