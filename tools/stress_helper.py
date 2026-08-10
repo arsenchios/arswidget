@@ -51,12 +51,22 @@ def needs_stress(word: str) -> bool:
     return sum(1 for ch in word if ch in VOWELS) > 1
 
 
-def collect_words() -> list:
+def collect_words(side: str = "target") -> list:
+    """Слова, которым нужно ударение.
+
+    `target` — только украинские: ударение важнее всего там, где слово учат.
+    `ru` — только русские. `both` — и те и другие.
+
+    Порядок здесь и при вклейке обязан совпадать, поэтому режим один и тот же
+    надо указывать на обоих шагах.
+    """
     data = json.loads(PACK_PATH.read_text(encoding="utf-8"))
+    fields = {"target": ("target",), "ru": ("ru",), "both": ("ru", "target")}[side]
     words = []
     seen = set()
     for item in data["words"]:
-        for value in (item["ru"], item["target"]):
+        for field in fields:
+            value = item[field]
             if value in seen or not needs_stress(value):
                 continue
             seen.add(value)
@@ -64,8 +74,8 @@ def collect_words() -> list:
     return words
 
 
-def command_export() -> int:
-    words = collect_words()
+def command_export(side: str) -> int:
+    words = collect_words(side)
     EXPORT_DIR.mkdir(parents=True, exist_ok=True)
     for old in EXPORT_DIR.glob("part-*.txt"):
         old.unlink()
@@ -104,8 +114,8 @@ def validate(original: str, answer: str):
     return True, ""
 
 
-def command_merge(answer_path: Path) -> int:
-    words = collect_words()
+def command_merge(answer_path: Path, side: str) -> int:
+    words = collect_words(side)
     answers = [line for line in answer_path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
     if len(answers) != len(words):
@@ -141,12 +151,20 @@ def main() -> int:
     if len(sys.argv) < 2 or sys.argv[1] not in {"export", "merge"}:
         print(__doc__)
         return 1
+    # Какие слова берём: только украинские (по умолчанию), только русские или все.
+    side = "target"
+    for candidate, name in (("--ru", "ru"), ("--all", "both"), ("--uk", "target")):
+        if candidate in sys.argv:
+            side = name
+
     if sys.argv[1] == "export":
-        return command_export()
-    if len(sys.argv) < 3:
+        return command_export(side)
+
+    files = [a for a in sys.argv[2:] if not a.startswith("--")]
+    if not files:
         print("Укажите файл с ответом модели: python3 tools/stress_helper.py merge ответы.txt")
         return 1
-    return command_merge(Path(sys.argv[2]))
+    return command_merge(Path(files[0]), side)
 
 
 if __name__ == "__main__":
