@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.1.8</title>
-            <pubDate>Mon, 10 Aug 2026 04:49:45 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.1.8</link>
-            <sparkle:version>1009</sparkle:version>
-            <sparkle:shortVersionString>0.1.8</sparkle:shortVersionString>
+            <title>0.1.9</title>
+            <pubDate>Mon, 10 Aug 2026 08:03:32 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.1.9</link>
+            <sparkle:version>1010</sparkle:version>
+            <sparkle:shortVersionString>0.1.9</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[Лимиты AI: понятное подключение и переподключение; английский и индонезийский словари; обновлённая иконка расширения.
+            <description sparkle:format="markdown"><![CDATA[Улучшены изучение языков, игры, привычки, мониторинг системы и подключение расширения Chrome.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.1.8/ArsWidget-0.1.8.dmg" length="9571295" type="application/octet-stream" sparkle:edSignature="OierjOLJO0KIxSEDu3w3jLVD4tX41+7oANz/JPZAYCt/u6htx8ePOdWfi9rtyDIhGDpyY+B2wh3uqUD0+BDyAQ=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.1.9/ArsWidget-0.1.9.dmg" length="9682318" type="application/octet-stream" sparkle:edSignature="Si7DJNKIBA9ELCBNS5hXHhuVW6+LKZ/ZmsMj3XBsMBF1mwlDNEsGGKZofRfgo76GBa5okgpyFLaw+nl38Y8pAQ=="/>
         </item>
     </channel>
 </rss>
