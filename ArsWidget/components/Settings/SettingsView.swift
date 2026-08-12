@@ -31,44 +31,17 @@ struct SettingsView: View {
                 NavigationLink(value: "General") {
                     Label("Общие", systemImage: "gear")
                 }
-                NavigationLink(value: "Appearance") {
-                    Label("Внешний вид", systemImage: "eye")
-                }
                 NavigationLink(value: "Media") {
                     Label("Музыка", systemImage: "play.laptopcomputer")
                 }
                 NavigationLink(value: "Calendar") {
                     Label("Календарь", systemImage: "calendar")
                 }
-                NavigationLink(value: "HUD") {
-                    Label("Индикаторы", systemImage: "dial.medium.fill")
-                }
-                NavigationLink(value: "Battery") {
-                    Label("Батарея", systemImage: "battery.100.bolt")
-                }
                 NavigationLink(value: "Vocab") {
                     Label("Словарь", systemImage: "text.book.closed")
                 }
                 NavigationLink(value: "Pomodoro") {
                     Label("Помодоро", systemImage: "timer")
-                }
-                NavigationLink(value: "SessionTimer") {
-                    Label("Сессия", systemImage: "hourglass")
-                }
-//                NavigationLink(value: "Downloads") {
-//                    Label("Downloads", systemImage: "square.and.arrow.down")
-//                }
-                NavigationLink(value: "Shelf") {
-                    Label("Файлы", systemImage: "books.vertical")
-                }
-                NavigationLink(value: "Shortcuts") {
-                    Label("Клавиши", systemImage: "keyboard")
-                }
-                // NavigationLink(value: "Extensions") {
-                //     Label("Extensions", systemImage: "puzzlepiece.extension")
-                // }
-                NavigationLink(value: "Advanced") {
-                    Label("Дополнительно", systemImage: "gearshape.2")
                 }
                 NavigationLink(value: "About") {
                     Label("О приложении", systemImage: "info.circle")
@@ -83,30 +56,14 @@ struct SettingsView: View {
                 switch selectedTab {
                 case "General":
                     GeneralSettings()
-                case "Appearance":
-                    Appearance()
                 case "Media":
                     Media()
                 case "Calendar":
                     CalendarSettings()
-                case "HUD":
-                    HUD()
-                case "Battery":
-                    Charge()
                 case "Vocab":
                     VocabSettings()
                 case "Pomodoro":
                     PomodoroSettings()
-                case "SessionTimer":
-                    SessionTimerSettings()
-                case "Shelf":
-                    Shelf()
-                case "Shortcuts":
-                    Shortcuts()
-                case "Extensions":
-                    GeneralSettings()
-                case "Advanced":
-                    Advanced()
                 case "About":
                     if let controller = updaterController {
                         About(updaterController: controller)
@@ -144,22 +101,9 @@ struct SettingsView: View {
 }
 
 struct GeneralSettings: View {
-    @State private var screens: [(uuid: String, name: String)] = NSScreen.screens.compactMap { screen in
-        guard let uuid = screen.displayUUID else { return nil }
-        return (uuid, screen.localizedName)
-    }
-    @EnvironmentObject var vm: ArsWidgetViewModel
     @ObservedObject var coordinator = ArsWidgetViewCoordinator.shared
 
-    @Default(.gestureSensitivity) var gestureSensitivity
     @Default(.minimumHoverDuration) var minimumHoverDuration
-    @Default(.nonNotchHeight) var nonNotchHeight
-    @Default(.nonNotchHeightMode) var nonNotchHeightMode
-    @Default(.notchHeight) var notchHeight
-    @Default(.notchHeightMode) var notchHeightMode
-    @Default(.showOnAllDisplays) var showOnAllDisplays
-    @Default(.automaticallySwitchDisplay) var automaticallySwitchDisplay
-    @Default(.enableGestures) var enableGestures
     @Default(.openNotchOnHover) var openNotchOnHover
 
 
@@ -174,108 +118,11 @@ struct GeneralSettings: View {
                 }
                 .tint(.effectiveAccent)
                 LaunchAtLogin.Toggle("Запускать при входе в macOS")
-                Defaults.Toggle(key: .showOnAllDisplays) {
-                    Text("Показывать на всех дисплеях")
-                }
-                .onChange(of: showOnAllDisplays) {
-                    NotificationCenter.default.post(
-                        name: Notification.Name.showOnAllDisplaysChanged, object: nil)
-                }
-                Picker("Основной дисплей", selection: $coordinator.preferredScreenUUID) {
-                    ForEach(screens, id: \.uuid) { screen in
-                        Text(screen.name).tag(screen.uuid as String?)
-                    }
-                }
-                .onChange(of: NSScreen.screens) {
-                    screens = NSScreen.screens.compactMap { screen in
-                        guard let uuid = screen.displayUUID else { return nil }
-                        return (uuid, screen.localizedName)
-                    }
-                }
-                .disabled(showOnAllDisplays)
-
-                Defaults.Toggle(key: .automaticallySwitchDisplay) {
-                    Text("Автоматически выбирать активный дисплей")
-                }
-                    .onChange(of: automaticallySwitchDisplay) {
-                        NotificationCenter.default.post(
-                            name: Notification.Name.automaticallySwitchDisplayChanged, object: nil)
-                    }
-                    .disabled(showOnAllDisplays)
             } header: {
                 Text("Системные функции")
             }
 
-            Section {
-                Picker(
-                    selection: $notchHeightMode,
-                    label:
-                        Text("Высота выреза на дисплеях с вырезом")
-                ) {
-                    Text("Как настоящий вырез")
-                        .tag(WindowHeightMode.matchRealNotchSize)
-                    Text("Как строка меню")
-                        .tag(WindowHeightMode.matchMenuBar)
-                    Text("Своя высота")
-                        .tag(WindowHeightMode.custom)
-                }
-                .onChange(of: notchHeightMode) {
-                    switch notchHeightMode {
-                    case .matchRealNotchSize:
-                        notchHeight = 38
-                    case .matchMenuBar:
-                        notchHeight = 44
-                    case .custom:
-                        notchHeight = 38
-                    }
-                    NotificationCenter.default.post(
-                        name: Notification.Name.notchHeightChanged, object: nil)
-                }
-                if notchHeightMode == .custom {
-                    Slider(value: $notchHeight, in: 15...45, step: 1) {
-                        Text("Высота: \(notchHeight, specifier: "%.0f")")
-                    }
-                    .onChange(of: notchHeight) {
-                        NotificationCenter.default.post(
-                            name: Notification.Name.notchHeightChanged, object: nil)
-                    }
-                }
-                Picker("Высота на дисплеях без выреза", selection: $nonNotchHeightMode) {
-                    Text("Как строка меню")
-                        .tag(WindowHeightMode.matchMenuBar)
-                    Text("Как настоящий вырез")
-                        .tag(WindowHeightMode.matchRealNotchSize)
-                    Text("Своя высота")
-                        .tag(WindowHeightMode.custom)
-                }
-                .onChange(of: nonNotchHeightMode) {
-                    switch nonNotchHeightMode {
-                    case .matchMenuBar:
-                        nonNotchHeight = 24
-                    case .matchRealNotchSize:
-                        nonNotchHeight = 32
-                    case .custom:
-                        nonNotchHeight = 32
-                    }
-                    NotificationCenter.default.post(
-                        name: Notification.Name.notchHeightChanged, object: nil)
-                }
-                if nonNotchHeightMode == .custom {
-                    Slider(value: $nonNotchHeight, in: 0...40, step: 1) {
-                        Text("Высота: \(nonNotchHeight, specifier: "%.0f")")
-                    }
-                    .onChange(of: nonNotchHeight) {
-                        NotificationCenter.default.post(
-                            name: Notification.Name.notchHeightChanged, object: nil)
-                    }
-                }
-            } header: {
-                Text("Размер выреза")
-            }
-
             NotchBehaviour()
-
-            gestureControls()
         }
         .toolbar {
             Button("Закрыть приложение") {
@@ -285,45 +132,6 @@ struct GeneralSettings: View {
         }
         .accentColor(.effectiveAccent)
         .navigationTitle("Общие")
-        .onChange(of: openNotchOnHover) {
-            if !openNotchOnHover {
-                enableGestures = true
-            }
-        }
-    }
-
-    @ViewBuilder
-    func gestureControls() -> some View {
-        Section {
-            Defaults.Toggle(key: .enableGestures) {
-                Text("Включить жесты")
-            }
-                .disabled(!openNotchOnHover)
-            if enableGestures {
-                Slider(value: $gestureSensitivity, in: 100...300, step: 100) {
-                    HStack {
-                        Text("Чувствительность жеста")
-                        Spacer()
-                        Text(
-                            Defaults[.gestureSensitivity] == 100
-                                ? "Высокая" : Defaults[.gestureSensitivity] == 200 ? "Средняя" : "Низкая"
-                        )
-                        .foregroundStyle(.secondary)
-                    }
-                }
-            }
-        } header: {
-            HStack {
-                Text("Управление жестами")
-            }
-        } footer: {
-            Text(
-                "Свайп двумя пальцами вверх закрывает виджет, вниз открывает его, когда выключено открытие по наведению."
-            )
-            .multilineTextAlignment(.trailing)
-            .foregroundStyle(.secondary)
-            .font(.caption)
-        }
     }
 
     @ViewBuilder
@@ -331,9 +139,6 @@ struct GeneralSettings: View {
         Section {
             Defaults.Toggle(key: .openNotchOnHover) {
                 Text("Открывать при наведении")
-            }
-            Defaults.Toggle(key: .enableHaptics) {
-                    Text("Тактильный отклик")
             }
             Toggle("Запоминать последнюю вкладку", isOn: $coordinator.openLastTabByDefault)
             if openNotchOnHover {
@@ -671,6 +476,7 @@ struct PomodoroSettings: View {
 
 struct VocabSettings: View {
     @ObservedObject private var vocab = VocabManager.shared
+    @AppStorage("vocabPauseInFullscreen") private var pauseInFullscreen = true
     @State private var sourceWord = ""
     @State private var translatedWord = ""
 
@@ -679,6 +485,7 @@ struct VocabSettings: View {
             Section {
                 Toggle("Включить карточки слов", isOn: $vocab.isEnabled)
                 Stepper("Показывать каждые \(vocab.intervalMinutes) мин", value: $vocab.intervalMinutes, in: 1...120)
+                Toggle("Не показывать в полноэкранном режиме", isOn: $pauseInFullscreen)
                 Toggle("Автоматически пополнять очередь", isOn: $vocab.autoFillEnabled)
                 Stepper("Слов в очереди каждого языка: \(vocab.activeTarget)", value: $vocab.activeTarget, in: 3...20)
                 Picker("Направление", selection: Binding(get: { vocab.direction }, set: { vocab.direction = $0 })) {

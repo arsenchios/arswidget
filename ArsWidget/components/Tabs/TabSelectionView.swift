@@ -52,6 +52,14 @@ struct TabSelectionView: View {
             // matched-geometry transition could leave the previous selected
             // capsule above the first tab (Games), swallowing its next click.
             coordinator.currentView = tab.view
+            // Tab changes can happen while another view has made the notch
+            // tall. Recalculate immediately so Games is always reachable.
+            let appDelegate = NSApp.delegate as? AppDelegate
+            if Defaults[.showOnAllDisplays] {
+                appDelegate?.viewModels.values.forEach { $0.updateOpenSizeIfNeeded() }
+            } else {
+                appDelegate?.vm.updateOpenSizeIfNeeded()
+            }
         }
         .frame(height: 26)
         .foregroundStyle(tab.view == coordinator.currentView ? .white : .gray)
