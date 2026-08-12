@@ -248,7 +248,7 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
         case .vocab:
             return .init(width: 640, height: 560)
         case .games:
-            return .init(width: 640, height: 880)
+            return .init(width: 640, height: 840)
         case .pomodoro:
             return .init(width: 640, height: pomodoroExpanded ? 560 : 240)
         case .breathing:

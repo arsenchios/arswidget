@@ -244,10 +244,25 @@ final class VocabManager: ObservableObject {
     }
 
     private var timerCancellable: AnyCancellable?
+    private var fullscreenCancellable: AnyCancellable?
     private lazy var overlay = VocabPromptOverlayWindow()
+
+    private var shouldPauseForFullscreenApp: Bool {
+        let pausesInFullscreen = UserDefaults.standard.object(forKey: "vocabPauseInFullscreen") as? Bool ?? true
+        guard pausesInFullscreen else {
+            return false
+        }
+        return FullscreenMediaDetector.shared.hasFullscreenApp
+    }
 
     private init() {
         loadWords()
+        fullscreenCancellable = FullscreenMediaDetector.shared.$hasFullscreenApp
+            .removeDuplicates()
+            .sink { [weak self] isFullscreen in
+                guard isFullscreen, self?.shouldPauseForFullscreenApp == true else { return }
+                self?.dismissPrompt()
+            }
         restartTimer()
     }
 
@@ -499,6 +514,10 @@ final class VocabManager: ObservableObject {
             let pack: VocabLanguagePack
             let word: VocabWord
         }
+
+        // A full-screen app is usually a film, presentation or game. Do not
+        // put a study card over it; the next timer tick will try again.
+        guard !shouldPauseForFullscreenApp else { return }
 
         ensureStudyQueuesIfNeeded()
         let candidates: [PromptCandidate] = enabledPacks.flatMap { pack in

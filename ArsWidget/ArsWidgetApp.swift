@@ -8,6 +8,7 @@
 import Combine
 import Defaults
 import KeyboardShortcuts
+import LaunchAtLogin
 import Sparkle
 import SwiftUI
 
@@ -20,6 +21,12 @@ struct ArsWidgetApp: App {
     let updaterController: SPUStandardUpdaterController
 
     init() {
+        // ArsWidget is a background utility. Enable its login item by default
+        // so the installed app is available after a normal Mac restart.
+        if !LaunchAtLogin.isEnabled {
+            LaunchAtLogin.isEnabled = true
+        }
+
         // This value used to be persisted, so changing the default alone would
         // leave existing installations showing the previous release nickname.
         let legacyReleaseNames = ["Flying Rabbit 🐇🪽", "Flying Rabbit 🐇 🪽"]

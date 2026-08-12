@@ -15,6 +15,9 @@ final class FullscreenMediaDetector: ObservableObject {
     static let shared = FullscreenMediaDetector()
 
     @Published var fullscreenStatus: [String: Bool] = [:]
+    /// Independent from the notch-visibility preference: study cards need to
+    /// pause for any full-screen app, not only for a media player.
+    @Published private(set) var hasFullscreenApp = false
 
     private var monitorTask: Task<Void, Never>?
 
@@ -37,6 +40,8 @@ final class FullscreenMediaDetector: ObservableObject {
 
     private func updateStatus(with spaces: [MacroVisionKit.FullScreenMonitor.SpaceInfo]) {
         var newStatus: [String: Bool] = [:]
+
+        hasFullscreenApp = spaces.contains { $0.screenUUID != nil }
 
         for space in spaces {
             if let uuid = space.screenUUID {
