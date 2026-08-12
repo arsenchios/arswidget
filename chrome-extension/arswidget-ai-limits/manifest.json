@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ArsWidget AI Limits",
-  "version": "0.3.0",
-  "description": "Показывает остаток лимитов Claude, ChatGPT, Codex, DeepSeek, Gemini, Perplexity, Cursor и Grok в ArsWidget на этом Mac.",
+  "version": "0.3.1",
+  "description": "Показывает остаток доступного использования поддерживаемых AI-сервисов в ArsWidget на этом Mac.",
   "permissions": ["alarms", "storage", "notifications"],
   "host_permissions": [
     "http://127.0.0.1:63554/*",
