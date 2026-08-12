@@ -21,10 +21,12 @@ struct ArsWidgetApp: App {
     let updaterController: SPUStandardUpdaterController
 
     init() {
-        // ArsWidget is a background utility. Enable its login item by default
-        // so the installed app is available after a normal Mac restart.
-        if !LaunchAtLogin.isEnabled {
+        // Enable the login item once for new installs, while still respecting
+        // a later choice to turn it off in Settings.
+        let hasConfiguredLaunchAtLogin = UserDefaults.standard.bool(forKey: "hasConfiguredLaunchAtLogin")
+        if !hasConfiguredLaunchAtLogin {
             LaunchAtLogin.isEnabled = true
+            UserDefaults.standard.set(true, forKey: "hasConfiguredLaunchAtLogin")
         }
 
         // This value used to be persisted, so changing the default alone would
