@@ -659,13 +659,14 @@ struct ContentView: View {
                     ? Color(nsColor: musicManager.avgColor).gradient
                     : Color.gray.gradient
             )
-            .frame(width: 62, alignment: .center)
+            // The spectrum must fit inside its capsule. A wider drawing here
+            // spills past the closed notch when the album cover is visible.
+            .frame(width: 26, alignment: .center)
             .matchedGeometryEffect(id: "spectrum", in: albumArtNamespace)
             .mask {
                 AudioSpectrumView(isPlaying: $musicManager.isPlaying)
                     .frame(width: 26, height: 14)
             }
-            .padding(.horizontal, 8)
             .frame(
                 width: 52,
                 height: max(0, vm.effectiveClosedNotchHeight - 12),
