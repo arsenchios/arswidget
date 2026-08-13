@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.2.2</title>
-            <pubDate>Mon, 10 Aug 2026 10:08:43 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.2</link>
-            <sparkle:version>1013</sparkle:version>
-            <sparkle:shortVersionString>0.2.2</sparkle:shortVersionString>
+            <title>0.2.3</title>
+            <pubDate>Thu, 13 Aug 2026 05:32:59 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.3</link>
+            <sparkle:version>1015</sparkle:version>
+            <sparkle:shortVersionString>0.2.3</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[arsansara ☯: исправлены переход в Игры и окно разрешения на мониторинг ввода.
+            <description sparkle:format="markdown"><![CDATA[Исправлены настройки, полноэкранный режим слов, вкладка Игр и отображение музыкального эквалайзера. Добавлена короткая инструкция по установке.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.2/ArsWidget-0.2.2.dmg" length="9693873" type="application/octet-stream" sparkle:edSignature="RvHZNj+dWjNnkeeS2yvPrG564L9ytM1/ZcmyT1yzCDv4lksj3NeOXk1mnWmgujz4afOvZOhEp3zueCk5ecZqAQ=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.3/ArsWidget-0.2.3.dmg" length="9561399" type="application/octet-stream" sparkle:edSignature="wsw6ksfzeDLSizFteP2oXMqzCUNRmTKBWGjyfobcqiBAQryxOseMck1ME5LWiypOYoQUpypEuxeZ+SVSAvHPDw=="/>
         </item>
     </channel>
 </rss>
