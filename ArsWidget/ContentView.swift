@@ -511,7 +511,7 @@ struct ContentView: View {
     @ViewBuilder
     func MusicLiveActivity() -> some View {
         HStack {
-            HStack(spacing: 8) {
+            HStack(spacing: 4) {
                 Image(nsImage: musicManager.albumArt)
                     .resizable()
                     .clipped()
@@ -659,21 +659,21 @@ struct ContentView: View {
                     ? Color(nsColor: musicManager.avgColor).gradient
                     : Color.gray.gradient
             )
-            // The spectrum must fit inside its capsule. A wider drawing here
-            // spills past the closed notch when the album cover is visible.
-            .frame(width: 26, alignment: .center)
-            .matchedGeometryEffect(id: "spectrum", in: albumArtNamespace)
+            // Keep the compact spectrum close to the album cover. Its drawing
+            // is 16 pt wide, so a narrow capsule prevents empty spacing.
+            .frame(width: 20, alignment: .center)
             .mask {
                 AudioSpectrumView(isPlaying: $musicManager.isPlaying)
-                    .frame(width: 26, height: 14)
+                    .frame(width: 20, height: 14)
             }
             .frame(
-                width: 52,
+                width: 36,
                 height: max(0, vm.effectiveClosedNotchHeight - 12),
                 alignment: .center
             )
             .background(Color.white.opacity(0.06))
             .clipShape(Capsule())
+            .clipped()
     }
 
     @ViewBuilder
