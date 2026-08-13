@@ -8,6 +8,22 @@
 import SwiftUI
 import Sparkle
 
+@MainActor
+enum UpdateChecker {
+    static func check(_ updater: SPUUpdater) {
+        guard updater.canCheckForUpdates else {
+            let alert = NSAlert()
+            alert.messageText = "Проверка обновлений уже выполняется"
+            alert.informativeText = "Подождите несколько секунд и попробуйте снова."
+            alert.addButton(withTitle: "Понятно")
+            alert.runModal()
+            return
+        }
+
+        updater.checkForUpdates()
+    }
+}
+
 final class CheckForUpdatesViewModel: ObservableObject {
     @Published var canCheckForUpdates = false
 
@@ -29,8 +45,9 @@ struct CheckForUpdatesView: View {
     }
 
     var body: some View {
-        Button("Проверить обновления", action: updater.checkForUpdates)
-            .disabled(!checkForUpdatesViewModel.canCheckForUpdates)
+        Button("Проверить обновления") {
+            UpdateChecker.check(updater)
+        }
     }
 }
 

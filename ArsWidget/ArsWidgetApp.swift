@@ -51,7 +51,13 @@ struct ArsWidgetApp: App {
                 }
             }
             .keyboardShortcut(KeyEquivalent(","), modifiers: .command)
-            CheckForUpdatesView(updater: updaterController.updater)
+            Button("Проверить обновления") {
+                // A menu bar item must be dismissed before Sparkle presents
+                // its result window; otherwise macOS can swallow it.
+                DispatchQueue.main.async {
+                    UpdateChecker.check(updaterController.updater)
+                }
+            }
             Divider()
             Button("Перезапустить ArsWidget") {
                 ApplicationRelauncher.restart()
