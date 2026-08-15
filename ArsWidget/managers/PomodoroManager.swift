@@ -22,7 +22,9 @@ enum PomodoroPhase {
 
 enum PomodoroContinuation {
     case breakFirst
+    case continueCurrentTask
     case nextFocus
+    case idle
 }
 
 enum PomodoroEntryKind: String, Codable {
@@ -85,6 +87,7 @@ final class PomodoroManager: NSObject, ObservableObject {
     @Published private(set) var history: [PomodoroEntry] = []
     @Published private(set) var activeTaskID: UUID?
     @Published private(set) var awaitingReview: Bool = false
+    @Published private(set) var reviewAfterBreak: Bool = false
     @Published var reviewComment: String = ""
     @Published var reviewNextTaskTitle: String = ""
     @Published var showStatistics: Bool = true
@@ -352,6 +355,7 @@ final class PomodoroManager: NSObject, ObservableObject {
         phase = .idle
         secondsRemaining = workMinutes * 60
         awaitingReview = false
+        reviewAfterBreak = false
         pendingReview = nil
         reviewComment = ""
         reviewNextTaskTitle = ""
@@ -416,6 +420,7 @@ final class PomodoroManager: NSObject, ObservableObject {
             shouldTriggerLongBreak: false
         )
         awaitingReview = true
+        reviewAfterBreak = false
         showStatistics = true
     }
 
@@ -447,6 +452,7 @@ final class PomodoroManager: NSObject, ObservableObject {
 
         awaitingReview = false
         self.pendingReview = nil
+        reviewAfterBreak = false
         reviewComment = ""
         reviewNextTaskTitle = ""
 
@@ -472,6 +478,16 @@ final class PomodoroManager: NSObject, ObservableObject {
             isRunning = true
             startTicking()
             notify(title: String(localized: "Следующий фокус"), body: String(localized: "Следующая задача запущена."))
+        case .continueCurrentTask:
+            beginWork()
+            isRunning = true
+            startTicking()
+            notify(title: String(localized: "Фокус продолжен"), body: String(localized: "Таймер запущен для текущей задачи."))
+        case .idle:
+            phase = .idle
+            secondsRemaining = workMinutes * 60
+            currentPhaseStartedAt = nil
+            hideBreakOverlay()
         }
     }
 
@@ -546,18 +562,31 @@ final class PomodoroManager: NSObject, ObservableObject {
                 durationSeconds: max(0, Int(end.timeIntervalSince(start))),
                 shouldTriggerLongBreak: willBeLongBreak
             )
-            awaitingReview = true
-            showStatistics = true
-            notify(title: String(localized: "Фокус завершён"), body: String(localized: "Зафиксируй результат и выбери, что дальше."))
+            // A completed focus block begins the break immediately. The task
+            // result is requested after the break, when it is actionable.
+            awaitingReview = false
+            reviewAfterBreak = true
+            beginBreak(long: willBeLongBreak)
+            isRunning = true
+            startTicking()
+            notify(
+                title: willBeLongBreak ? String(localized: "Длинный перерыв") : String(localized: "Перерыв: 5 минут"),
+                body: String(localized: "Фокус завершён. После перерыва зафиксируй результат задачи.")
+            )
 
         case .shortBreak, .longBreak:
             finalizeBreakEntry()
-            beginWork()
-            if phase == .work {
-                notify(title: String(localized: "Помодоро"), body: String(localized: "Перерыв закончен, можно возвращаться к работе."))
-            } else {
-                notify(title: String(localized: "Помодоро"), body: String(localized: "Перерыв завершён. Выбери следующую задачу."))
-            }
+            timerCancellable?.cancel()
+            isRunning = false
+            phase = .idle
+            secondsRemaining = workMinutes * 60
+            currentPhaseStartedAt = nil
+            hideBreakOverlay()
+            awaitingReview = pendingReview != nil
+            reviewAfterBreak = awaitingReview
+            showStatistics = true
+            notify(title: String(localized: "Перерыв завершён"), body: String(localized: "Отметь результат и выбери следующее действие."))
+            NotificationCenter.default.post(name: .pomodoroReviewReady, object: nil)
 
         case .idle:
             break

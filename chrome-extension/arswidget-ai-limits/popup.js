@@ -88,7 +88,7 @@ document.querySelector("#openClaude").addEventListener("click", () => {
 });
 
 document.querySelector("#openCodex").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://chatgpt.com/#settings/Account" });
+  chrome.tabs.create({ url: "https://chatgpt.com/codex/cloud/settings/analytics" });
 });
 
 document.querySelector("#openDeepSeek").addEventListener("click", () => {

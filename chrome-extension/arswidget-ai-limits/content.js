@@ -9,6 +9,9 @@ const MONTHLY = /(?:month|monthly|месяц)/i;
 const CODEX = /codex/i;
 const REMAINING = /(?:remaining|left|available|осталось|доступно|осталось лимита)/i;
 const USED = /(?:used|consumed|использовано|потрачено|израсходовано)/i;
+const CLAUDE_CURRENT_SESSION = /(?:current\s+session|текущ\S*\s+сесси)/i;
+const CLAUDE_WEEKLY_LIMITS = /(?:weekly\s+limits?|недельн\S*\s+лимит)/i;
+const CLAUDE_USAGE_CREDITS = /(?:usage\s+credits?|кредит\S*\s+использ)/i;
 
 const HEARTBEAT_MS = 55_000;
 const EMPTY_SCANS_BEFORE_WARNING = 6;
@@ -35,15 +38,26 @@ const SITES = [
   {
     key: "claude",
     hosts: ["claude.ai"],
-    isUsage: (path) => path.startsWith("/settings/usage"),
+    // Claude now opens this screen through /new#settings/usage for many
+    // accounts, so checking only the old pathname silently skipped scans.
+    isUsage: (path, hash) => path.startsWith("/settings/usage") || hash.includes("settings/usage"),
     read: (ctx, usage) => {
+      // "Usage credits" is paid API credit usage, not a plan quota.
+      if (CLAUDE_USAGE_CREDITS.test(ctx.context)) return;
+
       // Обе подписи могут попасть в одно окно текста; берём ближнюю слева,
       // иначе одно и то же число уходит сразу в обе строки.
-      const toFiveHour = distanceToCaptionBefore(FIVE_HOUR, ctx.captionContext, ctx.percentIndex);
-      const toWeekly = distanceToCaptionBefore(WEEKLY, ctx.captionContext, ctx.percentIndex);
-      if (toFiveHour !== null && (toWeekly === null || toFiveHour <= toWeekly)) {
+      const toFiveHour = Math.min(
+        distanceToCaptionBefore(FIVE_HOUR, ctx.captionContext, ctx.percentIndex) ?? Infinity,
+        distanceToCaptionBefore(CLAUDE_CURRENT_SESSION, ctx.captionContext, ctx.percentIndex) ?? Infinity
+      );
+      const toWeekly = Math.min(
+        distanceToCaptionBefore(WEEKLY, ctx.captionContext, ctx.percentIndex) ?? Infinity,
+        distanceToCaptionBefore(CLAUDE_WEEKLY_LIMITS, ctx.captionContext, ctx.percentIndex) ?? Infinity
+      );
+      if (Number.isFinite(toFiveHour) && (!Number.isFinite(toWeekly) || toFiveHour <= toWeekly)) {
         usage.claudeFiveHourRemaining = ctx.value;
-      } else if (toWeekly !== null) {
+      } else if (Number.isFinite(toWeekly)) {
         usage.claudeWeeklyRemaining = ctx.value;
       }
     }
@@ -118,7 +132,8 @@ function readPercentage(lines, index) {
   const raw = Number(match[1].replace(",", "."));
   if (!Number.isFinite(raw) || raw < 0 || raw > 100) return null;
 
-  const prefix = lines.slice(Math.max(0, index - 2), index).join(" ");
+  // Current Claude labels are a few lines above the bar and percentage.
+  const prefix = lines.slice(Math.max(0, index - 6), index).join(" ");
   const captionContext = prefix ? `${prefix} ${line}` : line;
   const percentIndex = (prefix ? prefix.length + 1 : 0) + match.index;
   const suffix = lines[index + 1] ?? "";

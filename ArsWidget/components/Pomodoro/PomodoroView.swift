@@ -196,7 +196,7 @@ struct PomodoroView: View {
 
     private var reviewCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Фокус завершён")
+            Text(pomodoro.reviewAfterBreak ? "Перерыв завершён" : "Фокус остановлен")
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.white)
 
@@ -226,21 +226,39 @@ struct PomodoroView: View {
                 .foregroundStyle(.white)
 
             HStack(spacing: 8) {
-                Button("Сделано") {
-                    pomodoro.submitReview(completedTask: true, continuation: .breakFirst)
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 7)
-                .background(Capsule().fill(Color.green.opacity(0.32)))
+                if pomodoro.reviewAfterBreak {
+                    Button("Сделано") {
+                        pomodoro.submitReview(completedTask: true, continuation: .idle)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Capsule().fill(Color.green.opacity(0.32)))
 
-                Button("Не сделано") {
-                    pomodoro.submitReview(completedTask: false, continuation: .breakFirst)
+                    Button("Продолжить") {
+                        pomodoro.submitReview(completedTask: false, continuation: .continueCurrentTask)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Capsule().fill(Color.orange.opacity(0.28)))
+                } else {
+                    Button("Сделано") {
+                        pomodoro.submitReview(completedTask: true, continuation: .breakFirst)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Capsule().fill(Color.green.opacity(0.32)))
+
+                    Button("Не сделано") {
+                        pomodoro.submitReview(completedTask: false, continuation: .breakFirst)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Capsule().fill(Color.orange.opacity(0.28)))
                 }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 7)
-                .background(Capsule().fill(Color.orange.opacity(0.28)))
 
                 Spacer(minLength: 0)
 

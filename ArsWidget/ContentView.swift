@@ -92,10 +92,16 @@ struct ContentView: View {
     private static let closedAIUsageCapsuleWidth: CGFloat = 38
     private static let closedAIUsageCapsuleSpacing: CGFloat = 5
 
-    /// Matches the capsules actually drawn. A fixed reserve fitted three
-    /// limits, so a fourth or fifth one was cut off by the notch.
+    /// The closed notch has room for a short, readable status row. Pomodoro
+    /// keeps priority and the full list remains available in the System tab.
+    private var closedAIUsageMetrics: [AIUsageMetric] {
+        let maximum = shouldShowClosedPomodoroIndicator ? 2 : 3
+        return Array(aiUsageManager.connectedMetrics.prefix(maximum))
+    }
+
+    /// Matches the capsules actually drawn.
     private var closedAIUsageWidth: CGFloat {
-        let count = aiUsageManager.connectedMetrics.count
+        let count = closedAIUsageMetrics.count
         guard count > 0 else { return 0 }
         return CGFloat(count) * Self.closedAIUsageCapsuleWidth
             + CGFloat(count - 1) * Self.closedAIUsageCapsuleSpacing
@@ -238,6 +244,10 @@ struct ContentView: View {
                                 }
                             }
                         }
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: .pomodoroReviewReady)) { _ in
+                        coordinator.currentView = .pomodoro
+                        vm.open()
                     }
                     .onChange(of: vm.notchState) { _, newState in
                         if newState == .closed && isHovering {
@@ -510,7 +520,7 @@ struct ContentView: View {
 
     @ViewBuilder
     func MusicLiveActivity() -> some View {
-        HStack {
+        HStack(spacing: 5) {
             HStack(spacing: 4) {
                 Image(nsImage: musicManager.albumArt)
                     .resizable()
@@ -575,13 +585,7 @@ struct ContentView: View {
                             + -cornerRadiusInsets.closed.top
                 )
 
-            if shouldShowClosedPomodoroIndicator {
-                pomodoroCapsule
-            }
-
-            if shouldShowClosedAIUsageIndicators {
-                closedAIUsageIndicators
-            }
+            closedStatusIndicators
         }
         .frame(
             height: vm.effectiveClosedNotchHeight,
@@ -591,18 +595,12 @@ struct ContentView: View {
 
     @ViewBuilder
     func ClosedActivityIndicators() -> some View {
-        HStack {
+        HStack(spacing: 5) {
             Rectangle()
                 .fill(.black)
                 .frame(width: vm.closedNotchSize.width - 10)
 
-            if shouldShowClosedPomodoroIndicator {
-                pomodoroCapsule
-            }
-
-            if shouldShowClosedAIUsageIndicators {
-                closedAIUsageIndicators
-            }
+            closedStatusIndicators
         }
         .frame(height: vm.effectiveClosedNotchHeight, alignment: .center)
     }
@@ -622,12 +620,25 @@ struct ContentView: View {
         )
         .background(Color.white.opacity(0.06))
         .clipShape(Capsule())
+        .layoutPriority(2)
+    }
+
+    @ViewBuilder
+    private var closedStatusIndicators: some View {
+        if shouldShowClosedPomodoroIndicator {
+            pomodoroCapsule
+        }
+
+        if shouldShowClosedAIUsageIndicators {
+            closedAIUsageIndicators
+                .layoutPriority(1)
+        }
     }
 
     @ViewBuilder
     private var closedAIUsageIndicators: some View {
         HStack(spacing: Self.closedAIUsageCapsuleSpacing) {
-            ForEach(aiUsageManager.connectedMetrics) { metric in
+            ForEach(closedAIUsageMetrics) { metric in
                 if let value = aiUsageManager.value(for: metric) {
                     aiUsageCapsule(label: metric.shortLabel, value: value, color: metric.tint)
                 }
