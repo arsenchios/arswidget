@@ -279,6 +279,19 @@ function watchForPageChanges() {
   }, 1000);
 }
 
+// Usage screens are client-rendered. Their visible values often appear after
+// document_idle, so re-scan after a quiet DOM update instead of relying on a
+// single scan immediately after opening the tab.
+function watchForUsageContent() {
+  if (!document.body) return;
+
+  const observer = new MutationObserver(() => {
+    if (isUsagePage()) scheduleReport();
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+}
+
 try {
   chrome.runtime.sendMessage({ type: "GET_CONSENT" }, (response) => {
     void chrome.runtime.lastError;
@@ -287,6 +300,8 @@ try {
 } catch {
   // Без живого контекста расширения делать нечего.
 }
+
+watchForUsageContent();
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "USAGE_ENABLED") start();
