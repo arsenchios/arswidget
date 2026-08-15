@@ -41,6 +41,8 @@ struct AIUsageSnapshot: Codable, Equatable {
     var codexWeeklyRemaining: Double?
     var claudeFiveHourRemaining: Double?
     var claudeWeeklyRemaining: Double?
+    // DeepSeek exposes prepaid API balance rather than a subscription quota.
+    var deepseekBalanceUSD: Double?
     var deepseekRemaining: Double?
     var geminiRemaining: Double?
     // Added later; optional so a file written by an older build still decodes.
@@ -58,7 +60,7 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
     case claudeWeekly
     case codexWeekly
     case chatgpt
-    case deepseek
+    case deepseekBalance
     case gemini
     case perplexity
     case cursor
@@ -72,7 +74,7 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
         case .claudeFiveHour, .claudeWeekly: return "Claude"
         case .codexWeekly: return "Codex"
         case .chatgpt: return "ChatGPT"
-        case .deepseek: return "DeepSeek"
+        case .deepseekBalance: return "DeepSeek"
         case .gemini: return "Gemini"
         case .perplexity: return "Perplexity"
         case .cursor: return "Cursor"
@@ -86,7 +88,7 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
         case .claudeWeekly: return String(localized: "Claude, неделя")
         case .codexWeekly: return String(localized: "Codex, неделя")
         case .chatgpt: return String(localized: "ChatGPT")
-        case .deepseek: return String(localized: "DeepSeek")
+        case .deepseekBalance: return String(localized: "DeepSeek balance")
         case .gemini: return String(localized: "Gemini")
         case .perplexity: return String(localized: "Perplexity")
         case .cursor: return String(localized: "Cursor")
@@ -102,7 +104,7 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
         case .claudeWeekly: return "Cw"
         case .codexWeekly: return "Cx"
         case .chatgpt: return "GP"
-        case .deepseek: return "DS"
+        case .deepseekBalance: return "DS"
         case .gemini: return "Gm"
         case .perplexity: return "Px"
         case .cursor: return "Cu"
@@ -116,7 +118,7 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
         case .claudeWeekly: return Color.orange.opacity(0.72)
         case .codexWeekly: return .blue
         case .chatgpt: return Color.blue.opacity(0.7)
-        case .deepseek: return .teal
+        case .deepseekBalance: return .teal
         case .gemini: return .purple
         case .perplexity: return .mint
         case .cursor: return .indigo
@@ -130,12 +132,20 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
         case .claudeWeekly: return snapshot.claudeWeeklyRemaining
         case .codexWeekly: return snapshot.codexWeeklyRemaining
         case .chatgpt: return snapshot.chatgptRemaining
-        case .deepseek: return snapshot.deepseekRemaining
+        case .deepseekBalance: return snapshot.deepseekBalanceUSD
         case .gemini: return snapshot.geminiRemaining
         case .perplexity: return snapshot.perplexityRemaining
         case .cursor: return snapshot.cursorRemaining
         case .grok: return snapshot.grokRemaining
         }
+    }
+
+    var isPercentage: Bool {
+        self != .deepseekBalance
+    }
+
+    func formattedValue(_ value: Double) -> String {
+        isPercentage ? "\(Int(value.rounded()))%" : String(format: "$%.2f", value)
     }
 }
 
@@ -262,7 +272,8 @@ final class AIUsageManager: ObservableObject {
     }
 }
 
-/// Receives only percentage values from the optional Chrome extension.
+/// Receives derived percentages and the optional DeepSeek prepaid balance from
+/// the Chrome extension. The listener accepts local connections only.
 /// The listener accepts local connections only; it never exposes a network API.
 final class AIUsageBridge {
     static let shared = AIUsageBridge()
@@ -385,19 +396,23 @@ final class AIUsageBridge {
             payload.chatgptRemaining,
             payload.claudeFiveHourRemaining,
             payload.claudeWeeklyRemaining,
-            payload.deepseekRemaining,
             payload.geminiRemaining,
             payload.perplexityRemaining,
             payload.cursorRemaining,
             payload.grokRemaining,
         ].compactMap { $0 }
 
-        guard !values.isEmpty, values.allSatisfy({ (0...100).contains($0) }) else { return false }
+        let validPercentages = values.allSatisfy { (0...100).contains($0) }
+        let validDeepSeekBalance = payload.deepseekBalanceUSD.map { (0...1_000_000).contains($0) } ?? true
+        guard (validPercentages && !values.isEmpty) || payload.deepseekBalanceUSD != nil,
+              validDeepSeekBalance
+        else { return false }
 
         let snapshot = AIUsageSnapshot(
             codexWeeklyRemaining: payload.codexWeeklyRemaining,
             claudeFiveHourRemaining: payload.claudeFiveHourRemaining,
             claudeWeeklyRemaining: payload.claudeWeeklyRemaining,
+            deepseekBalanceUSD: payload.deepseekBalanceUSD,
             deepseekRemaining: payload.deepseekRemaining,
             geminiRemaining: payload.geminiRemaining,
             chatgptRemaining: payload.chatgptRemaining,
@@ -444,6 +459,7 @@ private struct AIUsageBridgePayload: Decodable, Sendable {
     let chatgptRemaining: Double?
     let claudeFiveHourRemaining: Double?
     let claudeWeeklyRemaining: Double?
+    let deepseekBalanceUSD: Double?
     let deepseekRemaining: Double?
     let geminiRemaining: Double?
     let perplexityRemaining: Double?

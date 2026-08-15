@@ -103,7 +103,9 @@ struct ContentView: View {
     private var closedAIUsageWidth: CGFloat {
         let count = closedAIUsageMetrics.count
         guard count > 0 else { return 0 }
-        return CGFloat(count) * Self.closedAIUsageCapsuleWidth
+        return closedAIUsageMetrics.reduce(CGFloat(0)) { partial, metric in
+            partial + (metric.isPercentage ? Self.closedAIUsageCapsuleWidth : 56)
+        }
             + CGFloat(count - 1) * Self.closedAIUsageCapsuleSpacing
             + 8
     }
@@ -647,18 +649,18 @@ struct ContentView: View {
     }
 
     private func aiUsageCapsule(label: String, value: Double, color: Color) -> some View {
-        let accent = AIUsageManager.isLow(value) ? Color.red : color
+        let accent = label == "DS" ? color : (AIUsageManager.isLow(value) ? Color.red : color)
 
         return HStack(spacing: 3) {
             Text(label)
                 .font(.system(size: 9, weight: .bold, design: .rounded))
-            Text("\(Int(value.rounded()))")
+            Text(label == "DS" ? String(format: "$%.2f", value) : "\(Int(value.rounded()))")
                 .font(.system(size: 10, weight: .bold, design: .rounded))
                 .contentTransition(.numericText())
         }
         // Stale numbers are dimmed instead of silently pretending to be live.
         .foregroundStyle(accent.opacity(aiUsageManager.isStale ? 0.45 : 1))
-        .frame(width: Self.closedAIUsageCapsuleWidth, height: max(0, vm.effectiveClosedNotchHeight - 12))
+        .frame(width: label == "DS" ? 56 : Self.closedAIUsageCapsuleWidth, height: max(0, vm.effectiveClosedNotchHeight - 12))
         .background(Color.white.opacity(0.06))
         .clipShape(Capsule())
     }

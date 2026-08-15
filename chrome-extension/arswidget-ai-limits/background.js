@@ -11,12 +11,12 @@ const PERCENT_KEYS = [
   "chatgptRemaining",
   "claudeFiveHourRemaining",
   "claudeWeeklyRemaining",
-  "deepseekRemaining",
   "geminiRemaining",
   "perplexityRemaining",
   "cursorRemaining",
   "grokRemaining"
 ];
+const BALANCE_KEYS = ["deepseekBalanceUSD"];
 
 // A service worker is torn down after a few idle seconds, so anything the
 // throttling logic needs to remember has to live in storage, not in module
@@ -106,7 +106,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 });
 
 async function mergeUsage(candidate) {
-  const values = pickPercentages(candidate);
+  const values = pickUsageValues(candidate);
   const { [USAGE_KEY]: current = {} } = await chrome.storage.local.get(USAGE_KEY);
   if (Object.keys(values).length === 0) return current;
 
@@ -121,11 +121,16 @@ async function mergeUsage(candidate) {
   return merged;
 }
 
-function pickPercentages(value = {}) {
+function pickUsageValues(value = {}) {
   const result = {};
   for (const key of PERCENT_KEYS) {
     if (Number.isFinite(value[key]) && value[key] >= 0 && value[key] <= 100) {
       result[key] = Math.round(value[key] * 10) / 10;
+    }
+  }
+  for (const key of BALANCE_KEYS) {
+    if (Number.isFinite(value[key]) && value[key] >= 0 && value[key] <= 1_000_000) {
+      result[key] = Math.round(value[key] * 100) / 100;
     }
   }
   return result;
@@ -159,7 +164,7 @@ async function notifyNoData() {
 }
 
 async function sendUsage(usage = {}) {
-  const payload = pickPercentages(usage);
+  const payload = pickUsageValues(usage);
   if (Object.keys(payload).length === 0) return false;
   if (Number.isFinite(usage.updatedAt)) {
     payload.capturedAt = usage.updatedAt;

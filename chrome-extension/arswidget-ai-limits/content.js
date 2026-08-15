@@ -83,7 +83,7 @@ const SITES = [
     key: "deepseek",
     hosts: ["platform.deepseek.com"],
     isUsage: (path) => path.includes("usage"),
-    read: (ctx, usage) => { usage.deepseekRemaining = ctx.value; }
+    read: () => {}
   },
   {
     key: "gemini",
@@ -172,6 +172,10 @@ function detectUsage() {
   if (!site || !isUsagePage()) return {};
 
   const text = document.body?.innerText?.slice(0, 20_000) ?? "";
+  if (site.key === "deepseek") {
+    const balance = readDeepSeekBalance(text);
+    return balance === null ? {} : { deepseekBalanceUSD: balance };
+  }
   const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
   const usage = {};
 
@@ -181,6 +185,21 @@ function detectUsage() {
   }
 
   return usage;
+}
+
+// DeepSeek shows prepaid API balance, not a plan percentage. Read only the
+// dollar amount nearest the explicit balance label.
+function readDeepSeekBalance(text) {
+  const label = /topped[- ]up\s+balance/i;
+  const match = label.exec(text);
+  if (!match) return null;
+
+  const area = text.slice(match.index, match.index + 700);
+  const amount = area.match(/\$\s*([\d,]+(?:\.\d{1,2})?)/);
+  if (!amount) return null;
+
+  const value = Number(amount[1].replace(/,/g, ""));
+  return Number.isFinite(value) && value >= 0 && value <= 1_000_000 ? value : null;
 }
 
 function send(message) {

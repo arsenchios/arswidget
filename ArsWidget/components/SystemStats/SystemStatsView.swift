@@ -314,10 +314,10 @@ struct SystemStatsView: View {
 
     private func aiLimitRow(_ metric: AIUsageMetric) -> some View {
         let value = aiUsage.value(for: metric) ?? 0
-        let fraction = min(max(value / 100, 0), 1)
+        let fraction = metric.isPercentage ? min(max(value / 100, 0), 1) : 0
         // Nearly-exhausted limits go red; everything else keeps the vendor
         // colour so a row stays recognisable at a glance.
-        let accent = AIUsageManager.isLow(value) ? Color.red : metric.tint
+        let accent = metric.isPercentage && AIUsageManager.isLow(value) ? Color.red : metric.tint
         let dimmed = aiUsage.isStale
 
         return HStack(spacing: 7) {
@@ -331,20 +331,22 @@ struct SystemStatsView: View {
 
             Spacer(minLength: 6)
 
-            // Slim remaining-bar, same visual language as the CPU/memory rows.
-            ZStack(alignment: .leading) {
-                Capsule().fill(Color.white.opacity(0.12))
-                Capsule()
-                    .fill(accent.opacity(dimmed ? 0.4 : 1))
-                    .frame(width: 46 * fraction)
-                    .animation(.easeInOut(duration: 0.4), value: fraction)
+            if metric.isPercentage {
+                // Slim remaining-bar, same visual language as the CPU/memory rows.
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.12))
+                    Capsule()
+                        .fill(accent.opacity(dimmed ? 0.4 : 1))
+                        .frame(width: 46 * fraction)
+                        .animation(.easeInOut(duration: 0.4), value: fraction)
+                }
+                .frame(width: 46, height: 4)
             }
-            .frame(width: 46, height: 4)
 
-            Text("\(Int(value.rounded()))%")
+            Text(metric.formattedValue(value))
                 .font(.caption.monospacedDigit().weight(.semibold))
                 .foregroundStyle(accent.opacity(dimmed ? 0.5 : 1))
-                .frame(width: 36, alignment: .trailing)
+                .frame(width: metric.isPercentage ? 36 : 48, alignment: .trailing)
                 .contentTransition(.numericText())
         }
     }

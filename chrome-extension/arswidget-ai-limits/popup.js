@@ -3,7 +3,7 @@ const METRICS = [
   { key: "claudeWeeklyRemaining", title: "Claude, неделя", provider: "Claude" },
   { key: "codexWeeklyRemaining", title: "Codex, неделя", provider: "Codex" },
   { key: "chatgptRemaining", title: "ChatGPT", provider: "ChatGPT" },
-  { key: "deepseekRemaining", title: "DeepSeek", provider: "DeepSeek" },
+  { key: "deepseekBalanceUSD", title: "DeepSeek balance", provider: "DeepSeek", format: "usd" },
   { key: "geminiRemaining", title: "Gemini", provider: "Gemini" },
   { key: "perplexityRemaining", title: "Perplexity", provider: "Perplexity" },
   { key: "cursorRemaining", title: "Cursor", provider: "Cursor" },
@@ -41,7 +41,8 @@ async function render() {
     ? "ArsWidget подключён."
     : "Запусти ArsWidget, затем открой страницы лимитов.";
 
-  limits.replaceChildren(...rows.map(({ key, title }) => {
+  limits.replaceChildren(...rows.map((metric) => {
+    const { key, title } = metric;
     const row = document.createElement("div");
     row.className = "limit";
 
@@ -49,7 +50,7 @@ async function render() {
     name.textContent = title;
 
     const value = document.createElement("strong");
-    value.textContent = `${Math.round(arsWidgetUsage[key])}%`;
+    value.textContent = formatValue(arsWidgetUsage[key], metric.format);
 
     row.append(name, value);
     return row;
@@ -69,6 +70,10 @@ async function render() {
     ? `Ещё можно подключить: ${missingNames.join(", ")}. Открой нужную страницу лимитов.`
     : "";
   missing.hidden = !missingNames.length;
+}
+
+function formatValue(value, format = "percent") {
+  return format === "usd" ? `$${value.toFixed(2)}` : `${Math.round(value)}%`;
 }
 
 document.querySelector("#enable").addEventListener("click", async () => {
