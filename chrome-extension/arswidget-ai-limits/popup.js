@@ -89,7 +89,7 @@ document.querySelector("#disable").addEventListener("click", async () => {
 });
 
 document.querySelector("#openClaude").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://claude.ai/settings/usage" });
+  chrome.tabs.create({ url: "https://claude.ai/new#settings/usage" });
 });
 
 document.querySelector("#openCodex").addEventListener("click", () => {
