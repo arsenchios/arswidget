@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.2.5</title>
-            <pubDate>Sat, 15 Aug 2026 06:33:58 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.5</link>
-            <sparkle:version>1017</sparkle:version>
-            <sparkle:shortVersionString>0.2.5</sparkle:shortVersionString>
+            <title>0.2.6</title>
+            <pubDate>Sat, 15 Aug 2026 07:13:06 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.6</link>
+            <sparkle:version>1018</sparkle:version>
+            <sparkle:shortVersionString>0.2.6</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[Исправлены распознавание лимитов Claude, последовательность Pomodoro и совместное отображение таймера с лимитами.
+            <description sparkle:format="markdown"><![CDATA[Добавлен показ остатка API-баланса DeepSeek в долларах.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.5/ArsWidget-0.2.5.dmg" length="9569146" type="application/octet-stream" sparkle:edSignature="DyZqxKqp4fZz/mLLFqb3Z1TsSA1O/n70E/0Re16Xu3rodGw9egTeAhPOA7ZFTWmwqYdZSXvtN3WkC37QwzX1DQ=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.6/ArsWidget-0.2.6.dmg" length="9571049" type="application/octet-stream" sparkle:edSignature="Gc8hTw2yqtvpp0WvOfA2Q0UbfW26y2MfbuvEAusIL+an+gkBdAf4VYiCWlHUKs5YY3wTcqp09Y/AQ4/yrbp4Cw=="/>
         </item>
     </channel>
 </rss>
