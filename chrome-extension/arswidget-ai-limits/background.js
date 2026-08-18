@@ -4,6 +4,8 @@ const STATUS_KEY = "arsWidgetBridgeStatus";
 const CONSENT_KEY = "arsWidgetUsageConsent";
 const NOTIFY_KEY = "arsWidgetNotifyState";
 const RESEND_ALARM = "resendUsage";
+// Совпадает с content_scripts в манифесте: расходиться им нельзя.
+const TRACKED_URLS = chrome.runtime.getManifest().content_scripts[0].matches;
 const NOTIFY_COOLDOWN_MS = 15 * 60 * 1000;
 // Единственные поля, которые уходят в приложение. Всё остальное отбрасывается.
 const PERCENT_KEYS = [
@@ -102,8 +104,27 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name !== RESEND_ALARM) return;
   const { [USAGE_KEY]: usage = {}, [CONSENT_KEY]: enabled = false } = await chrome.storage.local.get([USAGE_KEY, CONSENT_KEY]);
   if (!enabled) return;
+  // Сначала просим страницы перечитать себя, потом отправляем.
+  // Свои таймеры у фоновой вкладки Chrome придушивает вплоть до полной
+  // остановки, поэтому возраст значений рос до часа, хотя вкладка открыта.
+  // Будильник расширения не придушивается, а доставка сообщений будит вкладку.
+  await rescanOpenTabs();
   await sendUsage(usage);
 });
+
+/// Просит все подходящие вкладки перечитать страницу.
+async function rescanOpenTabs() {
+  let tabs = [];
+  try {
+    tabs = await chrome.tabs.query({ url: TRACKED_URLS });
+  } catch {
+    return;
+  }
+  await Promise.all(tabs.map((tab) => {
+    if (typeof tab.id !== "number") return Promise.resolve();
+    return chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }).catch(() => {});
+  }));
+}
 
 async function mergeUsage(candidate) {
   const values = pickUsageValues(candidate);

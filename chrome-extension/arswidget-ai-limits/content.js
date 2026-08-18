@@ -7,6 +7,7 @@ const FIVE_HOUR = /(?:5\s*[- ]?\s*(?:hour|hours|час|часов|часа)|пя
 const WEEKLY = /(?:week|weekly|недел)/i;
 const MONTHLY = /(?:month|monthly|месяц)/i;
 const CODEX = /codex/i;
+const CHATGPT = /chat\s?gpt/i;
 const REMAINING = /(?:remaining|left|available|осталось|доступно|осталось лимита)/i;
 const USED = /(?:used|consumed|использовано|потрачено|израсходовано)/i;
 const CLAUDE_CURRENT_SESSION = /(?:current\s+session|текущ\S*\s+сесси)/i;
@@ -68,9 +69,14 @@ const SITES = [
     isUsage: (path, hash) =>
       path.includes("settings") || path.includes("codex") || hash.includes("settings"),
     read: (ctx, usage) => {
-      // Codex и обычный ChatGPT живут в одних и тех же настройках аккаунта,
-      // поэтому разделяем их по названию рядом с числом.
-      if (CODEX.test(ctx.context)) {
+      // Codex и обычный ChatGPT живут в одних и тех же настройках аккаунта.
+      // Простой проверки «есть ли слово Codex рядом» не хватает: окно текста
+      // шириной в шесть строк, и название с самого верха перетягивало чужое
+      // число себе. Считаем, чьё название стоит ближе слева от процента.
+      const toCodex = distanceToCaptionBefore(CODEX, ctx.captionContext, ctx.percentIndex);
+      const toChatGPT = distanceToCaptionBefore(CHATGPT, ctx.captionContext, ctx.percentIndex);
+
+      if (toCodex !== null && (toChatGPT === null || toCodex <= toChatGPT)) {
         if (WEEKLY.test(ctx.context)) usage.codexWeeklyRemaining = ctx.value;
         return;
       }
@@ -303,9 +309,52 @@ try {
 
 watchForUsageContent();
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === "USAGE_ENABLED") start();
+
+  // Пересканировать по команде фоновой части. Свои таймеры в фоновой вкладке
+  // Chrome придушивает, а доставку сообщений — нет, поэтому отсчёт свежести
+  // держится на этом, а не на setInterval внутри страницы.
+  if (message?.type === "RESCAN") {
+    lastUsage = "";
+    reportUsage();
+  }
+
+  // Что скрипт видит на странице. Нужно, когда сервис поменял вёрстку и
+  // проценты перестали находиться: без этого причину можно только угадывать.
+  if (message?.type === "DIAGNOSE") {
+    sendResponse(collectDiagnostics());
+    return true;
+  }
 });
+
+function collectDiagnostics() {
+  const site = currentSite();
+  const text = document.body?.innerText?.slice(0, 20_000) ?? "";
+  const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+
+  // Только строки с процентом и пара строк вокруг — остальное не нужно и
+  // незачем показывать: это чужая страница.
+  const interesting = [];
+  lines.forEach((line, index) => {
+    if (!/\d\s*%/.test(line)) return;
+    for (let offset = -3; offset <= 1; offset += 1) {
+      const neighbour = lines[index + offset];
+      if (neighbour && !interesting.includes(neighbour)) interesting.push(neighbour);
+    }
+  });
+
+  return {
+    host: location.hostname,
+    path: location.pathname,
+    hash: location.hash,
+    site: site?.key ?? null,
+    isUsagePage: isUsagePage(),
+    consent: isEnabled,
+    detected: detectUsage(),
+    linesWithPercent: interesting.slice(0, 60)
+  };
+}
 
 new MutationObserver(scheduleReport).observe(document.documentElement, {
   childList: true,

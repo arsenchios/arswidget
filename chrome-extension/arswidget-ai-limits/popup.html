@@ -39,6 +39,10 @@
       <button class="secondary" id="openCursor">Открыть Cursor</button>
       <button class="secondary" id="openGrok">Открыть Grok</button>
       <button class="secondary" id="refresh">Обновить сейчас</button>
+      <button class="secondary" id="diagnose">Что видит расширение</button>
+      <textarea id="diagnosis" hidden readonly rows="10"
+                aria-label="Что расширение видит на этой странице"></textarea>
+      <button class="secondary" id="copyDiagnosis" hidden>Скопировать</button>
       <button class="text" id="disable" hidden>Отключить показ лимитов</button>
     </main>
     <script src="popup.js"></script>

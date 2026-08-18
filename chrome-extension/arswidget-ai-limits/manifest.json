@@ -1,9 +1,13 @@
 {
   "manifest_version": 3,
   "name": "ArsWidget AI Limits",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Показывает остаток доступного использования поддерживаемых AI-сервисов в ArsWidget на этом Mac.",
-  "permissions": ["alarms", "storage", "notifications"],
+  "permissions": [
+    "alarms",
+    "storage",
+    "notifications"
+  ],
   "host_permissions": [
     "http://127.0.0.1:63554/*",
     "https://claude.ai/*",
@@ -38,7 +42,9 @@
         "https://www.cursor.com/*",
         "https://grok.com/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],

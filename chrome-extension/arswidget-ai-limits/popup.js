@@ -127,3 +127,60 @@ chrome.storage.onChanged.addListener((_changes, area) => {
 });
 
 render();
+
+// ─── Диагностика ─────────────────────────────────────────────────────────────
+// Когда сервис меняет вёрстку, проценты перестают находиться, и снаружи это
+// выглядит как «расширение не работает». Эта кнопка показывает, что скрипт
+// реально видит на открытой странице, — чтобы чинить по факту, а не наугад.
+
+const diagnosis = document.querySelector("#diagnosis");
+const copyDiagnosis = document.querySelector("#copyDiagnosis");
+
+function describe(report) {
+  if (!report) {
+    return "На этой вкладке расширение не работает.\n\n" +
+      "Открой страницу лимитов (кнопки выше) и нажми ещё раз.";
+  }
+  const lines = [
+    `сайт:        ${report.site ?? "не поддерживается"}`,
+    `адрес:       ${report.host}${report.path}${report.hash}`,
+    `страница лимитов: ${report.isUsagePage ? "да" : "НЕТ"}`,
+    `показ включён:    ${report.consent ? "да" : "НЕТ"}`,
+    `распознано:  ${JSON.stringify(report.detected)}`,
+    "",
+    "строки с процентами на странице:"
+  ];
+  if (report.linesWithPercent.length === 0) {
+    lines.push("  (процентов на странице не найдено)");
+  } else {
+    for (const line of report.linesWithPercent) lines.push("  " + line);
+  }
+  return lines.join("\n");
+}
+
+document.querySelector("#diagnose").addEventListener("click", async () => {
+  diagnosis.hidden = false;
+  copyDiagnosis.hidden = false;
+  diagnosis.value = "Смотрю…";
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab || typeof tab.id !== "number") {
+    diagnosis.value = describe(null);
+    return;
+  }
+  try {
+    const report = await chrome.tabs.sendMessage(tab.id, { type: "DIAGNOSE" });
+    diagnosis.value = describe(report);
+  } catch {
+    // Скрипт в эту вкладку не внедрён — значит, адрес не из списка,
+    // либо вкладку открыли до установки расширения.
+    diagnosis.value = describe(null) +
+      "\n\nЕсли адрес правильный — перезагрузи вкладку: скрипт внедряется при загрузке.";
+  }
+});
+
+copyDiagnosis.addEventListener("click", async () => {
+  await navigator.clipboard.writeText(diagnosis.value);
+  copyDiagnosis.textContent = "Скопировано";
+  window.setTimeout(() => { copyDiagnosis.textContent = "Скопировать"; }, 1500);
+});

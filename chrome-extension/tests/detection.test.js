@@ -74,18 +74,27 @@ const cases = [
     expect: { claudeFiveHourRemaining: 66 }
   },
   {
-    name: "Слово-признак стоит после числа",
+    // DeepSeek перевели с процентов на остаток оплаченного баланса:
+    // проценты плана он не показывает, показывает деньги.
+    name: "DeepSeek: остаток баланса в долларах",
+    host: "platform.deepseek.com",
+    path: "/usage",
+    body: "API Usage\nTopped-up Balance\n$ 12.35\nGranted Balance\n$ 0.00",
+    expect: { deepseekBalanceUSD: 12.35 }
+  },
+  {
+    name: "DeepSeek: без подписи баланса ничего не берём",
+    host: "platform.deepseek.com",
+    path: "/usage",
+    body: "API Usage\nSome other number\n$ 99.00",
+    expect: {}
+  },
+  {
+    name: "DeepSeek: проценты на странице больше не читаются",
     host: "platform.deepseek.com",
     path: "/usage",
     body: "Quota\n64%\nremaining this month",
-    expect: { deepseekRemaining: 64 }
-  },
-  {
-    name: "DeepSeek: слово-признак над числом",
-    host: "platform.deepseek.com",
-    path: "/usage",
-    body: "Usage\nBalance\nremaining\n64%",
-    expect: { deepseekRemaining: 64 }
+    expect: {}
   },
   {
     name: "Codex: название сервиса двумя строками выше",

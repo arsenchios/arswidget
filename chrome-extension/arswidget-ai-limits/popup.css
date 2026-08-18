@@ -19,3 +19,4 @@ p { margin: 0; line-height: 1.4; color: #b6bac2; }
 button { width: 100%; border: 0; border-radius: 8px; padding: 10px; background: #1677ff; color: #fff; cursor: pointer; font: inherit; font-weight: 650; }
 button.secondary { margin-top: 8px; background: #26292d; color: #eceef0; }
 button.text { margin-top: 10px; padding: 4px; background: transparent; color: #9ba4b2; font-size: 12px; font-weight: 500; }
+textarea { width: 100%; margin-top: 8px; padding: 8px; border-radius: 8px; border: 1px solid #2a2d31; background: #17191c; color: #c8ccd2; font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
