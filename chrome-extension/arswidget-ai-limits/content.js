@@ -22,6 +22,10 @@ const CLAUDE_USAGE_CREDITS = /(?:usage\s+credits?|кредит\S*\s+исполь
 const REFRESH_LABEL = /(?:^|\s)(?:refresh|reload|обновить|обновление|оновити)(?:\s|$)/i;
 const REFRESH_FORBIDDEN = /(?:plan|billing|upgrade|subscription|checkout|delete|cancel|logout|sign\s?out|тариф|оплат|подписк|удал|отмен|выход)/i;
 const REFRESH_LABEL_MAX = 24;
+// У Claude кнопка обновления — иконка без подписи, зато рядом с ней написано
+// «Last updated: just now». По этому тексту её и находим, если подписи нет.
+const LAST_UPDATED = /(?:last\s+updated|обновлено|оновлено)/i;
+const LAST_UPDATED_BOX_MAX = 60;
 
 const HEARTBEAT_MS = 55_000;
 const EMPTY_SCANS_BEFORE_WARNING = 6;
@@ -29,6 +33,13 @@ const WARNING_GRACE_MS = 20_000;
 // Сколько строк вокруг числа считаем его окружением.
 const CAPTION_LINES_BEFORE = 6;
 const CONTEXT_LINES_AFTER = 2;
+// Значение лимита на этих страницах всегда стоит в своей короткой строке:
+// «39% used», «12% remaining». Проценты внутри длинного абзаца — это текст, а
+// не показатель. У Claude прямо между недельной подписью и её числом висит
+// баннер «Your weekly Claude Code limit is 50% higher through August 19»: без
+// этого ограничения расширение читало из него 50% и записывало как недельный
+// лимит, а настоящие 20% уже не могли его перебить.
+const VALUE_LINE_MAX = 64;
 
 const openedAt = Date.now();
 let lastUsage = "";
@@ -168,6 +179,8 @@ function createSink() {
 /// Процент относится к своей строке, прочитанной вместе с соседними.
 function readPercentage(lines, index, site) {
   const line = lines[index];
+  if (line.length > VALUE_LINE_MAX) return null;
+
   const match = line.match(/(\d{1,3}(?:[.,]\d+)?)\s*%/);
   if (!match) return null;
 
@@ -383,23 +396,55 @@ function watchForUsageContent() {
 /// «Last updated» и стоит кнопка обновления. Нажимаем её сами, иначе виджет
 /// честно показывает свежесть чтения страницы, а на странице — цифры часовой
 /// давности. Совпадение только по полной подписи кнопки.
-function findRefreshControl() {
-  const controls = document.querySelectorAll('button, [role="button"]');
-  for (const control of controls) {
-    if (control.disabled || control.getAttribute("aria-disabled") === "true") continue;
-    const label = (
-      control.getAttribute("aria-label") ||
-      control.getAttribute("title") ||
-      control.textContent ||
-      ""
-    ).replace(/\s+/g, " ").trim();
+function controlLabel(control) {
+  return (
+    control.getAttribute?.("aria-label") ||
+    control.getAttribute?.("title") ||
+    control.textContent ||
+    ""
+  ).replace(/\s+/g, " ").trim();
+}
 
+function isDisabled(control) {
+  return Boolean(control.disabled) || control.getAttribute?.("aria-disabled") === "true";
+}
+
+/// Первый способ: у кнопки есть подпись, и вся она — про обновление.
+function findRefreshByLabel() {
+  for (const control of document.querySelectorAll('button, [role="button"]')) {
+    if (isDisabled(control)) continue;
+    const label = controlLabel(control);
     if (label.length === 0 || label.length > REFRESH_LABEL_MAX) continue;
     if (!REFRESH_LABEL.test(label)) continue;
     if (REFRESH_FORBIDDEN.test(label)) continue;
     return control;
   }
   return null;
+}
+
+/// Второй способ: подписи нет вовсе — кнопка нарисована иконкой. Тогда ищем
+/// самый тесный блок, в котором написано «Last updated…», и берём кнопку
+/// оттуда. Кнопка должна быть в этом блоке единственной, иначе непонятно, на
+/// что мы нажимаем, и лучше не нажимать вообще.
+function findRefreshNearLastUpdated() {
+  for (const box of document.querySelectorAll("div, p, span, section")) {
+    if (typeof box.querySelectorAll !== "function") continue;
+    const text = (box.textContent ?? "").replace(/\s+/g, " ").trim();
+    if (text.length === 0 || text.length > LAST_UPDATED_BOX_MAX) continue;
+    if (!LAST_UPDATED.test(text)) continue;
+
+    const controls = box.querySelectorAll('button, [role="button"]');
+    if (controls.length !== 1) continue;
+    const control = controls[0];
+    if (isDisabled(control)) continue;
+    if (REFRESH_FORBIDDEN.test(controlLabel(control))) continue;
+    return control;
+  }
+  return null;
+}
+
+function findRefreshControl() {
+  return findRefreshByLabel() ?? findRefreshNearLastUpdated();
 }
 
 function clickRefreshControl() {

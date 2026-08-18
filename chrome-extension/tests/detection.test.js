@@ -76,6 +76,38 @@ const cases = [
     expect: { claudeFiveHourRemaining: 61, claudeWeeklyRemaining: 80 }
   },
   {
+    // Между недельной подписью и её числом Claude вешает баннер про акцию, а
+    // в нём тоже стоят проценты: «weekly Claude Code limit is 50% higher».
+    // Слово «weekly» там ближе к числу, чем настоящая подпись, поэтому 50%
+    // записывались как недельный лимит и настоящие 20% уже не проходили.
+    // Значение лимита всегда стоит в своей короткой строке — длинный абзац
+    // числом больше не считается.
+    name: "Claude: баннер про акцию не читается как лимит",
+    host: "claude.ai",
+    path: "/new",
+    hash: "#settings/usage",
+    body: [
+      "Plan usage limits Pro",
+      "Current session",
+      "Resets in 4 hr 10 min",
+      "39% used",
+      "Weekly limits",
+      "Your limits are temporarily boosted. Your weekly Claude Code limit is 50% higher through August 19, and your Cowork limit is 100% higher through August 5. When each promotion ends, limits return to your plan's standard amounts.",
+      "Learn more about usage limits",
+      "All models",
+      "Resets Fri 7:59 PM",
+      "20% used",
+      "Last updated: just now",
+      "Usage credits",
+      "Turn on usage credits to keep using Claude if you hit a plan limit. Learn more",
+      "$17.64 spent",
+      "Resets Sep 1",
+      "88% used"
+    ].join("\n"),
+    expect: { claudeFiveHourRemaining: 61, claudeWeeklyRemaining: 80 },
+    approximate: []
+  },
+  {
     // Внутри недельного блока идёт ещё строка по отдельной модели. Общий
     // лимит стоит первым, и подменять его частным нельзя.
     name: "Claude: общий недельный лимит не перебивается строкой по модели",
@@ -154,6 +186,26 @@ const cases = [
     path: "/usage",
     body: "API Usage\nTopped-up Balance\n$ 12.35\nGranted Balance\n$ 0.00",
     expect: { deepseekBalanceUSD: 12.35 }
+  },
+  {
+    // Настоящая раскладка страницы. Рядом стоит вторая сумма — «Total cost»,
+    // и брать надо именно остаток, а не потраченное.
+    name: "DeepSeek: живая страница — берём остаток, а не расход",
+    host: "platform.deepseek.com",
+    path: "/usage",
+    body: [
+      "Usage",
+      "All dates and times are GMT+8, and data may be delayed up to 5 minutes.",
+      "Topped-up balance",
+      "Balance alert disabled Settings",
+      "$1.26",
+      "USD",
+      "Top up",
+      "Total cost",
+      "$0.73",
+      "USD"
+    ].join("\n"),
+    expect: { deepseekBalanceUSD: 1.26 }
   },
   {
     name: "DeepSeek: без подписи баланса ничего не берём",
@@ -299,20 +351,20 @@ function checkSinglePageNavigation() {
 /// Расширение само нажимает на странице кнопку обновления — это единственное
 /// его действие на чужом сайте. Промах здесь дороже пропуска: нажатие на
 /// «Update plan» уводит человека на оплату. Поэтому подписи проверяем отдельно.
-function checkRefreshButtonChoice() {
+function runRefreshScenario({ buttonLabels = [], boxes = [] }) {
   const clicked = [];
-  const controls = [
-    { label: "Upgrade plan" },
-    { label: "Update plan" },
-    { label: "Cancel subscription" },
-    { label: "Reload the entire application from scratch please" },
-    { label: "Refresh" },
-    { label: "Обновить" }
-  ].map((control) => ({
+  const makeButton = (label) => ({
     disabled: false,
-    getAttribute: (name) => (name === "aria-label" ? control.label : null),
-    textContent: control.label,
-    click: () => clicked.push(control.label)
+    getAttribute: (name) => (name === "aria-label" ? label : null),
+    textContent: label,
+    click: () => clicked.push(label || "(иконка)")
+  });
+
+  const buttons = buttonLabels.map(makeButton);
+  const boxNodes = boxes.map((box) => ({
+    textContent: box.text,
+    getAttribute: () => null,
+    querySelectorAll: () => box.buttonIndexes.map((index) => buttons[index])
   }));
 
   const sandbox = {
@@ -320,7 +372,8 @@ function checkRefreshButtonChoice() {
     document: {
       body: { innerText: "" },
       documentElement: {},
-      querySelectorAll: () => controls
+      // Селектор различаем грубо: кнопки или контейнеры.
+      querySelectorAll: (selector) => (selector.includes("button") ? buttons : boxNodes)
     },
     window: { setTimeout: () => 0, setInterval: () => 0 },
     MutationObserver: class { observe() {} },
@@ -336,9 +389,54 @@ function checkRefreshButtonChoice() {
   vm.createContext(sandbox);
   vm.runInContext(fs.readFileSync(CONTENT_SCRIPT, "utf8"), sandbox);
   const found = vm.runInContext("clickRefreshControl()", sandbox);
+  return { found, clicked };
+}
 
+/// Расширение само нажимает на странице кнопку обновления — это единственное
+/// его действие на чужом сайте. Промах здесь дороже пропуска: нажатие на
+/// «Update plan» уводит человека на оплату.
+function checkRefreshButtonChoice() {
+  const { found, clicked } = runRefreshScenario({
+    buttonLabels: [
+      "Upgrade plan",
+      "Update plan",
+      "Cancel subscription",
+      "Reload the entire application from scratch please",
+      "Refresh",
+      "Обновить"
+    ]
+  });
   return {
     ok: found === true && clicked.length === 1 && clicked[0] === "Refresh",
+    detail: `нажато: ${JSON.stringify(clicked)}`
+  };
+}
+
+/// На живой странице Claude кнопка обновления нарисована иконкой и подписи у
+/// неё нет — зато рядом написано «Last updated: just now».
+function checkRefreshIconNearLastUpdated() {
+  const { found, clicked } = runRefreshScenario({
+    buttonLabels: ["Upgrade plan", ""],
+    boxes: [
+      { text: "Plan usage limits Pro", buttonIndexes: [0] },
+      { text: "Last updated: just now", buttonIndexes: [1] }
+    ]
+  });
+  return {
+    ok: found === true && clicked.length === 1 && clicked[0] === "(иконка)",
+    detail: `нажато: ${JSON.stringify(clicked)}`
+  };
+}
+
+/// Если в блоке рядом с «Last updated» кнопок несколько, непонятно, на какую
+/// нажимать. Лучше не нажимать вообще, чем угадывать.
+function checkRefreshSkipsAmbiguousBox() {
+  const { found, clicked } = runRefreshScenario({
+    buttonLabels: ["", ""],
+    boxes: [{ text: "Last updated: just now", buttonIndexes: [0, 1] }]
+  });
+  return {
+    ok: found === false && clicked.length === 0,
     detail: `нажато: ${JSON.stringify(clicked)}`
   };
 }
@@ -365,7 +463,9 @@ for (const testCase of cases) {
 
 const extras = [
   ["Переход на страницу лимитов внутри сайта, без перезагрузки", checkSinglePageNavigation()],
-  ["Нажимаем только кнопку обновления, а не «Update plan»", checkRefreshButtonChoice()]
+  ["Нажимаем только кнопку обновления, а не «Update plan»", checkRefreshButtonChoice()],
+  ["Кнопка-иконка находится по соседству с «Last updated»", checkRefreshIconNearLastUpdated()],
+  ["Если кнопок рядом несколько — не нажимаем ни одну", checkRefreshSkipsAmbiguousBox()]
 ];
 const total = cases.length + extras.length;
 for (const [name, result] of extras) {
