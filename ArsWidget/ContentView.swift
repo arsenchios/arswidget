@@ -78,19 +78,16 @@ struct ContentView: View {
             chinWidth += (2 * max(0, vm.effectiveClosedNotchHeight - 12) + 20)
         }
 
-        if shouldShowClosedPomodoroIndicator {
-            chinWidth += max(0, vm.effectiveClosedNotchHeight + 30)
-        }
-
-        if shouldShowClosedAIUsageIndicators {
-            chinWidth += closedAIUsageWidth
-        }
+        // Отступ зеркалится слева (см. ClosedActivityIndicators), поэтому в
+        // ширину зоны наведения он входит дважды.
+        chinWidth += 2 * closedTrailingIndicatorsWidth
 
         return chinWidth
     }
 
-    private static let closedAIUsageCapsuleWidth: CGFloat = 38
     private static let closedAIUsageCapsuleSpacing: CGFloat = 5
+    /// Просвет между самим вырезом и первой капсулой.
+    private static let closedIndicatorsGap: CGFloat = 8
 
     /// The closed notch has room for a short, readable status row. Pomodoro
     /// keeps priority and the full list remains available in the System tab.
@@ -99,15 +96,37 @@ struct ContentView: View {
         return Array(aiUsageManager.connectedMetrics.prefix(maximum))
     }
 
+    /// Ширина капсулы считается по её собственному тексту. Одной константы не
+    /// хватает: «Cx 6%» и «DS $17.64» разной длины, а капсула по константе
+    /// обрезала буквы — снаружи это выглядит как поломка виджета.
+    private func closedAIUsageCapsuleWidth(for metric: AIUsageMetric) -> CGFloat {
+        let value = aiUsageManager.value(for: metric)
+        let number = value.map(metric.formattedValue) ?? "—"
+        let label = CGFloat(metric.shortLabel.count) * 6.2
+        return ceil(label + CGFloat(number.count) * 6.6 + 17)
+    }
+
     /// Matches the capsules actually drawn.
     private var closedAIUsageWidth: CGFloat {
-        let count = closedAIUsageMetrics.count
-        guard count > 0 else { return 0 }
-        return closedAIUsageMetrics.reduce(CGFloat(0)) { partial, metric in
-            partial + (metric.isPercentage ? Self.closedAIUsageCapsuleWidth : 56)
+        let metrics = closedAIUsageMetrics
+        guard !metrics.isEmpty else { return 0 }
+        return metrics.reduce(CGFloat(0)) { partial, metric in
+            partial + closedAIUsageCapsuleWidth(for: metric)
         }
-            + CGFloat(count - 1) * Self.closedAIUsageCapsuleSpacing
-            + 8
+            + CGFloat(metrics.count - 1) * Self.closedAIUsageCapsuleSpacing
+    }
+
+    private var closedPomodoroWidth: CGFloat {
+        shouldShowClosedPomodoroIndicator ? max(0, vm.effectiveClosedNotchHeight + 18) : 0
+    }
+
+    /// Всё, что дорисовано справа от выреза в свёрнутом виде.
+    private var closedTrailingIndicatorsWidth: CGFloat {
+        let pomodoro = closedPomodoroWidth
+        let ai = shouldShowClosedAIUsageIndicators ? closedAIUsageWidth : 0
+        guard pomodoro > 0 || ai > 0 else { return 0 }
+        let between: CGFloat = (pomodoro > 0 && ai > 0) ? Self.closedAIUsageCapsuleSpacing : 0
+        return Self.closedIndicatorsGap + pomodoro + between + ai
     }
 
     private var shouldShowClosedPomodoroIndicator: Bool {
@@ -597,12 +616,23 @@ struct ContentView: View {
 
     @ViewBuilder
     func ClosedActivityIndicators() -> some View {
-        HStack(spacing: 5) {
+        // Окно виджета центрируется по экрану. Всё, что дорисовано справа,
+        // уводит чёрный прямоугольник влево от настоящего выреза — и капсулы
+        // уезжают под него, обрезая буквы и проценты. Зеркальный пустой
+        // отступ слева держит вырез ровно на своём месте.
+        HStack(spacing: 0) {
+            Color.clear
+                .frame(width: closedTrailingIndicatorsWidth)
+
             Rectangle()
                 .fill(.black)
-                .frame(width: vm.closedNotchSize.width - 10)
+                .frame(width: vm.closedNotchSize.width)
 
-            closedStatusIndicators
+            HStack(spacing: Self.closedAIUsageCapsuleSpacing) {
+                closedStatusIndicators
+            }
+            .padding(.leading, Self.closedIndicatorsGap)
+            .frame(width: closedTrailingIndicatorsWidth, alignment: .leading)
         }
         .frame(height: vm.effectiveClosedNotchHeight, alignment: .center)
     }
@@ -642,25 +672,35 @@ struct ContentView: View {
         HStack(spacing: Self.closedAIUsageCapsuleSpacing) {
             ForEach(closedAIUsageMetrics) { metric in
                 if let value = aiUsageManager.value(for: metric) {
-                    aiUsageCapsule(label: metric.shortLabel, value: value, color: metric.tint)
+                    aiUsageCapsule(metric: metric, value: value)
                 }
             }
         }
     }
 
-    private func aiUsageCapsule(label: String, value: Double, color: Color) -> some View {
-        let accent = label == "DS" ? color : (AIUsageManager.isLow(value) ? Color.red : color)
+    private func aiUsageCapsule(metric: AIUsageMetric, value: Double) -> some View {
+        // Проценты у DeepSeek не показываются — там остаток денег, и «мало
+        // осталось» для него значит другое.
+        let accent = metric.isPercentage && AIUsageManager.isLow(value) ? Color.red : metric.tint
 
         return HStack(spacing: 3) {
-            Text(label)
+            Text(metric.shortLabel)
                 .font(.system(size: 9, weight: .bold, design: .rounded))
-            Text(label == "DS" ? String(format: "$%.2f", value) : "\(Int(value.rounded()))")
+            // Единица измерения нужна прямо в капсуле: без неё «6» читается как
+            // что угодно, а у DeepSeek рядом стоят доллары.
+            Text(metric.formattedValue(value))
                 .font(.system(size: 10, weight: .bold, design: .rounded))
+                .monospacedDigit()
                 .contentTransition(.numericText())
         }
+        .lineLimit(1)
+        .fixedSize()
         // Stale numbers are dimmed instead of silently pretending to be live.
         .foregroundStyle(accent.opacity(aiUsageManager.isStale ? 0.45 : 1))
-        .frame(width: label == "DS" ? 56 : Self.closedAIUsageCapsuleWidth, height: max(0, vm.effectiveClosedNotchHeight - 12))
+        .frame(
+            width: closedAIUsageCapsuleWidth(for: metric),
+            height: max(0, vm.effectiveClosedNotchHeight - 12)
+        )
         .background(Color.white.opacity(0.06))
         .clipShape(Capsule())
     }

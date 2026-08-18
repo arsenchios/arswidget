@@ -14,10 +14,10 @@ const CONTENT_SCRIPT = path.join(__dirname, "..", "arswidget-ai-limits", "conten
 
 /// Прогоняет content.js в песочнице с поддельной страницей и возвращает то,
 /// что скрипт отправил бы в фоновую часть расширения.
-function detect(hostname, pathname, bodyText) {
+function detect(hostname, pathname, bodyText, hash = "") {
   const sent = [];
   const sandbox = {
-    location: { hostname, pathname, hash: "", href: "" },
+    location: { hostname, pathname, hash, href: "" },
     document: { body: { innerText: bodyText }, documentElement: {} },
     window: { setTimeout: () => 0, setInterval: () => 0 },
     MutationObserver: class { observe() {} },
@@ -41,7 +41,7 @@ function detect(hostname, pathname, bodyText) {
   vm.runInContext(fs.readFileSync(CONTENT_SCRIPT, "utf8"), sandbox);
   // start() ставит скан через setTimeout, здесь вызываем скан напрямую.
   vm.runInContext("reportUsage()", sandbox);
-  return sent[0]?.usage ?? {};
+  return { usage: sent[0]?.usage ?? {}, approximate: sent[0]?.approximate ?? [] };
 }
 
 const cases = [
@@ -51,6 +51,79 @@ const cases = [
     path: "/settings/usage",
     body: "5-hour limit · 12% remaining\nWeekly limit · 88% remaining",
     expect: { claudeFiveHourRemaining: 12, claudeWeeklyRemaining: 88 }
+  },
+  {
+    // Настоящая раскладка страницы на август 2026, снятая со скриншота.
+    // Недельный процент терялся: следующей строкой начинался блок «Usage
+    // credits», и число выбрасывалось вместе с ним.
+    name: "Claude: живая страница — сессия, неделя и кредиты подряд",
+    host: "claude.ai",
+    path: "/new",
+    hash: "#settings/usage",
+    body: [
+      "Usage",
+      "Current session",
+      "Resets in 4 hr 10 min",
+      "39% used",
+      "Weekly limits",
+      "All models",
+      "Resets Fri 7:59 PM",
+      "20% used",
+      "Usage credits",
+      "$17.64 spent",
+      "88% used"
+    ].join("\n"),
+    expect: { claudeFiveHourRemaining: 61, claudeWeeklyRemaining: 80 }
+  },
+  {
+    // Внутри недельного блока идёт ещё строка по отдельной модели. Общий
+    // лимит стоит первым, и подменять его частным нельзя.
+    name: "Claude: общий недельный лимит не перебивается строкой по модели",
+    host: "claude.ai",
+    path: "/new",
+    hash: "#settings/usage",
+    body: [
+      "Weekly limits",
+      "All models",
+      "Resets Fri 7:59 PM",
+      "20% used",
+      "Claude Opus 4.6",
+      "Resets Fri 7:59 PM",
+      "5% used"
+    ].join("\n"),
+    expect: { claudeWeeklyRemaining: 80 }
+  },
+  {
+    // Слово «used» сайт рисует отдельным элементом и оно может пропасть.
+    // Пустой экран хуже приблизительного числа, поэтому считаем как
+    // «использовано» — это единственный формат у всех таких страниц.
+    name: "Claude: слово-признак пропало — читаем приблизительно",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: "Current session\nResets in 4 hr 10 min\n39%",
+    expect: { claudeFiveHourRemaining: 61 },
+    approximate: ["claudeFiveHourRemaining"]
+  },
+  {
+    // Догадка не должна перебивать честно прочитанное значение.
+    name: "Claude: точное значение важнее догадки",
+    host: "claude.ai",
+    path: "/settings/usage",
+    body: [
+      "Current session",
+      "Resets in 4 hr",
+      "39%",
+      "Прочий текст страницы",
+      "строка",
+      "строка",
+      "строка",
+      "строка",
+      "строка",
+      "Current session",
+      "25% used"
+    ].join("\n"),
+    expect: { claudeFiveHourRemaining: 75 },
+    approximate: []
   },
   {
     name: "Claude: значения блоками",
@@ -223,28 +296,86 @@ function checkSinglePageNavigation() {
   };
 }
 
+/// Расширение само нажимает на странице кнопку обновления — это единственное
+/// его действие на чужом сайте. Промах здесь дороже пропуска: нажатие на
+/// «Update plan» уводит человека на оплату. Поэтому подписи проверяем отдельно.
+function checkRefreshButtonChoice() {
+  const clicked = [];
+  const controls = [
+    { label: "Upgrade plan" },
+    { label: "Update plan" },
+    { label: "Cancel subscription" },
+    { label: "Reload the entire application from scratch please" },
+    { label: "Refresh" },
+    { label: "Обновить" }
+  ].map((control) => ({
+    disabled: false,
+    getAttribute: (name) => (name === "aria-label" ? control.label : null),
+    textContent: control.label,
+    click: () => clicked.push(control.label)
+  }));
+
+  const sandbox = {
+    location: { hostname: "claude.ai", pathname: "/settings/usage", hash: "", href: "" },
+    document: {
+      body: { innerText: "" },
+      documentElement: {},
+      querySelectorAll: () => controls
+    },
+    window: { setTimeout: () => 0, setInterval: () => 0 },
+    MutationObserver: class { observe() {} },
+    chrome: {
+      runtime: {
+        lastError: null,
+        sendMessage: (_message, callback) => { if (callback) callback({ enabled: false }); },
+        onMessage: { addListener: () => {} }
+      }
+    }
+  };
+  sandbox.globalThis = sandbox;
+  vm.createContext(sandbox);
+  vm.runInContext(fs.readFileSync(CONTENT_SCRIPT, "utf8"), sandbox);
+  const found = vm.runInContext("clickRefreshControl()", sandbox);
+
+  return {
+    ok: found === true && clicked.length === 1 && clicked[0] === "Refresh",
+    detail: `нажато: ${JSON.stringify(clicked)}`
+  };
+}
+
 let failed = 0;
 for (const testCase of cases) {
-  const actual = detect(testCase.host, testCase.path, testCase.body);
-  const ok = JSON.stringify(actual) === JSON.stringify(testCase.expect);
-  if (!ok) {
+  const actual = detect(testCase.host, testCase.path, testCase.body, testCase.hash);
+  const valuesOk = JSON.stringify(actual.usage) === JSON.stringify(testCase.expect);
+  // Приблизительные значения проверяем только там, где тест их описывает.
+  const approxOk = testCase.approximate === undefined
+    || JSON.stringify(actual.approximate) === JSON.stringify(testCase.approximate);
+
+  if (!valuesOk || !approxOk) {
     failed += 1;
     console.error(`FAIL  ${testCase.name}`);
-    console.error(`      ожидалось ${JSON.stringify(testCase.expect)}`);
-    console.error(`      получено  ${JSON.stringify(actual)}`);
+    console.error(`      ожидалось ${JSON.stringify(testCase.expect)}`
+      + (testCase.approximate === undefined ? "" : ` прибл. ${JSON.stringify(testCase.approximate)}`));
+    console.error(`      получено  ${JSON.stringify(actual.usage)}`
+      + (testCase.approximate === undefined ? "" : ` прибл. ${JSON.stringify(actual.approximate)}`));
   } else {
     console.log(`ok    ${testCase.name}`);
   }
 }
 
-const spa = checkSinglePageNavigation();
-const total = cases.length + 1;
-if (spa.ok) {
-  console.log("ok    Переход на страницу лимитов внутри сайта, без перезагрузки");
-} else {
-  failed += 1;
-  console.error("FAIL  Переход на страницу лимитов внутри сайта, без перезагрузки");
-  console.error(`      получено  ${spa.detail}`);
+const extras = [
+  ["Переход на страницу лимитов внутри сайта, без перезагрузки", checkSinglePageNavigation()],
+  ["Нажимаем только кнопку обновления, а не «Update plan»", checkRefreshButtonChoice()]
+];
+const total = cases.length + extras.length;
+for (const [name, result] of extras) {
+  if (result.ok) {
+    console.log(`ok    ${name}`);
+  } else {
+    failed += 1;
+    console.error(`FAIL  ${name}`);
+    console.error(`      получено  ${result.detail}`);
+  }
 }
 
 if (failed > 0) {

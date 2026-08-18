@@ -13,31 +13,16 @@
       <p id="status">Проверяю связь с ArsWidget...</p>
       <div class="limits" id="limits" hidden></div>
       <p class="freshness" id="freshness" hidden></p>
-      <p class="hint" id="missing" hidden></p>
+      <p class="warn" id="stale" hidden></p>
       <section class="consent" id="consent" hidden>
         <p>Расширение читает только видимые проценты лимитов на открытых страницах и передаёт их в ArsWidget на этом Mac.</p>
         <button id="enable">Включить и подключить ArsWidget</button>
       </section>
-      <p class="hint">Держи страницы лимитов открытыми — вкладки можно закрепить.</p>
-      <details class="howto">
-        <summary>Какие сайты можно подключить</summary>
-        <ul>
-          <li>Claude — claude.ai → Settings → Usage</li>
-          <li>Codex — chatgpt.com/codex/cloud/settings/analytics</li>
-          <li>DeepSeek — остаток API-баланса в долларах</li>
-          <li>Gemini — aistudio.google.com</li>
-          <li>Perplexity — perplexity.ai → настройки аккаунта</li>
-          <li>Cursor — cursor.com/dashboard</li>
-          <li>Grok — grok.com → настройки</li>
-        </ul>
-      </details>
-      <button id="openClaude">Открыть Claude Usage</button>
-      <button class="secondary" id="openCodex">Открыть Codex Analytics</button>
-      <button class="secondary" id="openDeepSeek">Открыть DeepSeek API Usage</button>
-      <button class="secondary" id="openGemini">Открыть Gemini (AI Studio)</button>
-      <button class="secondary" id="openPerplexity">Открыть Perplexity</button>
-      <button class="secondary" id="openCursor">Открыть Cursor</button>
-      <button class="secondary" id="openGrok">Открыть Grok</button>
+
+      <h2>Что сейчас видно</h2>
+      <div class="state" id="state"></div>
+      <p class="hint">Держи страницы лимитов открытыми — вкладки можно закрепить. Раз в 10 минут расширение само нажимает на них «Обновить».</p>
+
       <button class="secondary" id="refresh">Обновить сейчас</button>
       <button class="secondary" id="diagnose">Что видит расширение</button>
       <textarea id="diagnosis" hidden readonly rows="10"

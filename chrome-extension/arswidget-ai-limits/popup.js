@@ -10,6 +10,62 @@ const METRICS = [
   { key: "grokRemaining", title: "Grok", provider: "Grok" }
 ];
 
+// Сервис = одна строка состояния. `site` совпадает с ключом в content.js,
+// `keys` — значения, которые с этого сайта приходят.
+const SERVICES = [
+  {
+    site: "claude",
+    name: "Claude",
+    keys: ["claudeFiveHourRemaining", "claudeWeeklyRemaining"],
+    url: "https://claude.ai/new#settings/usage",
+    where: "Settings → Usage"
+  },
+  {
+    site: "openai",
+    name: "Codex и ChatGPT",
+    keys: ["codexWeeklyRemaining", "chatgptRemaining"],
+    url: "https://chatgpt.com/codex/cloud/settings/analytics",
+    where: "Codex → Settings → Analytics"
+  },
+  {
+    site: "deepseek",
+    name: "DeepSeek",
+    keys: ["deepseekBalanceUSD"],
+    url: "https://platform.deepseek.com/usage",
+    where: "остаток API-баланса"
+  },
+  {
+    site: "gemini",
+    name: "Gemini",
+    keys: ["geminiRemaining"],
+    url: "https://aistudio.google.com/",
+    where: "AI Studio"
+  },
+  {
+    site: "perplexity",
+    name: "Perplexity",
+    keys: ["perplexityRemaining"],
+    url: "https://www.perplexity.ai/settings/account",
+    where: "настройки аккаунта"
+  },
+  {
+    site: "cursor",
+    name: "Cursor",
+    keys: ["cursorRemaining"],
+    url: "https://cursor.com/dashboard",
+    where: "Dashboard"
+  },
+  {
+    site: "grok",
+    name: "Grok",
+    keys: ["grokRemaining"],
+    url: "https://grok.com/settings",
+    where: "настройки"
+  }
+];
+
+const STALE_AFTER_MS = 15 * 60 * 1000;
+
 function ageText(timestamp) {
   if (!Number.isFinite(timestamp)) return "";
   const seconds = Math.max(0, (Date.now() - timestamp) / 1000);
@@ -28,9 +84,10 @@ async function render() {
 
   const status = document.querySelector("#status");
   const limits = document.querySelector("#limits");
-  const missing = document.querySelector("#missing");
   const freshness = document.querySelector("#freshness");
+  const stale = document.querySelector("#stale");
   const rows = METRICS.filter(({ key }) => Number.isFinite(arsWidgetUsage[key]));
+  const approximate = new Set(arsWidgetUsage.approximateKeys ?? []);
 
   document.querySelector("#consent").hidden = arsWidgetUsageConsent;
   document.querySelector("#disable").hidden = !arsWidgetUsageConsent;
@@ -38,8 +95,9 @@ async function render() {
   status.textContent = !arsWidgetUsageConsent
     ? "Сначала подтверди показ лимитов."
     : arsWidgetBridgeStatus.connected
-    ? "ArsWidget подключён."
-    : "Запусти ArsWidget, затем открой страницы лимитов.";
+    ? "ArsWidget подключён — цифры уходят в виджет."
+    : "ArsWidget не отвечает. Запусти приложение на этом Mac.";
+  status.className = arsWidgetUsageConsent && arsWidgetBridgeStatus.connected ? "ok" : "warn";
 
   limits.replaceChildren(...rows.map((metric) => {
     const { key, title } = metric;
@@ -47,10 +105,11 @@ async function render() {
     row.className = "limit";
 
     const name = document.createElement("span");
-    name.textContent = title;
+    name.textContent = approximate.has(key) ? `${title} · приблизительно` : title;
 
     const value = document.createElement("strong");
     value.textContent = formatValue(arsWidgetUsage[key], metric.format);
+    if (approximate.has(key)) value.classList.add("approx");
 
     row.append(name, value);
     return row;
@@ -62,14 +121,124 @@ async function render() {
   freshness.textContent = text;
   freshness.hidden = !text;
 
-  const missingNames = [...new Set(
-    METRICS.filter(({ key }) => !Number.isFinite(arsWidgetUsage[key])).map(({ provider }) => provider)
-  )].filter((provider) => !rows.some((row) => row.provider === provider));
-
-  missing.textContent = missingNames.length
-    ? `Ещё можно подключить: ${missingNames.join(", ")}. Открой нужную страницу лимитов.`
+  // Прямая подсказка вместо молчания: цифры есть, но им уже много времени.
+  const isStale = rows.length > 0
+    && Number.isFinite(arsWidgetUsage.updatedAt)
+    && Date.now() - arsWidgetUsage.updatedAt > STALE_AFTER_MS;
+  stale.textContent = isStale
+    ? "Страницы лимитов давно не читались. Открой их и нажми «Обновить сейчас»."
     : "";
-  missing.hidden = !missingNames.length;
+  stale.hidden = !isStale;
+
+  await renderState(arsWidgetUsage, approximate);
+}
+
+/// Состояние по каждому сервису: открыта ли вкладка, та ли это страница, есть
+/// ли на ней проценты и что из них прочитано. Без этого «не работает» выглядит
+/// одинаково во всех случаях, а причины у них разные.
+async function renderState(usage, approximate) {
+  const container = document.querySelector("#state");
+  const reports = await collectReports();
+
+  container.replaceChildren(...SERVICES.map((service) => {
+    const report = reports.get(service.site);
+    const values = service.keys
+      .filter((key) => Number.isFinite(usage[key]))
+      .map((key) => {
+        const metric = METRICS.find((candidate) => candidate.key === key);
+        const shown = formatValue(usage[key], metric?.format);
+        return approximate.has(key) ? `${shown}?` : shown;
+      });
+
+    const row = document.createElement("div");
+    row.className = "service";
+
+    const name = document.createElement("span");
+    name.className = "service-name";
+    name.textContent = service.name;
+
+    const note = document.createElement("span");
+    const state = describeService(service, report, values);
+    note.className = `service-note ${state.tone}`;
+    note.textContent = state.text;
+
+    const open = document.createElement("button");
+    open.className = "link";
+    open.textContent = report ? "показать" : "открыть";
+    open.addEventListener("click", () => {
+      if (report?.tabId !== undefined) {
+        chrome.tabs.update(report.tabId, { active: true });
+        window.close();
+        return;
+      }
+      chrome.tabs.create({ url: service.url });
+    });
+
+    const head = document.createElement("div");
+    head.className = "service-head";
+    head.append(name, open);
+    row.append(head, note);
+    return row;
+  }));
+}
+
+function describeService(service, report, values) {
+  if (!report) {
+    return values.length
+      ? { tone: "muted", text: `вкладка закрыта, последнее: ${values.join(" / ")}` }
+      : { tone: "muted", text: `вкладка не открыта — ${service.where}` };
+  }
+  if (!report.isUsagePage) {
+    return { tone: "warn", text: `сайт открыт, но не на странице лимитов — ${service.where}` };
+  }
+  if (!report.consent) {
+    return { tone: "warn", text: "показ лимитов выключен" };
+  }
+  if (Object.keys(report.detected ?? {}).length > 0) {
+    const shown = values.length ? values.join(" / ") : "читаю";
+    return { tone: "ok", text: `страницу вижу, читаю: ${shown}` };
+  }
+  if (report.hasPercentOnPage) {
+    return {
+      tone: "bad",
+      text: "страницу вижу, проценты на ней есть, но распознать их не получилось — нажми «Что видит расширение»"
+    };
+  }
+  return {
+    tone: "bad",
+    text: "страницу вижу, но процентов на ней нет — проверь, что ты вошёл в аккаунт, и обнови страницу"
+  };
+}
+
+/// Опрашивает открытые вкладки поддерживаемых сайтов.
+async function collectReports() {
+  const found = new Map();
+  let tabs = [];
+  try {
+    const matches = chrome.runtime.getManifest().content_scripts[0].matches;
+    tabs = await chrome.tabs.query({ url: matches });
+  } catch {
+    return found;
+  }
+
+  await Promise.all(tabs.map(async (tab) => {
+    if (typeof tab.id !== "number") return;
+    try {
+      const report = await chrome.tabs.sendMessage(tab.id, { type: "DIAGNOSE" });
+      if (!report?.site) return;
+      const previous = found.get(report.site);
+      // Вкладок одного сайта может быть несколько: показываем ту, где
+      // действительно что-то прочитано.
+      const better = !previous
+        || (Object.keys(report.detected ?? {}).length > Object.keys(previous.detected ?? {}).length)
+        || (report.isUsagePage && !previous.isUsagePage);
+      if (better) found.set(report.site, { ...report, tabId: tab.id });
+    } catch {
+      // Скрипт в эту вкладку не внедрён — её открыли до установки расширения.
+    }
+  }));
+
+  return found;
 }
 
 function formatValue(value, format = "percent") {
@@ -88,37 +257,9 @@ document.querySelector("#disable").addEventListener("click", async () => {
   render();
 });
 
-document.querySelector("#openClaude").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://claude.ai/new#settings/usage" });
-});
-
-document.querySelector("#openCodex").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://chatgpt.com/codex/cloud/settings/analytics" });
-});
-
-document.querySelector("#openDeepSeek").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://platform.deepseek.com/usage" });
-});
-
-document.querySelector("#openGemini").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://aistudio.google.com/" });
-});
-
-document.querySelector("#openPerplexity").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://www.perplexity.ai/settings/account" });
-});
-
-document.querySelector("#openCursor").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://cursor.com/dashboard" });
-});
-
-document.querySelector("#openGrok").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://grok.com/settings" });
-});
-
 document.querySelector("#refresh").addEventListener("click", () => {
-  chrome.runtime.sendMessage({ type: "RESEND" }).catch(() => {});
-  window.setTimeout(render, 500);
+  chrome.runtime.sendMessage({ type: "REFRESH_NOW" }).catch(() => {});
+  window.setTimeout(render, 1200);
 });
 
 // Values can land while the popup is open.
@@ -139,14 +280,16 @@ const copyDiagnosis = document.querySelector("#copyDiagnosis");
 function describe(report) {
   if (!report) {
     return "На этой вкладке расширение не работает.\n\n" +
-      "Открой страницу лимитов (кнопки выше) и нажми ещё раз.";
+      "Открой страницу лимитов из списка выше и нажми ещё раз.";
   }
   const lines = [
     `сайт:        ${report.site ?? "не поддерживается"}`,
     `адрес:       ${report.host}${report.path}${report.hash}`,
     `страница лимитов: ${report.isUsagePage ? "да" : "НЕТ"}`,
     `показ включён:    ${report.consent ? "да" : "НЕТ"}`,
+    `кнопка обновления: ${report.hasRefreshControl ? "нашлась" : "не нашлась"}`,
     `распознано:  ${JSON.stringify(report.detected)}`,
+    `приблизительно: ${JSON.stringify(report.approximate ?? [])}`,
     "",
     "строки с процентами на странице:"
   ];

@@ -7,6 +7,11 @@ const RESEND_ALARM = "resendUsage";
 // Совпадает с content_scripts в манифесте: расходиться им нельзя.
 const TRACKED_URLS = chrome.runtime.getManifest().content_scripts[0].matches;
 const NOTIFY_COOLDOWN_MS = 15 * 60 * 1000;
+// Как часто просить сами страницы пересчитать свои цифры. Страница лимитов
+// свои значения не обновляет: у Claude рядом кнопка «Refresh» и подпись,
+// когда данные были получены. Без этого нажатия вкладка может висеть сутки, а
+// расширение будет исправно передавать вчерашние проценты.
+const REFRESH_EVERY_MS = 10 * 60 * 1000;
 // Единственные поля, которые уходят в приложение. Всё остальное отбрасывается.
 const PERCENT_KEYS = [
   "codexWeeklyRemaining",
@@ -28,7 +33,8 @@ async function readNotifyState() {
   return {
     consecutiveFailures: state.consecutiveFailures ?? 0,
     lastFailureAt: state.lastFailureAt ?? 0,
-    lastNoDataAt: state.lastNoDataAt ?? 0
+    lastNoDataAt: state.lastNoDataAt ?? 0,
+    lastPageRefreshAt: state.lastPageRefreshAt ?? 0
   };
 }
 
@@ -75,6 +81,21 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 
+  // Кнопка «Обновить сейчас»: нажать обновление на самих страницах, перечитать
+  // их и переслать в приложение, не дожидаясь будильника.
+  if (message?.type === "REFRESH_NOW") {
+    ensureAlarm();
+    (async () => {
+      await writeNotifyState({ lastPageRefreshAt: Date.now() });
+      await eachTrackedTab((tabId) => chrome.tabs.sendMessage(tabId, { type: "REFRESH" }));
+      await wakeContentScripts();
+      await rescanOpenTabs();
+      const { [USAGE_KEY]: usage = {} } = await chrome.storage.local.get(USAGE_KEY);
+      sendResponse({ ok: await sendUsage(usage) });
+    })().catch(() => sendResponse({ ok: false }));
+    return true;
+  }
+
   if (message?.type === "USAGE_PAGE_NO_DATA") {
     notifyNoData();
     return;
@@ -85,7 +106,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   chrome.storage.local.get(CONSENT_KEY)
     .then(({ [CONSENT_KEY]: enabled = false }) => {
       if (!enabled) return false;
-      return mergeUsage(message.usage).then(sendUsage);
+      return mergeUsage(message.usage, message.approximate).then(sendUsage);
     })
     .then((ok) => sendResponse({ ok }))
     .catch(() => sendResponse({ ok: false }));
@@ -108,12 +129,26 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   // Свои таймеры у фоновой вкладки Chrome придушивает вплоть до полной
   // остановки, поэтому возраст значений рос до часа, хотя вкладка открыта.
   // Будильник расширения не придушивается, а доставка сообщений будит вкладку.
+  await refreshOpenPagesIfDue();
   await rescanOpenTabs();
   await sendUsage(usage);
 });
 
 /// Просит все подходящие вкладки перечитать страницу.
 async function rescanOpenTabs() {
+  await eachTrackedTab((tabId) => chrome.tabs.sendMessage(tabId, { type: "RESCAN" }));
+}
+
+/// Раз в REFRESH_EVERY_MS просит страницы нажать свою кнопку обновления.
+/// Пересканировать мало: на самой странице цифры остаются старыми.
+async function refreshOpenPagesIfDue() {
+  const state = await readNotifyState();
+  if (Date.now() - state.lastPageRefreshAt < REFRESH_EVERY_MS) return;
+  await writeNotifyState({ lastPageRefreshAt: Date.now() });
+  await eachTrackedTab((tabId) => chrome.tabs.sendMessage(tabId, { type: "REFRESH" }));
+}
+
+async function eachTrackedTab(action) {
   let tabs = [];
   try {
     tabs = await chrome.tabs.query({ url: TRACKED_URLS });
@@ -122,11 +157,12 @@ async function rescanOpenTabs() {
   }
   await Promise.all(tabs.map((tab) => {
     if (typeof tab.id !== "number") return Promise.resolve();
-    return chrome.tabs.sendMessage(tab.id, { type: "RESCAN" }).catch(() => {});
+    // Вкладку могли закрыть или в ней нет нашего скрипта — это не ошибка.
+    return Promise.resolve(action(tab.id)).catch(() => {});
   }));
 }
 
-async function mergeUsage(candidate) {
+async function mergeUsage(candidate, approximate = []) {
   const values = pickUsageValues(candidate);
   const { [USAGE_KEY]: current = {} } = await chrome.storage.local.get(USAGE_KEY);
   if (Object.keys(values).length === 0) return current;
@@ -134,12 +170,23 @@ async function mergeUsage(candidate) {
   const merged = {
     ...current,
     ...values,
+    // Какие значения прочитаны наугад — popup помечает их как приблизительные.
+    approximateKeys: mergeApproximate(current.approximateKeys, values, approximate),
     // When a page was last really read. The widget shows the age of this, so
     // values left over from a closed tab stop looking fresh.
     updatedAt: Date.now()
   };
   await chrome.storage.local.set({ [USAGE_KEY]: merged });
   return merged;
+}
+
+/// Пометки старых значений сохраняются, пометки только что прочитанных
+/// заменяются: значение могло стать точным, и пометка должна уйти.
+function mergeApproximate(current, values, approximate) {
+  const scanned = new Set(Object.keys(values));
+  const kept = (Array.isArray(current) ? current : []).filter((key) => !scanned.has(key));
+  const fresh = (Array.isArray(approximate) ? approximate : []).filter((key) => scanned.has(key));
+  return [...new Set([...kept, ...fresh])];
 }
 
 function pickUsageValues(value = {}) {

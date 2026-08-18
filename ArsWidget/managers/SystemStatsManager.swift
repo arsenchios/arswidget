@@ -112,16 +112,20 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Цвет сервиса. В свёрнутом виде подписи короткие («Cx», «C5»), и цвет —
+    /// главное, по чему строка читается с одного взгляда, поэтому оттенки
+    /// разведены между собой, а не взяты из одного семейства.
     var tint: Color {
         switch self {
         case .claudeFiveHour: return .orange
         case .claudeWeekly: return Color.orange.opacity(0.72)
-        case .codexWeekly: return .blue
-        case .chatgpt: return Color.blue.opacity(0.7)
-        case .deepseekBalance: return .teal
+        case .codexWeekly: return Color(red: 0.38, green: 0.78, blue: 1.00)
+        case .chatgpt: return Color(red: 0.38, green: 0.78, blue: 1.00).opacity(0.62)
+        case .deepseekBalance: return Color(red: 0.30, green: 0.42, blue: 0.95)
         case .gemini: return .purple
         case .perplexity: return .mint
-        case .cursor: return .indigo
+        // Индиго слишком близко к синему DeepSeek — на чёрном их не различить.
+        case .cursor: return Color(white: 0.78)
         case .grok: return .pink
         }
     }

@@ -8,15 +8,27 @@ const WEEKLY = /(?:week|weekly|недел)/i;
 const MONTHLY = /(?:month|monthly|месяц)/i;
 const CODEX = /codex/i;
 const CHATGPT = /chat\s?gpt/i;
-const REMAINING = /(?:remaining|left|available|осталось|доступно|осталось лимита)/i;
-const USED = /(?:used|consumed|использовано|потрачено|израсходовано)/i;
+const REMAINING = /(?:remaining|left|available|осталось|доступно|залишилось)/i;
+const USED = /(?:used|consumed|spent|использован\S*|израсходован\S*|потрачен\S*|витрачен\S*)/i;
+// Ни «осталось», ни «использовано» на странице нет — но это явно счётчик
+// лимита. Такие числа берём как приблизительные, а не выбрасываем.
+const LIMIT_HINT = /(?:limit|quota|resets?|session|лимит|квота|сброс|сесси)/i;
 const CLAUDE_CURRENT_SESSION = /(?:current\s+session|текущ\S*\s+сесси)/i;
 const CLAUDE_WEEKLY_LIMITS = /(?:weekly\s+limits?|недельн\S*\s+лимит)/i;
 const CLAUDE_USAGE_CREDITS = /(?:usage\s+credits?|кредит\S*\s+использ)/i;
+// Кнопка «обновить» на самой странице лимитов. Слово должно стоять отдельно, а
+// подпись — быть короткой: «Update plan», «Upgrade» и всё, что уводит на
+// оплату, нажимать нельзя ни при каких условиях.
+const REFRESH_LABEL = /(?:^|\s)(?:refresh|reload|обновить|обновление|оновити)(?:\s|$)/i;
+const REFRESH_FORBIDDEN = /(?:plan|billing|upgrade|subscription|checkout|delete|cancel|logout|sign\s?out|тариф|оплат|подписк|удал|отмен|выход)/i;
+const REFRESH_LABEL_MAX = 24;
 
 const HEARTBEAT_MS = 55_000;
 const EMPTY_SCANS_BEFORE_WARNING = 6;
 const WARNING_GRACE_MS = 20_000;
+// Сколько строк вокруг числа считаем его окружением.
+const CAPTION_LINES_BEFORE = 6;
+const CONTEXT_LINES_AFTER = 2;
 
 const openedAt = Date.now();
 let lastUsage = "";
@@ -29,12 +41,13 @@ let noDataNotified = false;
 /// Один сервис — одна запись.
 ///   hosts    — на каких доменах работаем
 ///   isUsage  — похоже ли это на страницу лимитов (путь и хэш в нижнем регистре)
-///   read     — записывает найденные проценты в usage
+///   read     — записывает найденные проценты через sink.set(...)
+///   guessDirection — можно ли додумывать «использовано», когда слова нет
 ///
-/// `ctx` в read: { value, context, captionContext, percentIndex }.
-/// `context` захватывает и строку после числа — слово-признак и название
-/// сервиса могут стоять с любой стороны. `captionContext` обрывается на числе,
-/// потому что подпись лимита всегда стоит перед ним.
+/// `ctx` в read: { value, context, captionContext, percentIndex, confident }.
+/// `context` захватывает и строки после числа — слово-признак может стоять с
+/// любой стороны. `captionContext` обрывается на числе, потому что подпись
+/// лимита всегда стоит перед ним.
 const SITES = [
   {
     key: "claude",
@@ -42,25 +55,25 @@ const SITES = [
     // Claude now opens this screen through /new#settings/usage for many
     // accounts, so checking only the old pathname silently skipped scans.
     isUsage: (path, hash) => path.startsWith("/settings/usage") || hash.includes("settings/usage"),
-    read: (ctx, usage) => {
-      // "Usage credits" is paid API credit usage, not a plan quota.
-      if (CLAUDE_USAGE_CREDITS.test(ctx.context)) return;
+    // Подписи здесь однозначные, а слово «used» сайт иногда рисует отдельным
+    // элементом — без догадки страница читается вхолостую.
+    guessDirection: true,
+    read: (ctx, sink) => {
+      // На странице три блока подряд: сессия, недельные лимиты и «Usage
+      // credits» (это оплаченные API-кредиты, не квота тарифа). Раньше
+      // достаточно было слов «Usage credits» где угодно рядом, и недельный
+      // процент выбрасывался только потому, что следующей строкой начинался
+      // блок кредитов. Поэтому смотрим, чья подпись ближе СЛЕВА от числа.
+      const distances = [
+        ["claudeFiveHourRemaining", nearest(ctx, FIVE_HOUR, CLAUDE_CURRENT_SESSION)],
+        ["claudeWeeklyRemaining", nearest(ctx, WEEKLY, CLAUDE_WEEKLY_LIMITS)],
+        [null, nearest(ctx, CLAUDE_USAGE_CREDITS)]
+      ].filter(([, distance]) => distance !== null);
 
-      // Обе подписи могут попасть в одно окно текста; берём ближнюю слева,
-      // иначе одно и то же число уходит сразу в обе строки.
-      const toFiveHour = Math.min(
-        distanceToCaptionBefore(FIVE_HOUR, ctx.captionContext, ctx.percentIndex) ?? Infinity,
-        distanceToCaptionBefore(CLAUDE_CURRENT_SESSION, ctx.captionContext, ctx.percentIndex) ?? Infinity
-      );
-      const toWeekly = Math.min(
-        distanceToCaptionBefore(WEEKLY, ctx.captionContext, ctx.percentIndex) ?? Infinity,
-        distanceToCaptionBefore(CLAUDE_WEEKLY_LIMITS, ctx.captionContext, ctx.percentIndex) ?? Infinity
-      );
-      if (Number.isFinite(toFiveHour) && (!Number.isFinite(toWeekly) || toFiveHour <= toWeekly)) {
-        usage.claudeFiveHourRemaining = ctx.value;
-      } else if (Number.isFinite(toWeekly)) {
-        usage.claudeWeeklyRemaining = ctx.value;
-      }
+      if (distances.length === 0) return;
+      distances.sort((left, right) => left[1] - right[1]);
+      const [key] = distances[0];
+      if (key) sink.set(key, ctx.value, ctx.confident);
     }
   },
   {
@@ -68,20 +81,21 @@ const SITES = [
     hosts: ["chatgpt.com", "openai.com"],
     isUsage: (path, hash) =>
       path.includes("settings") || path.includes("codex") || hash.includes("settings"),
-    read: (ctx, usage) => {
+    guessDirection: true,
+    read: (ctx, sink) => {
       // Codex и обычный ChatGPT живут в одних и тех же настройках аккаунта.
       // Простой проверки «есть ли слово Codex рядом» не хватает: окно текста
       // шириной в шесть строк, и название с самого верха перетягивало чужое
       // число себе. Считаем, чьё название стоит ближе слева от процента.
-      const toCodex = distanceToCaptionBefore(CODEX, ctx.captionContext, ctx.percentIndex);
-      const toChatGPT = distanceToCaptionBefore(CHATGPT, ctx.captionContext, ctx.percentIndex);
+      const toCodex = nearest(ctx, CODEX);
+      const toChatGPT = nearest(ctx, CHATGPT);
 
       if (toCodex !== null && (toChatGPT === null || toCodex <= toChatGPT)) {
-        if (WEEKLY.test(ctx.context)) usage.codexWeeklyRemaining = ctx.value;
+        if (WEEKLY.test(ctx.context)) sink.set("codexWeeklyRemaining", ctx.value, ctx.confident);
         return;
       }
       if (WEEKLY.test(ctx.context) || MONTHLY.test(ctx.context) || REMAINING.test(ctx.context)) {
-        usage.chatgptRemaining = ctx.value;
+        sink.set("chatgptRemaining", ctx.value, ctx.confident);
       }
     }
   },
@@ -96,25 +110,25 @@ const SITES = [
     hosts: ["aistudio.google.com", "gemini.google.com"],
     isUsage: (path, hash) =>
       path.includes("usage") || hash.includes("usage") || path === "/" || path === "",
-    read: (ctx, usage) => { usage.geminiRemaining = ctx.value; }
+    read: (ctx, sink) => { sink.set("geminiRemaining", ctx.value, ctx.confident); }
   },
   {
     key: "perplexity",
     hosts: ["perplexity.ai"],
     isUsage: (path) => path.includes("settings") || path.includes("account"),
-    read: (ctx, usage) => { usage.perplexityRemaining = ctx.value; }
+    read: (ctx, sink) => { sink.set("perplexityRemaining", ctx.value, ctx.confident); }
   },
   {
     key: "cursor",
     hosts: ["cursor.com", "cursor.sh"],
     isUsage: (path) => path.includes("dashboard") || path.includes("settings") || path.includes("usage"),
-    read: (ctx, usage) => { usage.cursorRemaining = ctx.value; }
+    read: (ctx, sink) => { sink.set("cursorRemaining", ctx.value, ctx.confident); }
   },
   {
     key: "grok",
     hosts: ["grok.com"],
     isUsage: (path) => path.includes("settings") || path.includes("usage") || path.includes("subscription"),
-    read: (ctx, usage) => { usage.grokRemaining = ctx.value; }
+    read: (ctx, sink) => { sink.set("grokRemaining", ctx.value, ctx.confident); }
   }
 ];
 
@@ -129,8 +143,30 @@ function isUsagePage() {
   return Boolean(site.isUsage(location.pathname.toLowerCase(), location.hash.toLowerCase()));
 }
 
-/// Процент относится к своей строке, прочитанной вместе с парой строк выше.
-function readPercentage(lines, index) {
+/// Копилка значений. Точно распознанное число не даёт себя перезаписать
+/// следующим таким же, а догадка уступает место точному значению.
+function createSink() {
+  const values = {};
+  const confident = {};
+
+  return {
+    values,
+    get approximate() {
+      return Object.keys(values).filter((key) => !confident[key]);
+    },
+    set(key, value, isConfident) {
+      const known = key in values;
+      // Первое точное значение — главное: страницы перечисляют сначала общий
+      // лимит, потом частные, и общий нужнее.
+      if (known && (confident[key] || !isConfident)) return;
+      values[key] = value;
+      confident[key] = Boolean(isConfident);
+    }
+  };
+}
+
+/// Процент относится к своей строке, прочитанной вместе с соседними.
+function readPercentage(lines, index, site) {
   const line = lines[index];
   const match = line.match(/(\d{1,3}(?:[.,]\d+)?)\s*%/);
   if (!match) return null;
@@ -139,58 +175,103 @@ function readPercentage(lines, index) {
   if (!Number.isFinite(raw) || raw < 0 || raw > 100) return null;
 
   // Current Claude labels are a few lines above the bar and percentage.
-  const prefix = lines.slice(Math.max(0, index - 6), index).join(" ");
+  const prefix = lines.slice(Math.max(0, index - CAPTION_LINES_BEFORE), index).join(" ");
   const captionContext = prefix ? `${prefix} ${line}` : line;
   const percentIndex = (prefix ? prefix.length + 1 : 0) + match.index;
-  const suffix = lines[index + 1] ?? "";
+  const suffix = lines.slice(index + 1, index + 1 + CONTEXT_LINES_AFTER).join(" ");
   const context = suffix ? `${captionContext} ${suffix}` : captionContext;
 
-  // Страницы пишут либо «осталось», либо «использовано» — без одного из этих
-  // слов число может означать что угодно, и мы его не берём.
+  // Страницы пишут либо «осталось», либо «использовано». Слов может быть два
+  // сразу — соседняя строка чужого блока попадает в то же окно, — поэтому
+  // берём то, что стоит ближе к самому числу.
+  const toRemaining = nearestTo(REMAINING, context, percentIndex);
+  const toUsed = nearestTo(USED, context, percentIndex);
+
   let value = null;
-  if (REMAINING.test(context)) value = raw;
-  else if (USED.test(context)) value = 100 - raw;
+  let confident = true;
+  if (toRemaining !== null && (toUsed === null || toRemaining <= toUsed)) {
+    value = raw;
+  } else if (toUsed !== null) {
+    value = 100 - raw;
+  } else if (site.guessDirection && LIMIT_HINT.test(context)) {
+    // Слово-признак пропало (сайт перерисовал вёрстку), но это явно счётчик
+    // лимита. Все такие страницы показывают израсходованное — считаем так же
+    // и помечаем значение как приблизительное.
+    value = 100 - raw;
+    confident = false;
+  }
   if (value === null) return null;
 
-  return { value, context, captionContext, percentIndex };
+  return { value, context, captionContext, percentIndex, confident };
 }
 
 /// Расстояние от числа назад до ближайшей подписи, или null, если подписи
 /// перед числом нет.
 function distanceToCaptionBefore(pattern, context, percentIndex) {
-  const scanner = new RegExp(pattern.source, `${pattern.flags.replace("g", "")}g`);
   let best = null;
+  for (const index of matchIndexes(pattern, context)) {
+    if (index >= percentIndex) continue;
+    const distance = percentIndex - index;
+    if (best === null || distance < best) best = distance;
+  }
+  return best;
+}
+
+/// Ближайшее слово-признак с любой стороны от числа.
+function nearestTo(pattern, context, percentIndex) {
+  let best = null;
+  for (const index of matchIndexes(pattern, context)) {
+    const distance = Math.abs(index - percentIndex);
+    if (best === null || distance < best) best = distance;
+  }
+  return best;
+}
+
+/// Ближайшая слева подпись из перечисленных.
+function nearest(ctx, ...patterns) {
+  let best = null;
+  for (const pattern of patterns) {
+    const distance = distanceToCaptionBefore(pattern, ctx.captionContext, ctx.percentIndex);
+    if (distance !== null && (best === null || distance < best)) best = distance;
+  }
+  return best;
+}
+
+function matchIndexes(pattern, text) {
+  const scanner = new RegExp(pattern.source, `${pattern.flags.replace("g", "")}g`);
+  const found = [];
   let match;
 
-  while ((match = scanner.exec(context)) !== null) {
-    if (match.index < percentIndex) {
-      const distance = percentIndex - match.index;
-      if (best === null || distance < best) best = distance;
-    }
+  while ((match = scanner.exec(text)) !== null) {
+    found.push(match.index);
     if (match.index === scanner.lastIndex) scanner.lastIndex += 1;
   }
 
-  return best;
+  return found;
 }
 
 function detectUsage() {
   const site = currentSite();
-  if (!site || !isUsagePage()) return {};
+  if (!site || !isUsagePage()) return { usage: {}, approximate: [] };
 
   const text = document.body?.innerText?.slice(0, 20_000) ?? "";
   if (site.key === "deepseek") {
     const balance = readDeepSeekBalance(text);
-    return balance === null ? {} : { deepseekBalanceUSD: balance };
+    return {
+      usage: balance === null ? {} : { deepseekBalanceUSD: balance },
+      approximate: []
+    };
   }
+
   const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
-  const usage = {};
+  const sink = createSink();
 
   for (let index = 0; index < lines.length; index += 1) {
-    const found = readPercentage(lines, index);
-    if (found) site.read(found, usage);
+    const found = readPercentage(lines, index, site);
+    if (found) site.read(found, sink);
   }
 
-  return usage;
+  return { usage: sink.values, approximate: sink.approximate };
 }
 
 // DeepSeek shows prepaid API balance, not a plan percentage. Read only the
@@ -220,7 +301,7 @@ function reportUsage() {
   scheduled = false;
   if (!isEnabled) return;
 
-  const usage = detectUsage();
+  const { usage, approximate } = detectUsage();
   const serialized = JSON.stringify(usage);
 
   if (serialized === "{}") {
@@ -242,7 +323,7 @@ function reportUsage() {
 
   lastUsage = serialized;
   lastReportAt = now;
-  send({ type: "USAGE_FOUND", usage });
+  send({ type: "USAGE_FOUND", usage, approximate });
 }
 
 function scheduleReport() {
@@ -298,6 +379,37 @@ function watchForUsageContent() {
   observer.observe(document.body, { childList: true, subtree: true, characterData: true });
 }
 
+/// Сама страница лимитов свои цифры не пересчитывает: у Claude рядом написано
+/// «Last updated» и стоит кнопка обновления. Нажимаем её сами, иначе виджет
+/// честно показывает свежесть чтения страницы, а на странице — цифры часовой
+/// давности. Совпадение только по полной подписи кнопки.
+function findRefreshControl() {
+  const controls = document.querySelectorAll('button, [role="button"]');
+  for (const control of controls) {
+    if (control.disabled || control.getAttribute("aria-disabled") === "true") continue;
+    const label = (
+      control.getAttribute("aria-label") ||
+      control.getAttribute("title") ||
+      control.textContent ||
+      ""
+    ).replace(/\s+/g, " ").trim();
+
+    if (label.length === 0 || label.length > REFRESH_LABEL_MAX) continue;
+    if (!REFRESH_LABEL.test(label)) continue;
+    if (REFRESH_FORBIDDEN.test(label)) continue;
+    return control;
+  }
+  return null;
+}
+
+function clickRefreshControl() {
+  if (!isUsagePage()) return false;
+  const control = findRefreshControl();
+  if (!control) return false;
+  control.click();
+  return true;
+}
+
 try {
   chrome.runtime.sendMessage({ type: "GET_CONSENT" }, (response) => {
     void chrome.runtime.lastError;
@@ -320,6 +432,17 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     reportUsage();
   }
 
+  // Попросить страницу обновить свои цифры.
+  if (message?.type === "REFRESH") {
+    const clicked = clickRefreshControl();
+    if (clicked) {
+      lastUsage = "";
+      window.setTimeout(reportUsage, 2500);
+    }
+    sendResponse({ clicked });
+    return true;
+  }
+
   // Что скрипт видит на странице. Нужно, когда сервис поменял вёрстку и
   // проценты перестали находиться: без этого причину можно только угадывать.
   if (message?.type === "DIAGNOSE") {
@@ -332,6 +455,7 @@ function collectDiagnostics() {
   const site = currentSite();
   const text = document.body?.innerText?.slice(0, 20_000) ?? "";
   const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  const { usage, approximate } = detectUsage();
 
   // Только строки с процентом и пара строк вокруг — остальное не нужно и
   // незачем показывать: это чужая страница.
@@ -351,7 +475,10 @@ function collectDiagnostics() {
     site: site?.key ?? null,
     isUsagePage: isUsagePage(),
     consent: isEnabled,
-    detected: detectUsage(),
+    detected: usage,
+    approximate,
+    hasPercentOnPage: interesting.length > 0,
+    hasRefreshControl: Boolean(site) && findRefreshControl() !== null,
     linesWithPercent: interesting.slice(0, 60)
   };
 }
