@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.2.7</title>
-            <pubDate>Thu, 20 Aug 2026 15:12:07 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.7</link>
-            <sparkle:version>1019</sparkle:version>
-            <sparkle:shortVersionString>0.2.7</sparkle:shortVersionString>
+            <title>0.2.8</title>
+            <pubDate>Thu, 20 Aug 2026 15:40:03 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.8</link>
+            <sparkle:version>1020</sparkle:version>
+            <sparkle:shortVersionString>0.2.8</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[Фиксированные цвета лимитов, DeepSeek и отдельные переключатели отображения сверху.
+            <description sparkle:format="markdown"><![CDATA[Лимиты AI обновляются быстрее: виджет каждые 10 секунд, страницы сервисов — раз в минуту.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.7/ArsWidget-0.2.7.dmg" length="9581712" type="application/octet-stream" sparkle:edSignature="c2WW/tk2eny77nez5oAEjv4WZSgUX+yesHQBA81UysZx2E6OlnNwIhmZKGBE148DL32reXCmdL+FSHp280jADg=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.8/ArsWidget-0.2.8.dmg" length="9581748" type="application/octet-stream" sparkle:edSignature="Fvriw58N+qYzT78DxQu3n9HnnkCdEjfwjD7lXvME7yLJtA82hNX2al1RR8WPuJcIqgcWI0UvmSvGnH/SeCutAA=="/>
         </item>
     </channel>
 </rss>
