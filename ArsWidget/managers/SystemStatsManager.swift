@@ -194,7 +194,7 @@ final class AIUsageManager: ObservableObject {
     private init() {
         closedNotchVisibility = Self.loadClosedNotchVisibility()
         reload()
-        refreshTimer = Timer.publish(every: 15, on: .main, in: .common)
+        refreshTimer = Timer.publish(every: 10, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in self?.reload() }
     }

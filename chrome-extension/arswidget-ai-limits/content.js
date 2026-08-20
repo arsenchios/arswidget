@@ -27,7 +27,7 @@ const REFRESH_LABEL_MAX = 24;
 const LAST_UPDATED = /(?:last\s+updated|обновлено|оновлено)/i;
 const LAST_UPDATED_BOX_MAX = 60;
 
-const HEARTBEAT_MS = 55_000;
+const HEARTBEAT_MS = 10_000;
 const EMPTY_SCANS_BEFORE_WARNING = 6;
 const WARNING_GRACE_MS = 20_000;
 // Сколько строк вокруг числа считаем его окружением.
@@ -535,5 +535,5 @@ new MutationObserver(scheduleReport).observe(document.documentElement, {
 });
 // Периодический пересчёт, чтобы заметить разлогин или смену вёрстки даже на
 // статичной странице.
-window.setInterval(reportUsage, 30_000);
+window.setInterval(reportUsage, 10_000);
 watchForPageChanges();

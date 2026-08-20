@@ -11,7 +11,9 @@ const NOTIFY_COOLDOWN_MS = 15 * 60 * 1000;
 // свои значения не обновляет: у Claude рядом кнопка «Refresh» и подпись,
 // когда данные были получены. Без этого нажатия вкладка может висеть сутки, а
 // расширение будет исправно передавать вчерашние проценты.
-const REFRESH_EVERY_MS = 10 * 60 * 1000;
+// Chrome alarms cannot safely run more often than once a minute. That is also
+// frequent enough for live quota monitoring without hammering provider pages.
+const REFRESH_EVERY_MS = 60 * 1000;
 // Единственные поля, которые уходят в приложение. Всё остальное отбрасывается.
 const PERCENT_KEYS = [
   "codexWeeklyRemaining",
