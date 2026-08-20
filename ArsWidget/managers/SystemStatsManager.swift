@@ -112,6 +112,22 @@ enum AIUsageMetric: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Stable order for the compact row: the three default metrics arrive
+    /// first, while any extra enabled services continue to the right.
+    var closedNotchOrder: Int {
+        switch self {
+        case .codexWeekly: return 0
+        case .claudeFiveHour: return 1
+        case .deepseekBalance: return 2
+        case .claudeWeekly: return 3
+        case .chatgpt: return 4
+        case .gemini: return 5
+        case .perplexity: return 6
+        case .cursor: return 7
+        case .grok: return 8
+        }
+    }
+
     /// Цвет сервиса. В свёрнутом виде подписи короткие («Cx», «C5»), и цвет —
     /// главное, по чему строка читается с одного взгляда, поэтому оттенки
     /// разведены между собой, а не взяты из одного семейства.
@@ -161,29 +177,22 @@ final class AIUsageManager: ObservableObject {
     /// account is logged out — the numbers are still shown, but marked stale.
     static let staleAfter: TimeInterval = 15 * 60
 
-    /// Below this share of the limit left, the number is shown as a warning.
-    static let lowRemainingPercent: Double = 15
-
-    static func isLow(_ remainingPercent: Double) -> Bool {
-        remainingPercent < lowRemainingPercent
-    }
-
     @Published private(set) var snapshot: AIUsageSnapshot?
     /// Recomputed on a timer, but only republished when the visible text
     /// actually changes, so the notch is not redrawn every 15 seconds.
     @Published private(set) var freshnessText: String?
     @Published private(set) var isStale = false
 
-    // @AppStorage does not drive objectWillChange on its own inside a class,
-    // so views observing this manager would repaint late (or not at all).
-    @AppStorage("aiUsageShowInClosedNotch") var showInClosedNotch = false {
-        willSet { objectWillChange.send() }
-    }
+    /// Each service can independently be shown in the closed notch. The three
+    /// primary metrics are visible by default; additional services stay in the
+    /// System tab until the user explicitly enables them.
+    @Published private var closedNotchVisibility: [String: Bool]
 
     private var refreshTimer: AnyCancellable?
     private let fileName = "ai-usage.json"
 
     private init() {
+        closedNotchVisibility = Self.loadClosedNotchVisibility()
         reload()
         refreshTimer = Timer.publish(every: 15, on: .main, in: .common)
             .autoconnect()
@@ -191,6 +200,27 @@ final class AIUsageManager: ObservableObject {
     }
 
     var hasData: Bool { !connectedMetrics.isEmpty }
+
+    func isShownInClosedNotch(_ metric: AIUsageMetric) -> Bool {
+        closedNotchVisibility[metric.rawValue] ?? Self.defaultClosedNotchMetrics.contains(metric)
+    }
+
+    func setShownInClosedNotch(_ shown: Bool, for metric: AIUsageMetric) {
+        guard closedNotchVisibility[metric.rawValue] != shown else { return }
+        closedNotchVisibility[metric.rawValue] = shown
+        UserDefaults.standard.set(closedNotchVisibility, forKey: Self.closedNotchVisibilityKey)
+    }
+
+    private static let closedNotchVisibilityKey = "aiUsageClosedNotchVisibility"
+    private static let defaultClosedNotchMetrics: Set<AIUsageMetric> = [
+        .codexWeekly,
+        .claudeFiveHour,
+        .deepseekBalance
+    ]
+
+    private static func loadClosedNotchVisibility() -> [String: Bool] {
+        (UserDefaults.standard.dictionary(forKey: closedNotchVisibilityKey) as? [String: Bool]) ?? [:]
+    }
 
     /// Metrics we actually received a value for, in display order.
     var connectedMetrics: [AIUsageMetric] {

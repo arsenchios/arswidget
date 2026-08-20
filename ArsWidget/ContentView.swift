@@ -89,21 +89,19 @@ struct ContentView: View {
     /// Просвет между самим вырезом и первой капсулой.
     private static let closedIndicatorsGap: CGFloat = 8
 
-    /// The closed notch has room for a short, readable status row. Pomodoro
-    /// keeps priority and the full list remains available in the System tab.
+    /// The user controls the compact row per provider in the System tab.
     private var closedAIUsageMetrics: [AIUsageMetric] {
-        let maximum = shouldShowClosedPomodoroIndicator ? 2 : 3
-        return Array(aiUsageManager.connectedMetrics.prefix(maximum))
+        aiUsageManager.connectedMetrics
+            .filter(aiUsageManager.isShownInClosedNotch)
+            .sorted { $0.closedNotchOrder < $1.closedNotchOrder }
     }
 
-    /// Ширина капсулы считается по её собственному тексту. Одной константы не
-    /// хватает: «Cx 6%» и «DS $17.64» разной длины, а капсула по константе
-    /// обрезала буквы — снаружи это выглядит как поломка виджета.
+    /// The closed row intentionally shows values only: the fixed service
+    /// colours identify the provider without taking space from the percentage.
     private func closedAIUsageCapsuleWidth(for metric: AIUsageMetric) -> CGFloat {
         let value = aiUsageManager.value(for: metric)
         let number = value.map(metric.formattedValue) ?? "—"
-        let label = CGFloat(metric.shortLabel.count) * 6.2
-        return ceil(label + CGFloat(number.count) * 6.6 + 17)
+        return ceil(CGFloat(number.count) * 7.2 + 18)
     }
 
     /// Matches the capsules actually drawn.
@@ -135,8 +133,7 @@ struct ContentView: View {
 
     private var shouldShowClosedAIUsageIndicators: Bool {
         vm.notchState == .closed
-            && aiUsageManager.showInClosedNotch
-            && aiUsageManager.hasData
+            && !closedAIUsageMetrics.isEmpty
     }
 
     private var shouldKeepOpenOnMouseLeave: Bool {
@@ -679,15 +676,7 @@ struct ContentView: View {
     }
 
     private func aiUsageCapsule(metric: AIUsageMetric, value: Double) -> some View {
-        // Проценты у DeepSeek не показываются — там остаток денег, и «мало
-        // осталось» для него значит другое.
-        let accent = metric.isPercentage && AIUsageManager.isLow(value) ? Color.red : metric.tint
-
-        return HStack(spacing: 3) {
-            Text(metric.shortLabel)
-                .font(.system(size: 9, weight: .bold, design: .rounded))
-            // Единица измерения нужна прямо в капсуле: без неё «6» читается как
-            // что угодно, а у DeepSeek рядом стоят доллары.
+        return HStack(spacing: 0) {
             Text(metric.formattedValue(value))
                 .font(.system(size: 10, weight: .bold, design: .rounded))
                 .monospacedDigit()
@@ -696,7 +685,7 @@ struct ContentView: View {
         .lineLimit(1)
         .fixedSize()
         // Stale numbers are dimmed instead of silently pretending to be live.
-        .foregroundStyle(accent.opacity(aiUsageManager.isStale ? 0.45 : 1))
+        .foregroundStyle(metric.tint.opacity(aiUsageManager.isStale ? 0.45 : 1))
         .frame(
             width: closedAIUsageCapsuleWidth(for: metric),
             height: max(0, vm.effectiveClosedNotchHeight - 12)

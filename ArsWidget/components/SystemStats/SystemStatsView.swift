@@ -243,11 +243,6 @@ struct SystemStatsView: View {
 
                 Spacer(minLength: 0)
 
-                if aiUsage.hasData {
-                    Toggle("Показывать сверху", isOn: $aiUsage.showInClosedNotch)
-                        .toggleStyle(.switch)
-                        .controlSize(.mini)
-                }
             }
 
             let connected = aiUsage.connectedMetrics
@@ -315,9 +310,9 @@ struct SystemStatsView: View {
     private func aiLimitRow(_ metric: AIUsageMetric) -> some View {
         let value = aiUsage.value(for: metric) ?? 0
         let fraction = metric.isPercentage ? min(max(value / 100, 0), 1) : 0
-        // Nearly-exhausted limits go red; everything else keeps the vendor
-        // colour so a row stays recognisable at a glance.
-        let accent = metric.isPercentage && AIUsageManager.isLow(value) ? Color.red : metric.tint
+        // A provider always has the same tint. The colour must not encode the
+        // remaining amount because the compact closed row relies on it as ID.
+        let accent = metric.tint
         let dimmed = aiUsage.isStale
 
         return HStack(spacing: 7) {
@@ -348,6 +343,17 @@ struct SystemStatsView: View {
                 .foregroundStyle(accent.opacity(dimmed ? 0.5 : 1))
                 .frame(width: metric.isPercentage ? 36 : 48, alignment: .trailing)
                 .contentTransition(.numericText())
+
+            Toggle(
+                "Показывать сверху",
+                isOn: Binding(
+                    get: { aiUsage.isShownInClosedNotch(metric) },
+                    set: { aiUsage.setShownInClosedNotch($0, for: metric) }
+                )
+            )
+            .labelsHidden()
+            .toggleStyle(.checkbox)
+            .help(Text("Показывать \(metric.title) в свёрнутом виджете"))
         }
     }
 
