@@ -51,8 +51,19 @@ jobs:
         run: |
           APP_PATH="$RUNNER_TEMP/DerivedData/Build/Products/Release/$APP_NAME.app"
           test -d "$APP_PATH"
-          codesign --force --deep --sign - "$APP_PATH"
+          # Re-sign nested frameworks and Sparkle helpers first. Runtime
+          # options are required for the updater to launch after packaging.
+          codesign --force --deep --options runtime --sign - "$APP_PATH"
+          # Restore each target's sandbox entitlements without re-signing the
+          # nested bundle tree a second time.
+          codesign --force --options runtime \
+            --entitlements "ArsWidgetXPCHelper/ArsWidgetXPCHelper.entitlements" \
+            --sign - "$APP_PATH/Contents/XPCServices/ArsWidgetXPCHelper.xpc"
+          codesign --force --options runtime \
+            --entitlements "ArsWidget/ArsWidget.entitlements" \
+            --sign - "$APP_PATH"
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+          codesign -d --entitlements - "$APP_PATH"
 
       - name: Установить инструмент для DMG
         run: |

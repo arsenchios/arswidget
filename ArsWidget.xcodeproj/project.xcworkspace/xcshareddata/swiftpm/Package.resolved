@@ -1,5 +1,4 @@
 {
-  "originHash" : "ab961f5de25797b1a82bd0f8c39b561332a3dfe10de0a118e1252262fbd45864",
   "pins" : [
     {
       "identity" : "asyncxpcconnection",
@@ -78,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "066e75a8b3e99962685d6a90cdd5293ebffd9261",
-        "version" : "2.9.1"
+        "revision" : "d46d456107feacc80711b21847b82b07bd9fb46e",
+        "version" : "2.9.3"
       }
     },
     {
