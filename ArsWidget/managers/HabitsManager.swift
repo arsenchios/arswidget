@@ -94,6 +94,7 @@ final class HabitsManager: ObservableObject {
     @Published var expandedMonthHabitID: Habit.ID?
 
     private let storageKey = "arswidgetHabitsV1"
+    private let personalSeedKey = "arswidgetPersonalHabitsSeedV1"
 
     private static let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -105,6 +106,7 @@ final class HabitsManager: ObservableObject {
 
     private init() {
         load()
+        seedPersonalHabitsIfNeeded()
     }
 
     // MARK: Дни
@@ -201,6 +203,29 @@ final class HabitsManager: ObservableObject {
               let decoded = try? JSONDecoder().decode([Habit].self, from: data)
         else { return }
         habits = decoded
+    }
+
+    /// Добавляем один раз только ежедневный «минимум». Существующие привычки
+    /// не перезаписываются, совпадающие по названию не дублируются.
+    private func seedPersonalHabitsIfNeeded() {
+        guard !UserDefaults.standard.bool(forKey: personalSeedKey) else { return }
+
+        let suggested: [(String, HabitColor)] = [
+            ("Украинский — 10 минут", .blue),
+            ("Голос / дикция — 10 минут", .purple),
+            ("Отжимания + растяжка — 10 минут", .green),
+            ("Медитация / чистое состояние — 10 минут", .teal),
+            ("Порядок и опрятность — 5 минут", .orange)
+        ]
+
+        for (title, color) in suggested where !habits.contains(where: {
+            $0.title.caseInsensitiveCompare(title) == .orderedSame
+        }) {
+            habits.append(Habit(title: title, color: color))
+        }
+
+        UserDefaults.standard.set(true, forKey: personalSeedKey)
+        save()
     }
 
     private func save() {
