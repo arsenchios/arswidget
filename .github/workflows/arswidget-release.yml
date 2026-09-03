@@ -51,8 +51,26 @@ jobs:
         run: |
           APP_PATH="$RUNNER_TEMP/DerivedData/Build/Products/Release/$APP_NAME.app"
           test -d "$APP_PATH"
-          # Re-sign nested frameworks and Sparkle helpers first. Runtime
-          # options are required for the updater to launch after packaging.
+
+          # `codesign --deep` can silently leave a nested bundle with its
+          # original upstream signature instead of re-signing it — this has
+          # happened with SPM dependencies such as MediaRemoteAdapter.framework.
+          # The app then ships with two different Team IDs inside one bundle:
+          # macOS's Library Validation refuses to load the mismatched
+          # component and silently kills the app on launch (no crash log).
+          # Sign every nested bundle explicitly, deepest paths first, so
+          # nothing is left unsigned by us.
+          find "$APP_PATH" \( -name "*.framework" -o -name "*.dylib" -o -name "*.xpc" -o -name "*.appex" \) -print0 \
+            | awk -v RS='\0' '{ print gsub("/","/"), $0 }' \
+            | sort -rn \
+            | cut -d' ' -f2- \
+            | while IFS= read -r bundle; do
+                codesign --force --options runtime --sign - "$bundle"
+              done
+
+          # Re-sign frameworks/dylibs/etc, then Sparkle helpers, then the app
+          # itself. Runtime options are required for the updater to launch
+          # after packaging.
           codesign --force --deep --options runtime --sign - "$APP_PATH"
           # Restore each target's sandbox entitlements without re-signing the
           # nested bundle tree a second time.
@@ -64,6 +82,14 @@ jobs:
             --sign - "$APP_PATH"
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
           codesign -d --entitlements - "$APP_PATH"
+
+          # Fail the build loudly instead of shipping a bundle where some
+          # nested component still carries a foreign Team ID.
+          if codesign --verify --deep --verbose=4 "$APP_PATH" 2>&1 | tee /tmp/codesign-verify.log | grep -qi "different Team IDs"; then
+            echo "::error::Nested component still signed with a different Team ID after re-signing:"
+            cat /tmp/codesign-verify.log
+            exit 1
+          fi
 
       - name: Установить инструмент для DMG
         run: |
