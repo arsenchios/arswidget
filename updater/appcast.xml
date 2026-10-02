@@ -3,16 +3,16 @@
     <channel>
         <title>ArsWidget</title>
         <item>
-            <title>0.2.9</title>
-            <pubDate>Fri, 21 Aug 2026 04:47:42 +0000</pubDate>
-            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.9</link>
-            <sparkle:version>1021</sparkle:version>
-            <sparkle:shortVersionString>0.2.9</sparkle:shortVersionString>
+            <title>0.2.10</title>
+            <pubDate>Fri, 02 Oct 2026 05:34:15 +0000</pubDate>
+            <link>https://github.com/arsenchios/arswidget/releases/tag/v0.2.10</link>
+            <sparkle:version>1022</sparkle:version>
+            <sparkle:shortVersionString>0.2.10</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[Улучшена подпись встроенного обновления Sparkle и обновлён Sparkle до 2.9.3.
+            <description sparkle:format="markdown"><![CDATA[Исправлена совместимость истории буфера с Universal Clipboard: ArsWidget больше не запрашивает в фоне содержимое буфера iPhone. Локальная история сохранена. Исправлена подпись встроенных компонентов для запуска приложения.
 ]]></description>
-            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.9/ArsWidget-0.2.9.dmg" length="9585516" type="application/octet-stream" sparkle:edSignature="3OXvJDnvtkcRxQ9qRmj8NqdeyEW7wLR6znoZnyyujH+fmGJob9XXbVqMteaYxOBL3jnpeKgecvljBFLcu5rHCA=="/>
+            <enclosure url="https://github.com/arsenchios/arswidget/releases/download/v0.2.10/ArsWidget-0.2.10.dmg" length="9644730" type="application/octet-stream" sparkle:edSignature="OMfWb9qdpksPRJgYrhZKTB3ptXU/J6s24P0akTMcxp4X3D2hmQ4kkwF+lpss8vNVbpeEGn7cwlPXZEOYrmzxCA=="/>
         </item>
     </channel>
 </rss>
