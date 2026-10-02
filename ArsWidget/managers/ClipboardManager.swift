@@ -37,9 +37,12 @@ final class ClipboardManager: ObservableObject {
     private let maxItemBytes = 64 * 1024
     private var lastChangeCount: Int
     private var timerCancellable: AnyCancellable?
-    private let pasteboard = NSPasteboard.general
+    private let pasteboard: NSPasteboard
+    private var pendingChangeCount: Int?
+    private static let remoteClipboard = NSPasteboard.PasteboardType("com.apple.is-remote-clipboard")
 
-    private init() {
+    init(pasteboard: NSPasteboard = .general) {
+        self.pasteboard = pasteboard
         lastChangeCount = pasteboard.changeCount
         restartWatching()
     }
@@ -54,11 +57,37 @@ final class ClipboardManager: ObservableObject {
             }
     }
 
-    private func checkPasteboard() {
-        guard pasteboard.changeCount != lastChangeCount else { return }
-        lastChangeCount = pasteboard.changeCount
+    func checkPasteboard() {
+        guard isEnabled else { return }
+        let changeCount = pasteboard.changeCount
+        guard changeCount != lastChangeCount else { return }
 
-        guard let text = pasteboard.string(forType: .string) else { return }
+        // Inspect metadata before requesting any payload. Reading a remote
+        // string can start a Universal Clipboard transfer before the user pastes.
+        // Leave remote items entirely to macOS, including after they arrive.
+        guard let types = pasteboard.types, pasteboard.changeCount == changeCount else { return }
+        if types.contains(Self.remoteClipboard) {
+            lastChangeCount = changeCount
+            pendingChangeCount = nil
+            return
+        }
+
+        // Give promised contents / remote metadata one polling interval to
+        // settle. A newer copy supersedes this candidate without being read.
+        guard pendingChangeCount == changeCount else {
+            pendingChangeCount = changeCount
+            return
+        }
+        guard types.contains(.string) else {
+            lastChangeCount = changeCount
+            pendingChangeCount = nil
+            return
+        }
+        guard let text = pasteboard.string(forType: .string),
+              pasteboard.changeCount == changeCount,
+              pasteboard.types?.contains(Self.remoteClipboard) == false else { return }
+        lastChangeCount = changeCount
+        pendingChangeCount = nil
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         guard text.lengthOfBytes(using: .utf8) <= maxItemBytes else { return }
