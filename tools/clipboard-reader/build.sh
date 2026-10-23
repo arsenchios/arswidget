@@ -15,8 +15,12 @@ done
 # Paths may contain spaces: reconstruct the argument list from ARCHS.
 set --
 for reader_arch in $ARCHS; do set -- "$@" "$reader_build_dir/reader-$reader_arch"; done
-xcrun lipo -create "$@" -output "$reader_destination"
+# lipo and codesign create temporary siblings. Keep all of those inside
+# TEMP_DIR, then copy only the final file to the declared app output.
+reader_output="$reader_build_dir/ArsWidgetClipboardReader"
+xcrun lipo -create "$@" -output "$reader_output"
 if [ "${CODE_SIGNING_ALLOWED:-NO}" != NO ]; then
     codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY:--}" \
-        --entitlements "$SRCROOT/tools/clipboard-reader/ClipboardReader.entitlements" "$reader_destination"
+        --entitlements "$SRCROOT/tools/clipboard-reader/ClipboardReader.entitlements" "$reader_output"
 fi
+cp "$reader_output" "$reader_destination"
