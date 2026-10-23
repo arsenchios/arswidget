@@ -732,12 +732,21 @@ struct ContentView: View {
         .clipShape(Capsule())
     }
 
+    // Keep numeric inference outside ViewBuilder: a clean Swift compiler can
+    // otherwise exhaust its type-check budget on the combined expression.
+    private func visualizerPulse(time: TimeInterval, index: Int) -> Double {
+        let channel = Double(index)
+        let frequency: Double = 3.0 + channel * 0.7
+        let phase: Double = time * frequency + channel * 1.8
+        return (sin(phase) + 1.0) / 2.0
+    }
+
     private var musicVisualizerCapsule: some View {
         TimelineView(.animation(minimumInterval: 0.25, paused: !musicManager.isPlaying)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             HStack(alignment: .center, spacing: 2) {
                 ForEach(0..<4) { index in
-                    let pulse = (sin(time * (3.0 + Double(index) * 0.7) + Double(index) * 1.8) + 1) / 2
+                    let pulse: Double = visualizerPulse(time: time, index: index)
                     Capsule()
                         .fill(Defaults[.coloredSpectrogram]
                               ? Color(nsColor: musicManager.avgColor).ensureMinimumBrightness(factor: 0.65)
