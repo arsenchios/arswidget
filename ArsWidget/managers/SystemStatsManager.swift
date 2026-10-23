@@ -190,6 +190,8 @@ final class AIUsageManager: ObservableObject {
 
     private var refreshTimer: AnyCancellable?
     private let fileName = "ai-usage.json"
+    private var lastLoadedFileDate: Date?
+    private var lastLoadedFileSize: Int?
 
     private init() {
         closedNotchVisibility = Self.loadClosedNotchVisibility()
@@ -249,11 +251,18 @@ final class AIUsageManager: ObservableObject {
     }
 
     func reload() {
-        if let dataFileURL,
-           let data = try? Data(contentsOf: dataFileURL),
-           let decoded = try? JSONDecoder().decode(AIUsageSnapshot.self, from: data),
-           decoded != snapshot {
-            snapshot = decoded
+        // Freshness still advances, but unchanged bridge files are not read
+        // and JSON-decoded on the main thread every ten seconds.
+        if let url = dataFileURL,
+           let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+           let date = attrs[.modificationDate] as? Date,
+           let size = attrs[.size] as? Int,
+           date != lastLoadedFileDate || size != lastLoadedFileSize,
+           let data = try? Data(contentsOf: url),
+           let decoded = try? JSONDecoder().decode(AIUsageSnapshot.self, from: data) {
+            lastLoadedFileDate = date
+            lastLoadedFileSize = size
+            if decoded != snapshot { snapshot = decoded }
         }
         // A missing or unreadable file must not wipe values we already show:
         // the bridge keeps the live snapshot in memory even if the disk write

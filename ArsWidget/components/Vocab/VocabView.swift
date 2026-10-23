@@ -7,7 +7,7 @@
 //  эти два разных смысла делили один ряд из кружков и выпадающего списка, и
 //  понять, что за список перед тобой, было нельзя.
 //
-//  Сама карточка опроса — VocabPromptOverlayWindow.
+//  Карточка опроса встроена в NotchLayout через VocabPromptCardView.
 //
 
 import SwiftUI
@@ -34,16 +34,15 @@ struct VocabView: View {
 
     private var header: some View {
         HStack {
-            Toggle(isOn: $vocab.isEnabled) {
-                Text("Изучение языков")
+            HStack(spacing: 8) {
+                VocabStudySwitch(compact: false)
+                Text(vocab.isEnabled ? "Изучение включено" : "Изучение выключено")
                     .font(.system(size: 14, weight: .semibold))
             }
-            .toggleStyle(.switch)
-            .controlSize(.mini)
 
             Spacer()
 
-            Text("\(vocab.totalActiveCount) слов в изучении")
+            Text("\(vocab.totalActiveCount) карточек готовы")
                 .font(.caption2)
                 .foregroundStyle(.gray)
         }
@@ -89,6 +88,7 @@ struct VocabView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .vocabHandCursor()
         .help(isLearning ? Text("Этот язык сейчас изучается") : Text("Язык открыт для просмотра, но не изучается"))
     }
 
@@ -133,7 +133,7 @@ struct VocabView: View {
             }
 
             HStack(spacing: 6) {
-                Text("\(vocab.activeCount) из \(vocab.activeTarget) в очереди")
+                Text("\(vocab.activeCount) готовы сейчас · цель \(vocab.activeTarget)")
                 Text("·")
                 Text("в базе \(vocab.totalPackCount(for: vocab.languagePack))")
                 if vocab.reviewCount(for: vocab.languagePack) > 0 {
@@ -169,6 +169,7 @@ struct VocabView: View {
                     Label("Добавить слова", systemImage: "plus.circle")
                 }
                 .buttonStyle(.plain)
+                .vocabHandCursor()
                 .font(.caption)
                 .foregroundStyle(.white.opacity(0.82))
 
@@ -176,6 +177,7 @@ struct VocabView: View {
                     vocab.showRandomWord()
                 }
                 .buttonStyle(.plain)
+                .vocabHandCursor()
                 .font(.caption)
                 .foregroundStyle(.white.opacity(vocab.totalActiveCount == 0 ? 0.3 : 0.8))
                 .disabled(vocab.totalActiveCount == 0)
@@ -187,6 +189,7 @@ struct VocabView: View {
                         vocab.restoreDeletedWords()
                     }
                     .buttonStyle(.plain)
+                    .vocabHandCursor()
                     .font(.caption2)
                     .foregroundStyle(.white.opacity(0.5))
                 }
@@ -230,7 +233,7 @@ struct VocabView: View {
     /// Тем ниже остаются как быстрый способ взять слова одной темой.
     private var levelPicker: some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text("По уровню сложности")
+            Text(vocab.languagePack == .ukrainian ? "Этапы разговорного курса" : "По уровню сложности")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.white.opacity(0.5))
 
@@ -254,9 +257,11 @@ struct VocabView: View {
                             .foregroundStyle(.white.opacity(0.35))
                         Button("+20") { vocab.addWords(level: level, count: 20) }
                             .buttonStyle(.bordered)
+                            .vocabHandCursor()
                             .controlSize(.small)
                         Button("+50") { vocab.addWords(level: level, count: 50) }
                             .buttonStyle(.bordered)
+                            .vocabHandCursor()
                             .controlSize(.small)
                     }
                 }
@@ -285,6 +290,7 @@ struct VocabView: View {
                     Label("Открыть настройки словаря", systemImage: "gearshape")
                 }
                 .buttonStyle(.plain)
+                .vocabHandCursor()
                 .font(.caption)
                 .foregroundStyle(.white.opacity(0.82))
             } else {
@@ -303,6 +309,7 @@ struct VocabView: View {
                                 vocab.addTopic(topic)
                             }
                             .buttonStyle(.bordered)
+                            .vocabHandCursor()
                             .controlSize(.small)
                         }
                     }
@@ -314,6 +321,7 @@ struct VocabView: View {
                     Label("Свои слова и языки", systemImage: "gearshape")
                 }
                 .buttonStyle(.plain)
+                .vocabHandCursor()
                 .font(.caption2)
                 .foregroundStyle(.white.opacity(0.6))
             }
@@ -326,7 +334,7 @@ struct VocabView: View {
 
     private var wordList: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 3) {
+            LazyVStack(alignment: .leading, spacing: 3) {
                 if vocab.visibleWords.isEmpty {
                     Text("В этом наборе пока нет слов. Добавьте готовую тему выше.")
                         .font(.caption2)
@@ -355,6 +363,7 @@ private struct WordRow: View {
                 Image(systemName: word.isActive ? "checkmark.square.fill" : "square")
             }
             .buttonStyle(.plain)
+            .vocabHandCursor()
             .foregroundStyle(word.isActive ? VocabManager.color(for: vocab.languagePack) : .white.opacity(0.4))
             .help(word.isActive ? Text("Убрать из изучения") : Text("Взять в изучение"))
 
@@ -370,8 +379,8 @@ private struct WordRow: View {
                 .font(.system(size: 12))
                 .lineLimit(1)
 
-                if word.box >= 4 {
-                    Text("Уже знаю")
+                if word.box >= 4 || word.reviewDueAt != nil || word.isActive {
+                    Text(vocab.studyStatus(for: word))
                         .font(.system(size: 10))
                         .foregroundStyle(.green.opacity(0.8))
                 }
@@ -391,6 +400,7 @@ private struct WordRow: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .vocabHandCursor()
             .help(Text("Удалить слово навсегда"))
 
             Spacer()
@@ -439,4 +449,69 @@ private struct WordRow: View {
     VocabView()
         .frame(width: 640, height: 470)
         .background(.black)
+}
+
+// Explicit colors keep the status visible even in an inactive floating panel.
+struct VocabStudySwitch: View {
+    @ObservedObject private var vocab = VocabManager.shared
+    let compact: Bool
+
+    var body: some View {
+        Button { vocab.isEnabled.toggle() } label: {
+            HStack(spacing: 5) {
+                Capsule()
+                    .fill(vocab.isEnabled ? (compact ? Color.white.opacity(0.18) : Color.blue) : Color.white.opacity(0.12))
+                    .frame(width: 30, height: 18)
+                    .overlay(alignment: vocab.isEnabled ? .trailing : .leading) {
+                        Circle().fill(.white.opacity(compact ? 0.75 : 1))
+                            .frame(width: 12, height: 12).padding(3)
+                    }
+                if compact {
+                    Text(vocab.isEnabled ? "Вкл." : "Выкл.")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+            }
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(VocabNativeButtonStyle())
+        .vocabHandCursor()
+        .accessibilityLabel("Изучение языков")
+        .accessibilityValue(vocab.isEnabled ? "Включено" : "Выключено")
+        .help(vocab.isEnabled ? "Выключить изучение языков" : "Включить изучение языков")
+        .animation(.easeInOut(duration: 0.15), value: vocab.isEnabled)
+    }
+}
+
+private struct VocabHandCursor: ViewModifier {
+    @Environment(\.isEnabled) private var isEnabled
+    @State private var pushed = false
+
+    func body(content: Content) -> some View {
+        content
+            .onHover { hovering in
+                if hovering && isEnabled && !pushed {
+                    NSCursor.pointingHand.push()
+                    pushed = true
+                } else if !hovering && pushed {
+                    NSCursor.pop()
+                    pushed = false
+                }
+            }
+            .onChange(of: isEnabled) { _, enabled in
+                if !enabled { restoreCursor() }
+            }
+            .onDisappear { restoreCursor() }
+    }
+
+    private func restoreCursor() {
+        guard pushed else { return }
+        NSCursor.pop()
+        pushed = false
+    }
+}
+
+extension View {
+    func vocabHandCursor() -> some View { modifier(VocabHandCursor()) }
 }

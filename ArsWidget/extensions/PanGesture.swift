@@ -19,7 +19,7 @@ enum PanDirection {
 }
 
 extension View {
-    func panGesture(direction: PanDirection, threshold: CGFloat = 4, action: @escaping (CGFloat, NSEvent.Phase) -> Void) -> some View {
+    func panGesture(direction: PanDirection, threshold: CGFloat = 4, enabled: Bool = true, action: @escaping (CGFloat, NSEvent.Phase) -> Void) -> some View {
         self
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -28,23 +28,27 @@ extension View {
                         guard s > 0, s.magnitude >= threshold else { return }
                         action(s.magnitude, .changed)
                     }
-                    .onEnded { _ in action(0, .ended) }
+                    .onEnded { _ in action(0, .ended) },
+                including: enabled ? .all : .none
             )
-            .background(ScrollMonitor(direction: direction, threshold: threshold, action: action))
+            .background(ScrollMonitor(direction: direction, threshold: threshold, enabled: enabled, action: action))
     }
 }
 
 private struct ScrollMonitor: NSViewRepresentable {
     let direction: PanDirection
     let threshold: CGFloat
+    let enabled: Bool
     let action: (CGFloat, NSEvent.Phase) -> Void
 
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
-        context.coordinator.installMonitor(on: view)
+        context.coordinator.setEnabled(enabled, on: view)
         return view
     }
-    func updateNSView(_ nsView: NSView, context: Context) {}
+    func updateNSView(_ nsView: NSView, context: Context) {
+        context.coordinator.setEnabled(enabled, on: nsView)
+    }
     static func dismantleNSView(_ nsView: NSView, coordinator: Coordinator) { coordinator.removeMonitor() }
 
     func makeCoordinator() -> Coordinator {
@@ -81,6 +85,14 @@ private struct ScrollMonitor: NSViewRepresentable {
                 }
                 active = false
                 accumulated = 0
+            }
+        }
+
+        func setEnabled(_ enabled: Bool, on view: NSView) {
+            if enabled {
+                if monitor == nil { installMonitor(on: view) }
+            } else if monitor != nil {
+                removeMonitor()
             }
         }
 

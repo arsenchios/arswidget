@@ -40,6 +40,7 @@ struct SystemStatsView: View {
     }
 
     var body: some View {
+        ScrollView {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Toggle(isOn: $stats.isEnabled) {
@@ -117,6 +118,11 @@ struct SystemStatsView: View {
             Divider()
                 .overlay(Color.white.opacity(0.12))
 
+            KeepAwakeControlsView()
+
+            Divider()
+                .overlay(Color.white.opacity(0.12))
+
             cleaningControls
 
             Divider()
@@ -158,6 +164,9 @@ struct SystemStatsView: View {
             }
         }
         .padding(.horizontal, 8)
+        .padding(.bottom, 8)
+        }
+        .frame(height: max(160, vm.notchSize.height - max(24, vm.effectiveClosedNotchHeight) - 12))
         .onChange(of: stats.showSupport) {
             vm.updateOpenSizeIfNeeded()
         }
@@ -676,7 +685,7 @@ struct SystemStatsView: View {
                 Image(systemName: "chart.bar.xaxis")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.blue)
-                Text("Два шага")
+                Text("Подключение лимитов")
                     .font(.caption.weight(.semibold))
                 Spacer(minLength: 0)
                 Button {
@@ -690,21 +699,21 @@ struct SystemStatsView: View {
             }
 
             VStack(alignment: .leading, spacing: 5) {
-                setupStep(1, "Поставь расширение ArsWidget для Chrome")
+                setupStep(1, "Скачай архив расширения и загрузи распакованную папку в chrome://extensions (режим разработчика)")
                 setupStep(2, "В окне расширения нажми «Включить показ лимитов»")
                 setupStep(3, "Открой страницы Usage - лимиты появятся здесь автоматически")
             }
 
             Button {
-                openExtensionStore()
+                openExtensionInstructions()
             } label: {
-                Label("Установить расширение", systemImage: "puzzlepiece.extension")
+                Label("Как установить расширение", systemImage: "puzzlepiece.extension")
                     .font(.caption.weight(.semibold))
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
 
-            Label("Только проценты. Без паролей, cookies и переписок — всё остаётся на этом Mac.", systemImage: "lock.shield")
+            Label("Лимиты и время обновления. Без паролей, cookies и переписок — данные передаются только виджету на этом Mac.", systemImage: "lock.shield")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -727,8 +736,8 @@ struct SystemStatsView: View {
         }
     }
 
-    private func openExtensionStore() {
-        guard let url = URL(string: "https://chromewebstore.google.com/search/ArsWidget%20AI%20Limits"),
+    private func openExtensionInstructions() {
+        guard let url = URL(string: "https://github.com/arsenchios/arswidget/blob/main/chrome-extension/arswidget-ai-limits/README.md#установка"),
               url.scheme?.lowercased() == "https"
         else { return }
         guard let chromeURL = NSWorkspace.shared.urlForApplication(

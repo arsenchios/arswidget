@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDisplayName</key>
 	<string>ArsWidget</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>15.0</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
@@ -14,7 +16,7 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUEnableAutomaticChecks</key>
-	<true/>
+	<false/>
 	<key>SUScheduledCheckInterval</key>
 	<integer>14400</integer>
 	<key>SUAutomaticallyUpdate</key>

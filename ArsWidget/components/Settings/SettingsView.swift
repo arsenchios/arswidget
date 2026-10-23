@@ -35,7 +35,7 @@ struct SettingsView: View {
                     Label("Музыка", systemImage: "play.laptopcomputer")
                 }
                 NavigationLink(value: "Calendar") {
-                    Label("Календарь", systemImage: "calendar")
+                    Label("Календарь и напоминания", systemImage: "calendar")
                 }
                 NavigationLink(value: "Vocab") {
                     Label("Словарь", systemImage: "text.book.closed")
@@ -43,6 +43,12 @@ struct SettingsView: View {
                 NavigationLink(value: "Pomodoro") {
                     Label("Помодоро", systemImage: "timer")
                 }
+                NavigationLink(value: "Shelf") { Label("Файлы и AirDrop", systemImage: "tray") }
+                NavigationLink(value: "Battery") { Label("Батарея", systemImage: "battery.100") }
+                NavigationLink(value: "HUD") { Label("Индикаторы", systemImage: "slider.horizontal.3") }
+                NavigationLink(value: "Appearance") { Label("Внешний вид", systemImage: "paintpalette") }
+                NavigationLink(value: "Shortcuts") { Label("Сочетания клавиш", systemImage: "keyboard") }
+                NavigationLink(value: "Advanced") { Label("Дополнительно", systemImage: "gearshape.2") }
                 NavigationLink(value: "About") {
                     Label("О приложении", systemImage: "info.circle")
                 }
@@ -64,6 +70,12 @@ struct SettingsView: View {
                     VocabSettings()
                 case "Pomodoro":
                     PomodoroSettings()
+                case "Shelf": Shelf()
+                case "Battery": Charge()
+                case "HUD": HUD()
+                case "Appearance": Appearance()
+                case "Shortcuts": Shortcuts()
+                case "Advanced": Advanced()
                 case "About":
                     if let controller = updaterController {
                         About(updaterController: controller)
@@ -123,6 +135,23 @@ struct GeneralSettings: View {
             }
 
             NotchBehaviour()
+
+            Section {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Знакомство с приложением")
+                        Text("Наглядный тур по функциям: музыка, фокус, языки, файлы и система.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button("Показать") {
+                        ArsWidgetViewCoordinator.shared.replayFirstRunTour()
+                    }
+                }
+            } header: {
+                Text("Знакомство")
+            }
         }
         .toolbar {
             Button("Закрыть приложение") {
@@ -196,7 +225,6 @@ struct Charge: View {
 }
 
 struct HUD: View {
-    @EnvironmentObject var vm: ArsWidgetViewModel
     @Default(.inlineHUD) var inlineHUD
     @Default(.enableGradient) var enableGradient
     @Default(.optionKeyAction) var optionKeyAction
@@ -365,7 +393,7 @@ struct Media: View {
                     }
                 } else {
                     Text(
-                        "«Сейчас играет» работает со всеми музыкальными приложениями."
+                        "«Сейчас играет» работает с плеерами, которые передают macOS сведения о воспроизведении."
                     )
                     .foregroundStyle(.secondary)
                     .font(.caption)
@@ -419,7 +447,7 @@ struct Media: View {
             } header: {
                 Text("Управление музыкой")
             }  footer: {
-                Text("Выбери элементы управления в плеере. Громкость разворачивается при использовании.")
+                Text("Выбери элементы управления в плеере. Громкость приложения Apple Music доступна прямо в плеере.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -483,6 +511,10 @@ struct VocabSettings: View {
     var body: some View {
         Form {
             Section {
+                Text("Сначала разговорные вопросы, просьбы и места, затем более сложная речь.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Text("«Вспомнил» — интервальные повторения. «Уже знаю» — исключить слово из показа.")
+                    .font(.caption).foregroundStyle(.secondary)
                 Toggle("Включить карточки слов", isOn: $vocab.isEnabled)
                 Stepper("Показывать каждые \(vocab.intervalMinutes) мин", value: $vocab.intervalMinutes, in: 1...120)
                 Toggle("Не показывать в полноэкранном режиме", isOn: $pauseInFullscreen)
@@ -531,7 +563,7 @@ struct VocabSettings: View {
             } header: {
                 Text("Словарь")
             } footer: {
-                Text("Очередь пополняется следующими словами выбранного уровня. Выученное слово возвращается на повторение через 3 дня или после 10 новых слов — что наступит раньше.")
+                Text("Очередь пополняется словами выбранного уровня. «Вспомнил» назначает повтор через 30 минут, затем 1, 7, 21, 60 и 120 дней. «Повторить» возвращает слово через 10 минут. «Уже знаю» исключает его из показа.")
             }
 
             Section {
@@ -772,9 +804,9 @@ struct About: View {
                     Text("О версии")
                 }
 
-                UpdaterSettingsView(updater: updaterController.updater)
+                Link("Скачать последнюю версию", destination: URL(string: "https://github.com/arsenchios/arswidget/releases/latest")!)
 
-                Text("ArsWidget проверяет обновления автоматически. Когда новая версия готова, приложение предложит скачать её и перезапуститься.")
+                Text("Обновления этой сборки устанавливаются вручную из GitHub Releases. Скачайте новую версию и замените приложение в Applications. Настройки и задачи сохранятся.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -815,7 +847,7 @@ struct About: View {
             //                openWindow(id: "onboarding")
             //            }
             //            .controlSize(.extraLarge)
-            CheckForUpdatesView(updater: updaterController.updater)
+            Link("Обновления", destination: URL(string: "https://github.com/arsenchios/arswidget/releases/latest")!)
         }
         .navigationTitle("О приложении")
     }
@@ -1032,23 +1064,6 @@ struct Advanced: View {
 
     var body: some View {
         Form {
-            Section {
-                HStack {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Знакомство с приложением")
-                        Text("Короткий тур по вкладкам: что где лежит и зачем нужно.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Button("Показать") {
-                        ArsWidgetViewCoordinator.shared.replayFirstRunTour()
-                    }
-                }
-            } header: {
-                Text("Знакомство")
-            }
-
             Section {
                 Toggle(isOn: $telemetry.isEnabled) {
                     VStack(alignment: .leading, spacing: 3) {

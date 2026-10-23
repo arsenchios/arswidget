@@ -45,7 +45,12 @@ class MusicManager: ObservableObject {
     @Published var isShuffled: Bool = false
     @Published var repeatMode: RepeatMode = .off
     @Published var volume: Double = 0.5
-    @Published var volumeControlSupported: Bool = true
+    @Published var volumeControlSupported: Bool = false
+    @Published private(set) var volumeControlError: String?
+    private var pendingVolume: Double?
+    private var volumeWriteTask: Task<Void, Never>?
+    private var volumeWriteRevision = 0
+    private var isReadingVolume = false
     @ObservedObject var coordinator = ArsWidgetViewCoordinator.shared
     @Published var usingAppIconForArtwork: Bool = false
     @Published var currentLyrics: String = ""
@@ -55,6 +60,8 @@ class MusicManager: ObservableObject {
     @Published var isFavoriteTrack: Bool = false
 
     private var artworkData: Data? = nil
+    private var artworkRetryTask: Task<Void, Never>?
+    private var artworkRetryCount = 0
 
     // Store last values at the time artwork was changed
     private var lastArtworkTitle: String = "I'm Handsome"
@@ -102,6 +109,8 @@ class MusicManager: ObservableObject {
         controllerCancellables.removeAll()
         flipWorkItem?.cancel()
         transitionWorkItem?.cancel()
+        volumeWriteTask?.cancel()
+        artworkRetryTask?.cancel()
 
         // Release active controller
         activeController = nil
@@ -170,7 +179,13 @@ class MusicManager: ObservableObject {
         flipWorkItem?.cancel()
 
         // Set new active controller
+        volumeWriteRevision += 1
+        volumeWriteTask?.cancel()
+        volumeWriteTask = nil
+        pendingVolume = nil
         activeController = controller
+        self.volumeControlSupported = controller.supportsVolumeControl
+        self.volumeControlError = nil
 
         self.canFavoriteTrack = controller.supportsFavorite
 
@@ -200,40 +215,51 @@ class MusicManager: ObservableObject {
         let albumChanged = state.album != self.lastArtworkAlbum
         let bundleChanged = state.bundleIdentifier != self.lastArtworkBundleIdentifier
 
-        // Check for artwork changes
+        // Album metadata may arrive later for the same song. It must not erase its cover.
+        let trackChanged = titleChanged || artistChanged || bundleChanged
         let artworkChanged = state.artwork != nil && state.artwork != self.artworkData
-        let hasContentChange = titleChanged || artistChanged || albumChanged || artworkChanged || bundleChanged
-
-        // Handle artwork and visual transitions for changed content
-        if hasContentChange {
-            self.triggerFlipAnimation()
-
-            if artworkChanged, let artwork = state.artwork {
-                self.updateArtwork(artwork)
-            } else if state.artwork == nil {
-                // Try to use app icon if no artwork but track changed
-                if let appIconImage = AppIconAsNSImage(for: state.bundleIdentifier) {
-                    self.usingAppIconForArtwork = true
-                    self.updateAlbumArt(newAlbumArt: appIconImage)
-                }
+        if trackChanged {
+            artworkRetryTask?.cancel()
+            artworkRetryTask = nil
+            artworkRetryCount = 0
+            artworkData = nil
+        }
+        if trackChanged || artworkChanged || albumChanged {
+            triggerFlipAnimation()
+            if let artwork = state.artwork {
+                artworkData = artwork
+                updateArtwork(artwork)
+            } else if trackChanged, let appIconImage = AppIconAsNSImage(for: state.bundleIdentifier) {
+                // Only a different track/source can replace the previous cover.
+                usingAppIconForArtwork = true
+                updateAlbumArt(newAlbumArt: appIconImage)
             }
-            self.artworkData = state.artwork
-
-            if artworkChanged || state.artwork == nil {
-                // Update last artwork change values
-                self.lastArtworkTitle = state.title
-                self.lastArtworkArtist = state.artist
-                self.lastArtworkAlbum = state.album
-                self.lastArtworkBundleIdentifier = state.bundleIdentifier
-            }
-
-            // Only update sneak peek if there's actual content and something changed
+            lastArtworkTitle = state.title
+            lastArtworkArtist = state.artist
+            lastArtworkAlbum = state.album
+            lastArtworkBundleIdentifier = state.bundleIdentifier
             if !state.title.isEmpty && !state.artist.isEmpty && state.isPlaying {
-                self.updateSneakPeek()
+                updateSneakPeek()
             }
-
-            // Fetch lyrics on content change
-            self.fetchLyricsIfAvailable(bundleIdentifier: state.bundleIdentifier, title: state.title, artist: state.artist)
+            if trackChanged {
+                fetchLyricsIfAvailable(bundleIdentifier: state.bundleIdentifier, title: state.title, artist: state.artist)
+            }
+        }
+        // Music may send metadata before its cover is available. Retry a few
+        // times, without a permanent polling loop or erasing an existing cover.
+        if artworkData == nil, state.bundleIdentifier == "com.apple.Music",
+           !state.title.isEmpty, state.title != "Not Playing",
+           artworkRetryCount < 3, artworkRetryTask == nil {
+            artworkRetryCount += 1
+            artworkRetryTask = Task { @MainActor [weak self] in
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+                guard let self else { return }
+                self.artworkRetryTask = nil
+                self.forceUpdate()
+            }
+        } else if artworkData != nil {
+            artworkRetryTask?.cancel()
+            artworkRetryTask = nil
         }
 
         let timeChanged = state.currentTime != self.elapsedTime
@@ -272,6 +298,11 @@ class MusicManager: ObservableObject {
         }
 
         if state.bundleIdentifier != self.bundleIdentifier {
+            volumeWriteRevision += 1
+            volumeWriteTask?.cancel()
+            volumeWriteTask = nil
+            pendingVolume = nil
+            volumeControlError = nil
             self.bundleIdentifier = state.bundleIdentifier
             // Update volume control support from active controller
             self.volumeControlSupported = activeController?.supportsVolumeControl ?? false
@@ -284,9 +315,10 @@ class MusicManager: ObservableObject {
             self.isFavoriteTrack = state.isFavorite
         }
 
-        if volumeChanged {
+        if volumeChanged && volumeWriteTask == nil {
             self.volume = state.volume
         }
+        self.volumeControlSupported = activeController?.supportsVolumeControl ?? false
 
         self.timestampDate = state.lastUpdated
     }
@@ -524,8 +556,9 @@ class MusicManager: ObservableObject {
 
             if let artworkImage = NSImage(data: artworkData) {
                 DispatchQueue.main.async { [weak self] in
-                    self?.usingAppIconForArtwork = false
-                    self?.updateAlbumArt(newAlbumArt: artworkImage)
+                    guard let self, self.artworkData == artworkData else { return }
+                    self.usingAppIconForArtwork = false
+                    self.updateAlbumArt(newAlbumArt: artworkImage)
                 }
             }
         }
@@ -647,13 +680,53 @@ class MusicManager: ObservableObject {
         seek(to: newPos)
     }
 
+    var volumeSourceName: String {
+        switch bundleIdentifier {
+        case "com.apple.Music": return "Apple Music"
+        case "com.spotify.client": return "Spotify"
+        default: return "Плеер"
+        }
+    }
+
+    /// One in-flight command, retaining only the latest drag position.
+    /// Never route this control through the laptop's CoreAudio volume.
+    @MainActor
     func setVolume(to level: Double) {
-        if let controller = activeController {
-            Task {
-                await controller.setVolume(level)
+        guard level.isFinite, volumeControlSupported, let controller = activeController else { return }
+        let target = min(1, max(0, level))
+        pendingVolume = target
+        volume = target
+        volumeControlError = nil
+        guard volumeWriteTask == nil else { return }
+        let source = bundleIdentifier
+        let revision = volumeWriteRevision
+        volumeWriteTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            defer {
+                if self.volumeWriteRevision == revision { self.volumeWriteTask = nil }
+            }
+            while !Task.isCancelled, self.activeController === controller,
+                  self.volumeWriteRevision == revision, self.bundleIdentifier == source,
+                  let value = self.pendingVolume {
+                self.pendingVolume = nil
+                do {
+                    if let script = PlayerVolumeCommands.script(bundleID: source, value: value) {
+                        try await AppleScriptHelper.executeVoid(script)
+                    } else {
+                        await controller.setVolume(value)
+                    }
+                } catch {
+                    guard self.activeController === controller, self.volumeWriteRevision == revision else { return }
+                    self.pendingVolume = nil
+                    self.volumeControlError = "Разрешите ArsWidget управлять \(self.volumeSourceName) в настройках macOS → Конфиденциальность → Автоматизация."
+                    return
+                }
+                do { try await Task.sleep(for: .milliseconds(80)) }
+                catch { return }
             }
         }
     }
+
     func openMusicApp() {
         guard let bundleID = bundleIdentifier else {
             print("Error: appBundleIdentifier is nil")
@@ -689,47 +762,25 @@ class MusicManager: ObservableObject {
     }
 
 
+    @MainActor
     func syncVolumeFromActiveApp() async {
-        // Check if bundle identifier is valid and if the app is actually running
-        guard let bundleID = bundleIdentifier, !bundleID.isEmpty,
-              NSWorkspace.shared.runningApplications.contains(where: { $0.bundleIdentifier == bundleID }) else { return }
-
-        var script: String?
-        if bundleID == "com.apple.Music" {
-            script = """
-            tell application "Music"
-                if it is running then
-                    get sound volume
-                else
-                    return 50
-                end if
-            end tell
-            """
-        } else if bundleID == "com.spotify.client" {
-            script = """
-            tell application "Spotify"
-                if it is running then
-                    get sound volume
-                else
-                    return 50
-                end if
-            end tell
-            """
-        } else {
-            // For unsupported apps, don't sync volume
-            return
-        }
-
-        if let volumeScript = script,
-           let result = try? await AppleScriptHelper.execute(volumeScript) {
-            let volumeValue = result.int32Value
-            let currentVolume = Double(volumeValue) / 100.0
-
-            await MainActor.run {
-                if abs(currentVolume - self.volume) > 0.01 {
-                    self.volume = currentVolume
-                }
-            }
+        guard !isReadingVolume, volumeWriteTask == nil,
+              let controller = activeController,
+              let script = PlayerVolumeCommands.script(bundleID: bundleIdentifier) else { return }
+        let source = bundleIdentifier
+        isReadingVolume = true
+        defer { isReadingVolume = false }
+        do {
+            guard let result = try await AppleScriptHelper.execute(script),
+                  result.descriptorType != typeNull,
+                  activeController === controller, bundleIdentifier == source,
+                  volumeWriteTask == nil else { return }
+            let value = min(1, max(0, Double(result.int32Value) / 100))
+            if abs(value - volume) >= 0.005 { volume = value }
+            if volumeControlError != nil { volumeControlError = nil }
+        } catch {
+            guard activeController === controller else { return }
+            volumeControlError = "Нет доступа к громкости \(volumeSourceName). Проверьте разрешение «Автоматизация» для ArsWidget."
         }
     }
 }

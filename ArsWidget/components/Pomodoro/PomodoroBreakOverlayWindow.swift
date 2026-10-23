@@ -12,6 +12,7 @@ import Cocoa
 import SwiftUI
 
 final class PomodoroBreakOverlayWindow: NSPanel {
+    private var blocksInput = false
 
     convenience init() {
         let screenFrame = NSScreen.main?.frame ?? .zero
@@ -32,15 +33,16 @@ final class PomodoroBreakOverlayWindow: NSPanel {
         contentView = NSHostingView(rootView: PomodoroBreakOverlayView())
     }
 
-    override var canBecomeKey: Bool { true }
-    override var canBecomeMain: Bool { true }
+    override var canBecomeKey: Bool { blocksInput }
+    override var canBecomeMain: Bool { blocksInput }
 
     func showOverlay(blocksInput: Bool) {
         if let screenFrame = NSScreen.main?.frame {
             setFrame(screenFrame, display: true)
         }
+        self.blocksInput = blocksInput
         ignoresMouseEvents = !blocksInput
-        makeKeyAndOrderFront(nil)
+        if blocksInput { makeKeyAndOrderFront(nil) } else { orderFrontRegardless() }
         NSAnimationContext.runAnimationGroup { ctx in
             ctx.duration = 0.6
             animator().alphaValue = 1

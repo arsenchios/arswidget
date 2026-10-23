@@ -8,7 +8,7 @@
 //  small card near the notch. Mark "Знаю" / "Не знаю" — words you don't
 //  know yet get shown more often, words you know well fade out (a simple
 //  Leitner-box style spaced repetition: 5 levels, 0 = brand new,
-//  4 = mastered and stops appearing).
+//  4 = consolidated; scheduled reviews continue unless explicitly excluded).
 //
 //  Everything is stored in UserDefaults as plain JSON — no database, no
 //  disk polling, and the background timer only fires once every few
@@ -18,22 +18,6 @@
 import Foundation
 import SwiftUI
 import Combine
-
-struct VocabWord: Identifiable, Codable, Equatable {
-    var id: String { ru }
-    let ru: String
-    let uk: String
-    var isActive: Bool = false
-    var isCustom: Bool = false
-    /// Simple Leitner box: 0 = new/hard, 4 = mastered (stops showing).
-    var box: Int = 0
-    var timesShown: Int = 0
-    var timesKnown: Int = 0
-    /// A mastered word leaves the daily queue, then comes back as a review.
-    /// Optional fields keep all existing on-device progress decodable.
-    var reviewDueAt: Date?
-    var reviewAfterNewWords: Int?
-}
 
 enum VocabDirection: String, CaseIterable, Identifiable {
     case ruToUk = "RU → UK"
@@ -90,6 +74,7 @@ final class VocabManager: ObservableObject {
     @Published private(set) var currentPrompt: VocabWord?
     @Published private(set) var currentPromptPack: VocabLanguagePack?
     @Published private(set) var currentPromptIsRuToUk: Bool = true
+    @Published private(set) var currentPromptIsGap = false
     @Published var showPromptOverlay: Bool = false
 
     @AppStorage("vocabEnabled") var isEnabled: Bool = false {
@@ -217,7 +202,8 @@ final class VocabManager: ObservableObject {
     }
 
     func promptText(for word: VocabWord) -> String {
-        displayText(currentPromptIsRuToUk ? word.ru : word.uk)
+        if currentPromptIsGap, let text = VocabReviewSchedule.maskedExample(for: word) { return text }
+        return displayText(currentPromptIsRuToUk ? word.ru : word.uk)
     }
 
     func answerText(for word: VocabWord) -> String {
@@ -243,9 +229,11 @@ final class VocabManager: ObservableObject {
         }
     }
 
+    private var wordCache: [VocabLanguagePack: [VocabWord]] = [:]
+    private var lastPromptID: String?
     private var timerCancellable: AnyCancellable?
     private var fullscreenCancellable: AnyCancellable?
-    private lazy var overlay = VocabPromptOverlayWindow()
+    private var sessionAvailability = VocabSessionAvailability()
 
     private var shouldPauseForFullscreenApp: Bool {
         let pausesInFullscreen = UserDefaults.standard.object(forKey: "vocabPauseInFullscreen") as? Bool ?? true
@@ -256,6 +244,7 @@ final class VocabManager: ObservableObject {
     }
 
     private init() {
+        prepareConversationCourseIfNeeded()
         loadWords()
         fullscreenCancellable = FullscreenMediaDetector.shared.$hasFullscreenApp
             .removeDuplicates()
@@ -266,7 +255,7 @@ final class VocabManager: ObservableObject {
         restartTimer()
     }
 
-    var activeCount: Int { words.filter { $0.isActive }.count }
+    var activeCount: Int { words.filter { VocabReviewSchedule.isDue($0, now: Date()) }.count }
 
     func selectedLevel(for pack: VocabLanguagePack) -> VocabLevel {
         let key = selectedLevelKey(for: pack)
@@ -311,7 +300,7 @@ final class VocabManager: ObservableObject {
     var masteredCount: Int { words.filter { $0.box >= 4 }.count }
 
     func activeCount(for pack: VocabLanguagePack) -> Int {
-        loadWords(for: pack).filter(\.isActive).count
+        loadWords(for: pack).filter { VocabReviewSchedule.isDue($0, now: Date()) }.count
     }
 
     func isPackEnabled(_ pack: VocabLanguagePack) -> Bool {
@@ -338,6 +327,12 @@ final class VocabManager: ObservableObject {
     func setActive(_ word: VocabWord, active: Bool) {
         guard let idx = words.firstIndex(where: { $0.id == word.id }) else { return }
         words[idx].isActive = active
+        words[idx].isPaused = !active
+        if active {
+            words[idx].isExcluded = false
+            if words[idx].box >= 4 { words[idx].box = 0; words[idx].reviewStage = 0 }
+            words[idx].reviewDueAt = nil
+        }
         saveWords()
     }
 
@@ -348,7 +343,11 @@ final class VocabManager: ObservableObject {
 
         if let idx = words.firstIndex(where: { $0.ru.caseInsensitiveCompare(ru) == .orderedSame }) {
             words[idx].isActive = true
-            words[idx].box = min(words[idx].box, 3)
+            words[idx].box = 0
+            words[idx].reviewStage = 0
+            words[idx].reviewDueAt = nil
+            words[idx].isExcluded = false
+            words[idx].isPaused = false
             saveWords()
             return
         }
@@ -365,10 +364,7 @@ final class VocabManager: ObservableObject {
         let pack = currentPrompt?.id == word.id ? (currentPromptPack ?? languagePack) : languagePack
         var packWords = loadWords(for: pack)
         guard let idx = packWords.firstIndex(where: { $0.id == word.id }) else { return }
-        packWords[idx].box = 4
-        packWords[idx].timesKnown += 1
-        packWords[idx].isActive = false
-        scheduleReview(for: &packWords[idx], in: pack)
+        VocabReviewSchedule.exclude(&packWords[idx])
         saveWords(packWords, for: pack)
         if pack == languagePack {
             words = packWords
@@ -386,6 +382,11 @@ final class VocabManager: ObservableObject {
         words[idx].timesKnown = 0
         words[idx].reviewDueAt = nil
         words[idx].reviewAfterNewWords = nil
+        words[idx].reviewStage = 0
+        words[idx].lastAnsweredAt = nil
+        words[idx].isExcluded = false
+        words[idx].isPaused = false
+        words[idx].isActive = true
         saveWords()
     }
 
@@ -420,6 +421,7 @@ final class VocabManager: ObservableObject {
     }
 
     private func saveDeletedIDs(_ ids: Set<String>, for pack: VocabLanguagePack) {
+        wordCache[pack] = nil
         UserDefaults.standard.set(Array(ids), forKey: deletedKey(for: pack))
     }
 
@@ -432,22 +434,27 @@ final class VocabManager: ObservableObject {
     }
 
     private func loadWords(for pack: VocabLanguagePack) -> [VocabWord] {
+        if let cached = wordCache[pack] { return cached }
         let deleted = deletedIDs(for: pack)
         let builtinWords = Self.builtinWords(for: pack).filter { !deleted.contains($0.id) }
-        let builtinWordIDs = Self.builtinWordIDs(for: pack)
-
+        let builtinIDs = Self.builtinWordIDs(for: pack)
+        var merged = builtinWords
         if let data = UserDefaults.standard.data(forKey: storageKey(for: pack)),
            let saved = try? JSONDecoder().decode([VocabWord].self, from: data) {
             let savedByID = Dictionary(saved.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-            // Merge saved progress with the built-in list, in case the
-            // built-in list gained new words since last launch.
-            var merged = builtinWords.map { savedByID[$0.id] ?? $0 }
-            let customSavedWords = saved.filter { !builtinWordIDs.contains($0.id) && !deleted.contains($0.id) }
-            merged.insert(contentsOf: customSavedWords.reversed(), at: 0)
-            return merged
-        } else {
-            return builtinWords
+            merged = builtinWords.map { builtin in
+                guard var savedWord = savedByID[builtin.id] else { return builtin }
+                if pack == .ukrainian, !savedWord.isCustom { savedWord.uk = builtin.uk }
+                return savedWord
+            }
+            merged.insert(contentsOf: saved.filter { !builtinIDs.contains($0.id) && !deleted.contains($0.id) }, at: 0)
         }
+        let metadata = Dictionary(Self.levelPack(for: pack).map { ($0.ru, $0) }, uniquingKeysWith: { first, _ in first })
+        for i in merged.indices {
+            if let entry = metadata[merged[i].id] { VocabReviewSchedule.applyMetadata(entry, to: &merged[i]) }
+        }
+        wordCache[pack] = merged
+        return merged
     }
 
     private func saveWords() {
@@ -455,6 +462,7 @@ final class VocabManager: ObservableObject {
     }
 
     private func saveWords(_ words: [VocabWord], for pack: VocabLanguagePack) {
+        wordCache[pack] = words
         guard let data = try? JSONEncoder().encode(words) else { return }
         UserDefaults.standard.set(data, forKey: storageKey(for: pack))
     }
@@ -492,9 +500,20 @@ final class VocabManager: ObservableObject {
 
     // MARK: Timer
 
+    func setSessionSuspended(_ reason: VocabSessionAvailability.Suspension, suspended: Bool) {
+        guard sessionAvailability.setSuspended(reason, suspended: suspended) else { return }
+        if sessionAvailability.permitsPrompts {
+            restartTimer()
+        } else {
+            timerCancellable?.cancel()
+            timerCancellable = nil
+            dismissPrompt()
+        }
+    }
+
     private func restartTimer() {
         timerCancellable?.cancel()
-        guard isEnabled else { return }
+        guard isEnabled, sessionAvailability.permitsPrompts else { return }
         ensureStarterWordsIfNeeded()
         guard enabledPacks.isEmpty == false else { return }
         let seconds = max(1, intervalMinutes) * 60
@@ -517,20 +536,26 @@ final class VocabManager: ObservableObject {
 
         // A full-screen app is usually a film, presentation or game. Do not
         // put a study card over it; the next timer tick will try again.
-        guard !shouldPauseForFullscreenApp else { return }
+        guard sessionAvailability.permitsPrompts, currentPrompt == nil, !shouldPauseForFullscreenApp else { return }
 
         ensureStudyQueuesIfNeeded()
         let candidates: [PromptCandidate] = enabledPacks.flatMap { pack in
             loadWords(for: pack)
-                .filter { $0.isActive && $0.box < 4 }
+                .filter { VocabReviewSchedule.isDue($0, now: Date()) }
                 .map { PromptCandidate(pack: pack, word: $0) }
         }
         guard !candidates.isEmpty else { return }
 
-        let weighted = candidates.flatMap { candidate in
-            Array(repeating: candidate, count: max(1, 5 - candidate.word.box))
+        // Oldest due review first, then new conversation items in curriculum
+        // order. No random weighted-array allocation and no immediate repeat.
+        let ordered = candidates.sorted { left, right in
+            let l = left.word.reviewDueAt ?? .distantFuture
+            let r = right.word.reviewDueAt ?? .distantFuture
+            if l != r { return l < r }
+            return (left.word.priority ?? Int.max) < (right.word.priority ?? Int.max)
         }
-        guard let picked = weighted.randomElement() else { return }
+        guard let picked = ordered.first(where: { $0.word.id != lastPromptID }) ?? ordered.first else { return }
+        lastPromptID = picked.word.id
 
         currentPromptIsRuToUk = {
             switch direction {
@@ -540,11 +565,12 @@ final class VocabManager: ObservableObject {
             }
         }()
 
+        currentPromptIsGap = picked.pack == .ukrainian && currentPromptIsRuToUk
+            && picked.word.timesShown % 3 == 1 && VocabReviewSchedule.maskedExample(for: picked.word) != nil
         currentPromptPack = picked.pack
         currentPrompt = picked.word
         markShown(picked.word, in: picked.pack)
         showPromptOverlay = true
-        overlay.show()
     }
 
     private func markShown(_ word: VocabWord, in pack: VocabLanguagePack) {
@@ -561,16 +587,7 @@ final class VocabManager: ObservableObject {
         guard let word = currentPrompt, let pack = currentPromptPack else { return }
         var packWords = loadWords(for: pack)
         guard let idx = packWords.firstIndex(where: { $0.id == word.id }) else { return }
-        if knew {
-            packWords[idx].timesKnown += 1
-            packWords[idx].box = min(4, packWords[idx].box + 1)
-            if packWords[idx].box >= 4 {
-                packWords[idx].isActive = false
-                scheduleReview(for: &packWords[idx], in: pack)
-            }
-        } else {
-            packWords[idx].box = max(0, packWords[idx].box - 1)
-        }
+        VocabReviewSchedule.answer(&packWords[idx], recalled: knew, now: Date())
         saveWords(packWords, for: pack)
         if pack == languagePack {
             words = packWords
@@ -580,10 +597,16 @@ final class VocabManager: ObservableObject {
     }
 
     func dismissPrompt() {
+        let dismissing = currentPrompt
         showPromptOverlay = false
-        overlay.hide()
-        currentPrompt = nil
-        currentPromptPack = nil
+        // Keep text visible while the panel folds upward. A newer prompt must
+        // never be cleared by completion of the previous card's dismissal.
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(450))
+            guard let self, !self.showPromptOverlay, self.currentPrompt == dismissing else { return }
+            self.currentPrompt = nil
+            self.currentPromptPack = nil
+        }
     }
 
     /// Ударение показывается надстрочным знаком: «успі́х», а не «успИх».
@@ -647,13 +670,6 @@ final class VocabManager: ObservableObject {
         UserDefaults.standard.set(introducedWordCount(for: pack) + count, forKey: key)
     }
 
-    /// A word returns after three days, or sooner after ten newly introduced
-    /// words in the same language — whichever happens first.
-    private func scheduleReview(for word: inout VocabWord, in pack: VocabLanguagePack) {
-        word.reviewDueAt = Date().addingTimeInterval(3 * 24 * 60 * 60)
-        word.reviewAfterNewWords = introducedWordCount(for: pack) + 10
-    }
-
     private func ensureStudyQueuesIfNeeded() {
         for pack in enabledPacks {
             ensureStudyQueueIfNeeded(for: pack)
@@ -664,53 +680,64 @@ final class VocabManager: ObservableObject {
         guard isEnabled, isPackEnabled(pack) else { return }
         var packWords = loadWords(for: pack)
         let now = Date()
-        let introducedCount = introducedWordCount(for: pack)
         var changed = false
-
-        // Return only scheduled repetitions. Older mastered words with no
-        // schedule remain completed, so an app update never floods the queue.
-        for index in packWords.indices where packWords[index].box >= 4 {
-            let dueByDate = packWords[index].reviewDueAt.map { $0 <= now } ?? false
-            let dueByNewWords = packWords[index].reviewAfterNewWords.map { introducedCount >= $0 } ?? false
-            guard dueByDate || dueByNewWords else { continue }
-            packWords[index].box = 3
-            packWords[index].isActive = true
-            packWords[index].reviewDueAt = nil
-            packWords[index].reviewAfterNewWords = nil
-            changed = true
+        // Migrate old schedules when due, preserving completed/excluded words.
+        for i in packWords.indices where packWords[i].reviewStage == nil && packWords[i].box >= 4 {
+            let dueByDate = packWords[i].reviewDueAt.map { $0 <= now } ?? false
+            let dueByCount = packWords[i].reviewAfterNewWords.map { introducedWordCount(for: pack) >= $0 } ?? false
+            if dueByDate || dueByCount {
+                packWords[i].reviewStage = 3
+                packWords[i].reviewDueAt = now
+                packWords[i].reviewAfterNewWords = nil
+                changed = true
+            }
         }
-
-        guard autoFillEnabled, pack != .custom else {
-            if changed { saveWords(packWords, for: pack) }
-            if pack == languagePack { words = packWords }
-            return
+        if autoFillEnabled, pack != .custom {
+            let selected = selectedLevel(for: pack)
+            let levels = VocabLevel.allCases
+            let first = levels.firstIndex(of: selected) ?? 0
+            // Exhaust the curated stage before advancing to a harder one.
+            let entries = pack == .ukrainian
+                ? VocabStudyQueue.currentStage(catalog: Self.levelPack(for: pack), words: packWords,
+                    levels: levels.dropFirst(first).map(\.rawValue), deleted: deletedIDs(for: pack))
+                : Self.levelPack(for: pack).filter { $0.level == selected.rawValue }
+            let introduced = VocabStudyQueue.refill(&packWords, catalog: entries,
+                deleted: deletedIDs(for: pack), target: activeTarget, now: now)
+            changed = changed || introduced > 0
+            noteIntroducedWords(introduced, for: pack)
         }
+        if changed { saveWords(packWords, for: pack) }
+        if pack == languagePack && words != packWords { words = packWords }
+    }
 
-        let active = packWords.filter { $0.isActive && $0.box < 4 }.count
-        let needed = max(0, activeTarget - active)
-        guard needed > 0 else {
-            if changed { saveWords(packWords, for: pack) }
-            if pack == languagePack { words = packWords }
-            return
+    /// Start the requested conversational path once; never reset answers or
+    /// discard custom words. Old untouched built-ins remain available in lists.
+    private func prepareConversationCourseIfNeeded() {
+        let key = "vocabConversationCourseV1"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        var packWords = loadWords(for: .ukrainian)
+        for i in packWords.indices where packWords[i].box < 4 && packWords[i].reviewDueAt == nil {
+            packWords[i].isActive = false
         }
+        saveWords(packWords, for: .ukrainian)
+        UserDefaults.standard.set(VocabLevel.a1.rawValue, forKey: selectedLevelKey(for: .ukrainian))
+        UserDefaults.standard.set(true, forKey: key)
+    }
 
-        let existing = Set(packWords.map(\.id))
-        let level = selectedLevel(for: pack)
-        let additions = Self.levelPack(for: pack)
-            .filter { $0.level == level.rawValue && !existing.contains($0.ru) }
-            .prefix(needed)
-            .map { VocabWord(ru: $0.ru, uk: $0.target, isActive: true, isCustom: true) }
+    private static let reviewDateFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter
+    }()
 
-        guard additions.isEmpty == false else {
-            if changed { saveWords(packWords, for: pack) }
-            if pack == languagePack { words = packWords }
-            return
+    func studyStatus(for word: VocabWord) -> String {
+        if word.isExcluded == true { return "Уже знаю · больше не спрашивать" }
+        if let due = word.reviewDueAt {
+            let formatter = Self.reviewDateFormatter
+            let prefix = word.box >= 4 ? "Закрепление" : "Повторение"
+            return "\(prefix) \(formatter.localizedString(for: due, relativeTo: Date()))"
         }
-
-        packWords.insert(contentsOf: additions, at: 0)
-        noteIntroducedWords(additions.count, for: pack)
-        saveWords(packWords, for: pack)
-        if pack == languagePack { words = packWords }
+        return word.box >= 4 ? "Выучено" : "\(min(3, word.reviewStage ?? word.box))/3 успешных повторений"
     }
 
     private func storageKey(for pack: VocabLanguagePack) -> String {
@@ -720,105 +747,105 @@ final class VocabManager: ObservableObject {
     // MARK: Built-in starter list (common everyday words/phrases)
 
     private static let ukrainianWords: [VocabWord] = [
-        .init(ru: "успеть", uk: "встигнути"),
-        .init(ru: "отменить", uk: "скасувати"),
-        .init(ru: "перенести встречу", uk: "перенести зустріч"),
-        .init(ru: "напомни мне позже", uk: "нагадай мені пізніше"),
-        .init(ru: "я опаздываю", uk: "я запізнююся"),
-        .init(ru: "мне неудобно", uk: "мені незручно"),
-        .init(ru: "это срочно", uk: "це терміново"),
-        .init(ru: "мне подходит", uk: "мені підходить"),
-        .init(ru: "свободное время", uk: "вільний час"),
-        .init(ru: "расписание", uk: "розклад"),
-        .init(ru: "дедлайн", uk: "кінцевий термін"),
-        .init(ru: "привычка", uk: "звичка"),
-        .init(ru: "сосредоточиться", uk: "зосередитися"),
-        .init(ru: "отвлекаться", uk: "відволікатися"),
-        .init(ru: "перерыв", uk: "перерва"),
-        .init(ru: "нагрузка", uk: "навантаження"),
-        .init(ru: "самочувствие", uk: "самопочуття"),
-        .init(ru: "усталость", uk: "втома"),
-        .init(ru: "спокойствие", uk: "спокій"),
-        .init(ru: "обсудить", uk: "обговорити"),
-        .init(ru: "договориться", uk: "домовитися"),
-        .init(ru: "подтвердить", uk: "підтвердити"),
-        .init(ru: "уточнить", uk: "уточнити"),
-        .init(ru: "сравнить", uk: "порівняти"),
-        .init(ru: "выбрать", uk: "обрати"),
-        .init(ru: "решение", uk: "рішення"),
-        .init(ru: "причина", uk: "причина"),
-        .init(ru: "последствие", uk: "наслідок"),
-        .init(ru: "сомнение", uk: "сумнів"),
-        .init(ru: "поддержка", uk: "підтримка"),
-        .init(ru: "доверие", uk: "довіра"),
-        .init(ru: "впечатление", uk: "враження"),
-        .init(ru: "поведение", uk: "поведінка"),
-        .init(ru: "привычный", uk: "звичний"),
-        .init(ru: "неожиданно", uk: "несподівано"),
-        .init(ru: "вовремя", uk: "вчасно"),
-        .init(ru: "примерно", uk: "приблизно"),
-        .init(ru: "вместо этого", uk: "замість цього"),
-        .init(ru: "впрочем", uk: "втім"),
-        .init(ru: "поэтому", uk: "тому"),
-        .init(ru: "кстати", uk: "до речі"),
-        .init(ru: "окружение", uk: "оточення"),
-        .init(ru: "пространство", uk: "простір"),
-        .init(ru: "поверхность", uk: "поверхня"),
-        .init(ru: "граница", uk: "межа"),
-        .init(ru: "условие", uk: "умова"),
-        .init(ru: "возможность", uk: "можливість"),
-        .init(ru: "влияние", uk: "вплив"),
-        .init(ru: "разрешение", uk: "дозвіл"),
-        .init(ru: "запрос", uk: "запит"),
-        .init(ru: "напоминание", uk: "нагадування"),
-        .init(ru: "список дел", uk: "список справ"),
-        .init(ru: "покупки", uk: "покупки"),
-        .init(ru: "счёт", uk: "рахунок"),
-        .init(ru: "оплата", uk: "оплата"),
-        .init(ru: "доставка", uk: "доставка"),
-        .init(ru: "наличные", uk: "готівка"),
-        .init(ru: "карточка", uk: "картка"),
-        .init(ru: "стоимость", uk: "вартість"),
-        .init(ru: "скидка", uk: "знижка"),
-        .init(ru: "аренда", uk: "оренда"),
-        .init(ru: "сосед", uk: "сусід"),
-        .init(ru: "подъезд", uk: "під'їзд"),
-        .init(ru: "полотенце", uk: "рушник"),
-        .init(ru: "постель", uk: "постіль"),
-        .init(ru: "посуда", uk: "посуд"),
-        .init(ru: "морозилка", uk: "морозильник"),
-        .init(ru: "чайник", uk: "чайник"),
-        .init(ru: "зарядка", uk: "зарядка"),
-        .init(ru: "наушники", uk: "навушники"),
-        .init(ru: "выключатель", uk: "вимикач"),
-        .init(ru: "розетка", uk: "розетка"),
-        .init(ru: "ремонт", uk: "ремонт"),
-        .init(ru: "инструмент", uk: "інструмент"),
-        .init(ru: "лекарство", uk: "ліки"),
-        .init(ru: "аптека", uk: "аптека"),
-        .init(ru: "симптом", uk: "симптом"),
-        .init(ru: "давление", uk: "тиск"),
-        .init(ru: "кашель", uk: "кашель"),
-        .init(ru: "температура", uk: "температура"),
-        .init(ru: "беспокоиться", uk: "хвилюватися"),
-        .init(ru: "облегчение", uk: "полегшення"),
-        .init(ru: "честно говоря", uk: "чесно кажучи"),
-        .init(ru: "мне кажется", uk: "мені здається"),
-        .init(ru: "имеет смысл", uk: "має сенс"),
-        .init(ru: "не уверен", uk: "не впевнений"),
-        .init(ru: "постараюсь", uk: "постараюся"),
-        .init(ru: "получается", uk: "виходить"),
-        .init(ru: "не получается", uk: "не виходить"),
-        .init(ru: "я привык", uk: "я звик"),
-        .init(ru: "мне важно", uk: "для мене важливо"),
-        .init(ru: "я забыл", uk: "я забув"),
-        .init(ru: "я вспомнил", uk: "я згадав"),
-        .init(ru: "проверить", uk: "перевірити"),
-        .init(ru: "исправить", uk: "виправити"),
-        .init(ru: "обновить", uk: "оновити"),
-        .init(ru: "сохранить", uk: "зберегти"),
-        .init(ru: "поделиться", uk: "поділитися"),
-        .init(ru: "удалить", uk: "видалити"),
+        .init(ru: "успеть", uk: "всти́гнути"),
+        .init(ru: "отменить", uk: "скасува́ти"),
+        .init(ru: "перенести встречу", uk: "перенести́ зу́стріч"),
+        .init(ru: "напомни мне позже", uk: "нагада́й мені́ пізні́ше"),
+        .init(ru: "я опаздываю", uk: "я́ запі́знююся"),
+        .init(ru: "мне неудобно", uk: "мені́ незру́чно"),
+        .init(ru: "это срочно", uk: "це́ терміно́во"),
+        .init(ru: "мне подходит", uk: "мені́ підхо́дить"),
+        .init(ru: "свободное время", uk: "ві́льний ча́с"),
+        .init(ru: "расписание", uk: "ро́зклад"),
+        .init(ru: "дедлайн", uk: "кінце́вий те́рмін"),
+        .init(ru: "привычка", uk: "зви́чка"),
+        .init(ru: "сосредоточиться", uk: "зосере́дитися"),
+        .init(ru: "отвлекаться", uk: "відволіка́тися"),
+        .init(ru: "перерыв", uk: "пере́рва"),
+        .init(ru: "нагрузка", uk: "наванта́ження"),
+        .init(ru: "самочувствие", uk: "самопочуття́"),
+        .init(ru: "усталость", uk: "вто́ма"),
+        .init(ru: "спокойствие", uk: "спо́кій"),
+        .init(ru: "обсудить", uk: "обговори́ти"),
+        .init(ru: "договориться", uk: "домо́витися"),
+        .init(ru: "подтвердить", uk: "підтве́рдити"),
+        .init(ru: "уточнить", uk: "уточни́ти"),
+        .init(ru: "сравнить", uk: "порівня́ти"),
+        .init(ru: "выбрать", uk: "обра́ти"),
+        .init(ru: "решение", uk: "рі́шення"),
+        .init(ru: "причина", uk: "причи́на"),
+        .init(ru: "последствие", uk: "на́слідок"),
+        .init(ru: "сомнение", uk: "су́мнів"),
+        .init(ru: "поддержка", uk: "підтри́мка"),
+        .init(ru: "доверие", uk: "дові́ра"),
+        .init(ru: "впечатление", uk: "вра́ження"),
+        .init(ru: "поведение", uk: "поведі́нка"),
+        .init(ru: "привычный", uk: "зви́чний"),
+        .init(ru: "неожиданно", uk: "несподі́вано"),
+        .init(ru: "вовремя", uk: "вча́сно"),
+        .init(ru: "примерно", uk: "прибли́зно"),
+        .init(ru: "вместо этого", uk: "за́мість цього́"),
+        .init(ru: "впрочем", uk: "вті́м"),
+        .init(ru: "поэтому", uk: "тому́"),
+        .init(ru: "кстати", uk: "до́ ре́чі"),
+        .init(ru: "окружение", uk: "ото́чення"),
+        .init(ru: "пространство", uk: "про́стір"),
+        .init(ru: "поверхность", uk: "пове́рхня"),
+        .init(ru: "граница", uk: "межа́"),
+        .init(ru: "условие", uk: "умо́ва"),
+        .init(ru: "возможность", uk: "можли́вість"),
+        .init(ru: "влияние", uk: "впли́в"),
+        .init(ru: "разрешение", uk: "до́звіл"),
+        .init(ru: "запрос", uk: "за́пит"),
+        .init(ru: "напоминание", uk: "нага́дування"),
+        .init(ru: "список дел", uk: "спи́сок спра́в"),
+        .init(ru: "покупки", uk: "поку́пки"),
+        .init(ru: "счёт", uk: "раху́нок"),
+        .init(ru: "оплата", uk: "опла́та"),
+        .init(ru: "доставка", uk: "доста́вка"),
+        .init(ru: "наличные", uk: "готі́вка"),
+        .init(ru: "карточка", uk: "ка́ртка"),
+        .init(ru: "стоимость", uk: "ва́ртість"),
+        .init(ru: "скидка", uk: "зни́жка"),
+        .init(ru: "аренда", uk: "оре́нда"),
+        .init(ru: "сосед", uk: "сусі́д"),
+        .init(ru: "подъезд", uk: "під'ї́зд"),
+        .init(ru: "полотенце", uk: "рушни́к"),
+        .init(ru: "постель", uk: "по́стіль"),
+        .init(ru: "посуда", uk: "по́суд"),
+        .init(ru: "морозилка", uk: "морози́льник"),
+        .init(ru: "чайник", uk: "ча́йник"),
+        .init(ru: "зарядка", uk: "заря́дка"),
+        .init(ru: "наушники", uk: "наву́шники"),
+        .init(ru: "выключатель", uk: "вимика́ч"),
+        .init(ru: "розетка", uk: "розе́тка"),
+        .init(ru: "ремонт", uk: "ремо́нт"),
+        .init(ru: "инструмент", uk: "інструме́нт"),
+        .init(ru: "лекарство", uk: "лі́ки"),
+        .init(ru: "аптека", uk: "апте́ка"),
+        .init(ru: "симптом", uk: "симпто́м"),
+        .init(ru: "давление", uk: "ти́ск"),
+        .init(ru: "кашель", uk: "ка́шель"),
+        .init(ru: "температура", uk: "температу́ра"),
+        .init(ru: "беспокоиться", uk: "хвилюва́тися"),
+        .init(ru: "облегчение", uk: "поле́гшення"),
+        .init(ru: "честно говоря", uk: "че́сно ка́жучи"),
+        .init(ru: "мне кажется", uk: "мені́ здає́ться"),
+        .init(ru: "имеет смысл", uk: "ма́є се́нс"),
+        .init(ru: "не уверен", uk: "не́ впе́внений"),
+        .init(ru: "постараюсь", uk: "постара́юся"),
+        .init(ru: "получается", uk: "вихо́дить"),
+        .init(ru: "не получается", uk: "не́ вихо́дить"),
+        .init(ru: "я привык", uk: "я́ зви́к"),
+        .init(ru: "мне важно", uk: "для́ мене́ важли́во"),
+        .init(ru: "я забыл", uk: "я́ забу́в"),
+        .init(ru: "я вспомнил", uk: "я́ згада́в"),
+        .init(ru: "проверить", uk: "переві́рити"),
+        .init(ru: "исправить", uk: "ви́правити"),
+        .init(ru: "обновить", uk: "онови́ти"),
+        .init(ru: "сохранить", uk: "зберегти́"),
+        .init(ru: "поделиться", uk: "поділи́тися"),
+        .init(ru: "удалить", uk: "ви́далити"),
     ]
 
     private static let englishWords: [VocabWord] = [
@@ -898,7 +925,7 @@ final class VocabManager: ObservableObject {
         // Некоторые слова в украинском совпадают с русским буквально
         // («причина», «аптека», «температура»). Перевод верный, но карточка
         // бесполезна: вопрос и ответ одинаковые. В опрос такие не берём.
-        return list.filter { $0.ru.caseInsensitiveCompare($0.uk) != .orderedSame }
+        return list.filter { $0.ru.caseInsensitiveCompare($0.uk.replacingOccurrences(of: "\u{0301}", with: "")) != .orderedSame }
     }
 
     static func builtinWordIDs(for pack: VocabLanguagePack) -> Set<String> {
@@ -913,38 +940,17 @@ final class VocabManager: ObservableObject {
     static func topics(for pack: VocabLanguagePack) -> [VocabTopic] {
         switch pack {
         case .ukrainian:
-            return [
-                VocabTopic(id: "uk-food", title: "Еда и кафе", words: [
-                    .init(ru: "еда", uk: "їжа"),
-                    .init(ru: "завтрак", uk: "сніданок"),
-                    .init(ru: "обед", uk: "обід"),
-                    .init(ru: "ужин", uk: "вечеря"),
-                    .init(ru: "вкусно", uk: "смачно"),
-                    .init(ru: "голодный", uk: "голодний"),
-                    .init(ru: "счёт", uk: "рахунок"),
-                    .init(ru: "заказать", uk: "замовити"),
-                ]),
-                VocabTopic(id: "uk-city", title: "Город и дорога", words: [
-                    .init(ru: "улица", uk: "вулиця"),
-                    .init(ru: "здание", uk: "будівля"),
-                    .init(ru: "поезд", uk: "потяг"),
-                    .init(ru: "самолёт", uk: "літак"),
-                    .init(ru: "остановка", uk: "зупинка"),
-                    .init(ru: "налево", uk: "ліворуч"),
-                    .init(ru: "направо", uk: "праворуч"),
-                    .init(ru: "быстрее", uk: "швидше"),
-                ]),
-                VocabTopic(id: "uk-talk", title: "Разговор", words: [
-                    .init(ru: "привет", uk: "привіт"),
-                    .init(ru: "спасибо", uk: "дякую"),
-                    .init(ru: "пожалуйста", uk: "будь ласка"),
-                    .init(ru: "извини", uk: "вибач"),
-                    .init(ru: "как дела", uk: "як справи"),
-                    .init(ru: "понимаю", uk: "розумію"),
-                    .init(ru: "конечно", uk: "звісно"),
-                    .init(ru: "позже", uk: "пізніше"),
-                ]),
-            ]
+            let catalog = levelPack(for: pack)
+            var seen = Set<String>()
+            let categories = catalog.compactMap(\.category).filter { seen.insert($0).inserted }
+            return categories.map { category in
+                let words = catalog.filter { $0.category == category }.map { entry in
+                    var word = VocabWord(ru: entry.ru, uk: entry.target)
+                    VocabReviewSchedule.applyMetadata(entry, to: &word)
+                    return word
+                }
+                return VocabTopic(id: "uk-\(category)", title: category, words: words)
+            }
         case .english:
             return [
                 VocabTopic(id: "en-food", title: "Еда и кафе", words: [
@@ -1064,7 +1070,9 @@ final class VocabManager: ObservableObject {
         for candidate in Self.levelPack(for: languagePack) where candidate.level == level.rawValue {
             guard added.count < count else { break }
             guard !existing.contains(candidate.ru) else { continue }
-            added.append(VocabWord(ru: candidate.ru, uk: candidate.target, isActive: true, isCustom: true))
+            var word = VocabWord(ru: candidate.ru, uk: candidate.target, isActive: true)
+            VocabReviewSchedule.applyMetadata(candidate, to: &word)
+            added.append(word)
             existing.insert(candidate.ru)
             deleted.remove(candidate.ru)
         }
@@ -1091,7 +1099,9 @@ final class VocabManager: ObservableObject {
         var added: [VocabWord] = []
 
         for word in topic.words where !existing.contains(word.id) {
-            added.append(VocabWord(ru: word.ru, uk: word.uk, isActive: true, isCustom: true))
+            var addition = word
+            addition.isActive = true
+            added.append(addition)
             existing.insert(word.id)
             deleted.remove(word.id)
         }
@@ -1110,8 +1120,8 @@ struct VocabTopic: Identifiable {
     let words: [VocabWord]
 }
 
-/// Уровень сложности. Считается не на глаз: это диапазон позиций слова в
-/// частотном списке живой речи.
+/// Ukrainian labels are editorial course stages, not a CEFR certification.
+/// Other packs retain their original approximate frequency-based grouping.
 enum VocabLevel: String, CaseIterable, Identifiable {
     case a1 = "A1"
     case a2 = "A2"
@@ -1128,15 +1138,4 @@ enum VocabLevel: String, CaseIterable, Identifiable {
         case .b2: return String(localized: "редкие и точные")
         }
     }
-}
-
-struct VocabLevelWord: Codable {
-    let ru: String
-    let target: String
-    let level: String
-}
-
-struct VocabLevelPackFile: Codable {
-    let language: String
-    let words: [VocabLevelWord]
 }

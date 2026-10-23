@@ -33,6 +33,9 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
     @Published var isBatteryPopoverActive: Bool = false
     // Sheets are displayed outside the notch's hover region, so keep it open while one is active.
     @Published var isModalInteractionActive: Bool = false
+    @Published var isVocabPromptPresented = false
+    @Published var vocabPromptHeight: CGFloat = 320
+    private var vocabPresentation = VocabPromptPresentation()
 
     @Published var screenUUID: String?
 
@@ -69,6 +72,42 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
             .store(in: &cancellables)
 
         setupDetectorObserver()
+        setupVocabPresentation()
+    }
+
+    private func setupVocabPresentation() {
+        let vocab = VocabManager.shared
+        Publishers.CombineLatest(vocab.$showPromptOverlay, vocab.$currentPrompt.map { $0 != nil })
+            .receive(on: RunLoop.main)
+            .sink { [weak self] visible, hasWord in
+                self?.synchronizeVocabPresentation(visible: visible, hasWord: hasWord)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func synchronizeVocabPresentation(visible: Bool, hasWord: Bool) {
+        guard isVocabPromptPresented || screenUUID == nil || screenUUID == coordinator.selectedScreenUUID else { return }
+        let effect = vocabPresentation.synchronize(visible: visible, hasWord: hasWord, windowWasOpen: notchState == .open)
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.9)) {
+            switch effect {
+            case .present:
+                isVocabPromptPresented = true
+                open()
+            case .restoreOpen:
+                isVocabPromptPresented = false
+                updateOpenSizeIfNeeded()
+            case .fold:
+                close()
+            case nil:
+                break
+            }
+            // Text is retained during the fold. Its final removal also ends
+            // the layout override, even if a view was replaced mid-animation.
+            if !hasWord && isVocabPromptPresented {
+                isVocabPromptPresented = false
+                if notchState == .open { close() }
+            }
+        }
     }
 
     private func setupDetectorObserver() {
@@ -192,6 +231,10 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
     }
 
     func open() {
+        // Opening a regular tab during the fold must not resurrect retained text.
+        if isVocabPromptPresented && !vocabPresentation.isPresented {
+            isVocabPromptPresented = false
+        }
         self.notchSize = openNotchSizeForCurrentView()
         self.notchState = .open
 
@@ -204,6 +247,16 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
         notchSize = openNotchSizeForCurrentView()
     }
 
+    func refreshScreenGeometry(for screenUUID: String?) {
+        self.screenUUID = screenUUID
+        closedNotchSize = getClosedNotchSize(screenUUID: screenUUID)
+        if notchState == .open {
+            updateOpenSizeIfNeeded()
+        } else {
+            notchSize = closedNotchSize
+        }
+    }
+
     private func openNotchSizeForCurrentView() -> CGSize {
         openNotchSizeForView(
             coordinator.currentView,
@@ -212,20 +265,26 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
     }
 
     private func openNotchSizeForView(_ view: NotchViews, pomodoroExpanded: Bool) -> CGSize {
+        if isVocabPromptPresented {
+            return .init(width: max(VocabPromptCardView.width, closedNotchSize.width), height: max(24, effectiveClosedNotchHeight) + vocabPromptHeight)
+        }
         if coordinator.isFirstRunTourPresented {
             // Карточка тура: заголовок, текст, полоска прогресса и кнопки.
-            return .init(width: 640, height: 330)
+            return .init(width: 640, height: 420)
         }
 
         switch view {
-        case .home, .shelf, .clipboard, .sessionTimer:
+        case .home:
+            // Give the always-visible player volume its own row.
+            return .init(width: openNotchSize.width, height: openNotchSize.height + 24)
+        case .shelf, .clipboard, .sessionTimer:
             return openNotchSize
         case .systemStats:
             // Built from what is actually on screen: the old fixed height was
             // sized for three AI limits and clipped the tab once more appeared.
             let systemStats = SystemStatsManager.shared
             let aiUsage = AIUsageManager.shared
-            var height: CGFloat = 262
+            var height: CGFloat = 262 + 236
 
             let connectedLimits = aiUsage.connectedMetrics.count
             if connectedLimits > 0 {
@@ -239,7 +298,7 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
             if systemStats.isProcessDetailsVisible { height += 96 }
             if systemStats.showSupport { height += 160 }
 
-            return .init(width: openNotchSize.width, height: height)
+            return .init(width: openNotchSize.width, height: min(800, height))
         case .reminders:
             // Список напоминаний стал короче, а снизу добавился трекер
             // привычек — вкладка целиком стала выше.
@@ -250,7 +309,7 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
         case .games:
             return .init(width: 640, height: 840)
         case .pomodoro:
-            return .init(width: 640, height: pomodoroExpanded ? 560 : 240)
+            return .init(width: 640, height: (pomodoroExpanded || PomodoroManager.shared.awaitingReview) ? 650 : 350)
         case .breathing:
             return .init(width: openNotchSize.width, height: 240)
         }
@@ -260,6 +319,10 @@ class ArsWidgetViewModel: NSObject, ObservableObject {
         // Do not close while a share picker or sharing service is active
         if SharingStateManager.shared.preventNotchClose {
             return
+        }
+        if isVocabPromptPresented && VocabManager.shared.showPromptOverlay {
+            vocabPresentation.cancel()
+            VocabManager.shared.dismissPrompt()
         }
         self.notchSize = getClosedNotchSize(screenUUID: self.screenUUID)
         self.closedNotchSize = self.notchSize

@@ -11,187 +11,289 @@ import SwiftUI
 struct PomodoroView: View {
     @EnvironmentObject var vm: ArsWidgetViewModel
     @ObservedObject var pomodoro = PomodoroManager.shared
-    @State private var pulse = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var breathing = false
     @State private var newTaskTitle = ""
     @FocusState private var taskFieldFocused: Bool
 
-    private var isRunningOutOfTime: Bool {
-        pomodoro.isRunning && pomodoro.secondsRemaining <= 10 && pomodoro.secondsRemaining > 0
+    private var motion: Animation? {
+        reduceMotion ? nil : .spring(response: 0.42, dampingFraction: 0.86)
     }
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 12) {
             headerCard
+            workspaceToggle
 
-            if pomodoro.awaitingReview {
-                reviewCard
-            }
-
-            if pomodoro.showStatistics {
+            if pomodoro.showStatistics || pomodoro.awaitingReview {
                 ScrollView {
-                    expandedWorkspace
+                    VStack(spacing: 12) {
+                        if pomodoro.awaitingReview { reviewCard }
+                        if pomodoro.showStatistics { expandedWorkspace }
+                    }
+                    .padding(.bottom, 4)
                 }
-                .frame(maxHeight: 455)
+                .frame(height: 264)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(.horizontal, 8)
-        .padding(.bottom, 6)
+        .padding(.bottom, 12)
         .onAppear {
             vm.updateOpenSizeIfNeeded()
+            updateBreathing()
         }
-        .onChange(of: pomodoro.showStatistics) { _, _ in
-            vm.updateOpenSizeIfNeeded()
-        }
+        .onChange(of: pomodoro.showStatistics) { _, _ in resize() }
+        .onChange(of: pomodoro.awaitingReview) { _, _ in resize() }
+        .onChange(of: pomodoro.isRunning) { _, _ in updateBreathing() }
+        .onChange(of: reduceMotion) { _, _ in updateBreathing() }
+        .onDisappear { breathing = false }
     }
 
     private var headerCard: some View {
-        HStack(alignment: .center, spacing: 16) {
-            timerRing
-
-            VStack(alignment: .leading, spacing: 7) {
-                Text(phaseLabel)
-                    .font(.caption)
-                    .foregroundStyle(.gray)
-
-                Text(pomodoro.activeTask?.title ?? "Выбери задачу перед стартом")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .lineLimit(2)
-
-                HStack(spacing: 14) {
-                    Button {
-                        pomodoro.isRunning ? pomodoro.pause() : pomodoro.start()
-                    } label: {
-                        Image(systemName: pomodoro.isRunning ? "pause.fill" : "play.fill")
-                            .font(.system(size: 18, weight: .bold))
-                            .frame(width: 42, height: 42)
-                            .background(Circle().fill(phaseColor.opacity(0.24)))
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(!pomodoro.isRunning && !pomodoro.canStartFocus && pomodoro.phase == .idle)
-                    .opacity((!pomodoro.isRunning && !pomodoro.canStartFocus && pomodoro.phase == .idle) ? 0.35 : 1)
-
-                    if pomodoro.phase == .work {
-                        Button {
-                            pomodoro.stopAndReview()
-                        } label: {
-                            Image(systemName: "stop.fill")
-                                .font(.system(size: 17, weight: .bold))
-                                .frame(width: 42, height: 42)
-                                .background(Circle().fill(Color.white.opacity(0.12)))
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!pomodoro.isRunning || pomodoro.awaitingReview)
-                        .opacity((!pomodoro.isRunning || pomodoro.awaitingReview) ? 0.35 : 1)
-                    } else if pomodoro.phase == .shortBreak || pomodoro.phase == .longBreak {
-                        Button {
-                            pomodoro.skip()
-                        } label: {
-                            Image(systemName: "forward.end.fill")
-                                .font(.system(size: 16, weight: .bold))
-                                .frame(width: 42, height: 42)
-                                .background(Circle().fill(Color.cyan.opacity(0.2)))
-                        }
-                        .buttonStyle(.plain)
-                        .opacity(pomodoro.awaitingReview ? 0.35 : 1)
-                    }
-
-                    Button {
-                        pomodoro.reset()
-                    } label: {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 15, weight: .semibold))
-                            .frame(width: 36, height: 36)
-                            .background(Circle().fill(Color.white.opacity(0.08)))
-                    }
-                    .buttonStyle(.plain)
-
-                    Button {
-                        if !pomodoro.showStatistics {
-                            pomodoro.toggleStatistics()
-                        }
-                        DispatchQueue.main.async {
-                            taskFieldFocused = true
-                        }
-                    } label: {
-                        Label(
-                            "Задача",
-                            systemImage: "plus"
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .font(.system(size: 12, weight: .medium))
-
-                    Button {
-                        pomodoro.toggleStatistics()
-                    } label: {
-                        Label(
-                            pomodoro.showStatistics ? "Скрыть" : "Статистика",
-                            systemImage: pomodoro.showStatistics ? "chevron.up" : "chart.bar.xaxis"
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .font(.system(size: 12, weight: .medium))
+        VStack(spacing: 18) {
+            HStack(spacing: 8) {
+                Image(systemName: phaseIcon)
+                    .foregroundStyle(phaseColor)
+                Text(phaseLabel.uppercased())
+                    .tracking(1.8)
+                    .foregroundStyle(.white.opacity(0.7))
+                Spacer()
+                Text(statusLabel)
+                    .foregroundStyle(phaseColor.opacity(0.9))
+                Menu {
+                    Button("Сбросить таймер", systemImage: "arrow.counterclockwise") { pomodoro.reset() }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .foregroundStyle(.white.opacity(0.5))
+                        .frame(width: 24, height: 24)
+                        .contentShape(Rectangle())
                 }
-                .foregroundStyle(.white.opacity(0.95))
-                .font(.system(size: 14))
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+                .menuIndicator(.hidden)
+                .help("Действия с таймером")
+                .accessibilityLabel("Действия с таймером")
+            }
+            .font(.system(size: 10, weight: .semibold))
+
+            HStack(alignment: .center, spacing: 24) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(pomodoro.awaitingReview ? "Итог" : pomodoro.formattedTimeRemaining)
+                        .font(.system(size: pomodoro.awaitingReview ? 64 : 76, weight: .medium, design: .rounded))
+                        .tracking(-3)
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .contentTransition(.numericText(countsDown: true))
+                        .animation(reduceMotion ? nil : .easeInOut(duration: 0.28), value: pomodoro.secondsRemaining)
+                        .minimumScaleFactor(0.7)
+                        .lineLimit(1)
+                        .accessibilityLabel(pomodoro.awaitingReview ? "Итог сессии" : "Осталось \(pomodoro.formattedTimeRemaining)")
+                    taskPicker
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(spacing: 10) {
+                    Button(action: primaryAction) {
+                        ZStack {
+                            Circle()
+                                .stroke(phaseColor.opacity(breathing ? 0.08 : 0.28), lineWidth: 1)
+                                .scaleEffect(breathing ? 1.2 : 1.06)
+                            Circle()
+                                .fill(LinearGradient(colors: [phaseColor, phaseColor.opacity(0.83)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            Image(systemName: pomodoro.awaitingReview ? "checkmark" : (pomodoro.isRunning ? "pause.fill" : "play.fill"))
+                                .font(.system(size: 25, weight: .semibold))
+                                .offset(x: pomodoro.isRunning || pomodoro.awaitingReview ? 0 : 2)
+                                .foregroundStyle(.black.opacity(0.88))
+                                .contentTransition(.symbolEffect(.replace))
+                        }
+                        .frame(width: 74, height: 74)
+                        .contentShape(Circle())
+                    }
+                    .buttonStyle(PomodoroPressStyle())
+                    .disabled(pomodoro.awaitingReview)
+                    .opacity(pomodoro.awaitingReview ? 0.65 : 1)
+                    .accessibilityLabel(primaryLabel)
+                    .help(primaryLabel)
+
+                    Text(primaryLabel)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.7))
+                }
+                .frame(width: 100)
             }
 
-            Spacer(minLength: 0)
+            if pomodoro.phase == .idle && !pomodoro.awaitingReview {
+                HStack(spacing: 6) {
+                    ForEach([25, 45, 60], id: \.self) { minutes in
+                        Button {
+                            withAnimation(motion) { pomodoro.workMinutes = minutes }
+                        } label: {
+                            Text("\(minutes) мин")
+                                .font(.system(size: 11, weight: .medium))
+                                .padding(.horizontal, 11)
+                                .padding(.vertical, 7)
+                                .foregroundStyle(pomodoro.workMinutes == minutes ? phaseColor : .white.opacity(0.5))
+                                .background(Capsule().fill(pomodoro.workMinutes == minutes ? phaseColor.opacity(0.13) : .white.opacity(0.04)))
+                                .overlay(Capsule().stroke(pomodoro.workMinutes == minutes ? phaseColor.opacity(0.22) : .clear, lineWidth: 1))
+                        }
+                        .buttonStyle(PomodoroPressStyle())
+                        .accessibilityAddTraits(pomodoro.workMinutes == minutes ? .isSelected : [])
+                    }
+                    Spacer(minLength: 4)
+                    Text("Отдых \(pomodoro.shortBreakMinutes) мин")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.white.opacity(0.35))
+                }
+            } else {
+                progressTrack
+            }
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.white.opacity(0.07))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(0.06), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .padding(.horizontal, 22)
+        .padding(.vertical, 18)
+        .background {
+            RoundedRectangle(cornerRadius: 26, style: .continuous)
+                .fill(LinearGradient(colors: [phaseColor.opacity(0.105), Color.white.opacity(0.025), Color.white.opacity(0.035)], startPoint: .topLeading, endPoint: .bottomTrailing))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 26, style: .continuous)
+                .stroke(LinearGradient(colors: [phaseColor.opacity(0.2), .white.opacity(0.05), .white.opacity(0.07)], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
+        }
     }
 
-    private var timerRing: some View {
-        ZStack {
-            Circle()
-                .stroke(Color.white.opacity(0.12), lineWidth: 5)
-
-            Circle()
-                .trim(from: 0, to: max(pomodoro.progress, 0.001))
-                .stroke(
-                    AngularGradient(
-                        gradient: Gradient(colors: [phaseColor.opacity(0.45), phaseColor]),
-                        center: .center
-                    ),
-                    style: StrokeStyle(lineWidth: 5, lineCap: .round)
-                )
-                .rotationEffect(.degrees(-90))
-                .shadow(color: phaseColor.opacity(0.55), radius: 4)
-                .animation(.easeInOut(duration: 0.4), value: pomodoro.progress)
-                .animation(.easeInOut(duration: 0.4), value: phaseColor)
-
-            VStack(spacing: 1) {
-                Image(systemName: phaseIcon)
-                    .font(.system(size: 10))
-                    .foregroundStyle(phaseColor)
-                Text(pomodoro.formattedTimeRemaining)
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .monospacedDigit()
+    private var taskPicker: some View {
+        HStack(spacing: 6) {
+            if let task = pomodoro.activeTask {
+                Menu {
+                    ForEach(pomodoro.pendingTasks) { candidate in
+                        Button {
+                            pomodoro.setActiveTask(candidate.id)
+                        } label: {
+                            if candidate.id == task.id { Label(candidate.title, systemImage: "checkmark") }
+                            else { Text(candidate.title) }
+                        }
+                    }
+                    Divider()
+                    Button("Новая задача…", systemImage: "plus") { revealTaskField() }
+                } label: {
+                    Text(task.title)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize(horizontal: false, vertical: true)
+                .disabled(pomodoro.awaitingReview)
+            } else {
+                Image(systemName: "pencil.line")
+                    .foregroundStyle(phaseColor.opacity(0.6))
+                TextField("На чём сосредоточимся?", text: $newTaskTitle)
+                    .textFieldStyle(.plain)
+                    .onSubmit(primaryAction)
             }
         }
-        .frame(width: 68, height: 68)
-        .scaleEffect(isRunningOutOfTime && pulse ? 1.08 : 1.0)
-        .animation(
-            isRunningOutOfTime
-                ? .easeInOut(duration: 0.5).repeatForever(autoreverses: true)
-                : .default,
-            value: pulse
-        )
-        .onChange(of: isRunningOutOfTime) { _, isLow in
-            pulse = isLow
+        .font(.system(size: 12))
+        .foregroundStyle(.white.opacity(0.58))
+        .frame(height: 22)
+    }
+
+    private var progressTrack: some View {
+        VStack(spacing: 9) {
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(.white.opacity(0.07))
+                    Capsule().fill(phaseColor)
+                        .frame(width: geometry.size.width * min(1, max(0, pomodoro.progress)))
+                }
+            }
+            .frame(height: 3)
+            .animation(reduceMotion ? nil : .linear(duration: 0.8), value: pomodoro.progress)
+            HStack(spacing: 5) {
+                ForEach(0..<min(8, max(1, pomodoro.sessionsBeforeLongBreak)), id: \.self) { index in
+                    Capsule()
+                        .fill(index < pomodoro.completedWorkSessions % max(1, pomodoro.sessionsBeforeLongBreak) ? phaseColor : .white.opacity(0.14))
+                        .frame(width: 14, height: 3)
+                }
+                Text("Сессия \(pomodoro.completedWorkSessions % max(1, pomodoro.sessionsBeforeLongBreak) + 1)")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.white.opacity(0.35))
+                    .padding(.leading, 4)
+                Spacer()
+                if pomodoro.phase == .work && !pomodoro.awaitingReview {
+                    Button("Завершить", systemImage: "stop.fill") { withAnimation(motion) { pomodoro.stopAndReview() } }
+                        .disabled(!pomodoro.isRunning || pomodoro.awaitingReview)
+                } else if (pomodoro.phase == .shortBreak || pomodoro.phase == .longBreak) && !pomodoro.awaitingReview {
+                    Button("Пропустить", systemImage: "forward.end.fill") { withAnimation(motion) { pomodoro.skip() } }
+                        .disabled(pomodoro.awaitingReview)
+                }
+            }
+            .font(.system(size: 10, weight: .medium))
+            .buttonStyle(.plain)
+            .foregroundStyle(.white.opacity(0.6))
         }
+        .frame(height: 30)
+    }
+
+    private var workspaceToggle: some View {
+        HStack {
+            Button {
+                withAnimation(motion) { pomodoro.toggleStatistics() }
+            } label: {
+                HStack(spacing: 7) {
+                    Image(systemName: "list.bullet.rectangle")
+                    Text("Задачи и итоги")
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 8, weight: .bold))
+                        .rotationEffect(.degrees(pomodoro.showStatistics ? 180 : 0))
+                }
+                .padding(.vertical, 7)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(PomodoroPressStyle())
+            Spacer()
+            Text("Сегодня \(pomodoro.todaysFocusMinutes) мин в фокусе")
+                .foregroundStyle(.white.opacity(0.35))
+        }
+        .font(.system(size: 11, weight: .medium))
+        .foregroundStyle(.white.opacity(0.6))
+        .padding(.horizontal, 8)
+    }
+
+    private var primaryLabel: String {
+        if pomodoro.awaitingReview { return "Сессия окончена" }
+        if pomodoro.isRunning { return "Пауза" }
+        return pomodoro.phase == .idle ? "Начать фокус" : "Продолжить"
+    }
+
+    private var statusLabel: String {
+        if pomodoro.awaitingReview { return "Готово" }
+        if pomodoro.isRunning { return "В процессе" }
+        return pomodoro.phase == .idle ? "Готов к старту" : "На паузе"
+    }
+
+    private func primaryAction() {
+        guard !pomodoro.awaitingReview else { return }
+        withAnimation(motion) {
+            if pomodoro.isRunning { pomodoro.pause() }
+            else {
+                if pomodoro.phase == .idle && !trimmedNewTask.isEmpty { addTask() }
+                pomodoro.start()
+            }
+        }
+    }
+
+    private func revealTaskField() {
+        withAnimation(motion) { pomodoro.showStatistics = true }
+        DispatchQueue.main.async { taskFieldFocused = true }
+    }
+
+    private func resize() {
+        withAnimation(motion) { vm.updateOpenSizeIfNeeded() }
+    }
+
+    private func updateBreathing() {
+        breathing = false
+        guard pomodoro.isRunning, !reduceMotion else { return }
+        withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) { breathing = true }
     }
 
     private var reviewCard: some View {
@@ -332,7 +434,7 @@ struct PomodoroView: View {
             }
 
             if pomodoro.pendingTasks.isEmpty && pomodoro.completedTasksToday.isEmpty {
-                Text("Добавь первую задачу. Таймер стартует по выбранной задаче.")
+                Text("Можно добавить задачу или просто начать фокус.")
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.45))
             } else {
@@ -555,8 +657,9 @@ struct PomodoroView: View {
     }
 
     private var phaseLabel: String {
+        if pomodoro.awaitingReview { return "Подведём итог" }
         switch pomodoro.phase {
-        case .idle: return "Готов к работе"
+        case .idle: return "Время для важного"
         case .work: return "Фокус"
         case .shortBreak: return "Короткий перерыв"
         case .longBreak: return "Длинный перерыв"
@@ -565,7 +668,7 @@ struct PomodoroView: View {
 
     private var phaseIcon: String {
         switch pomodoro.phase {
-        case .idle: return "list.bullet.clipboard"
+        case .idle: return "scope"
         case .work: return "bolt.fill"
         case .shortBreak, .longBreak: return "cup.and.saucer.fill"
         }
@@ -573,7 +676,7 @@ struct PomodoroView: View {
 
     private var phaseColor: Color {
         switch pomodoro.phase {
-        case .work, .idle: return Color(red: 1.0, green: 0.35, blue: 0.35)
+        case .work, .idle: return Color(red: 1.0, green: 0.69, blue: 0.40)
         case .shortBreak, .longBreak: return Color(red: 0.35, green: 0.85, blue: 0.55)
         }
     }
@@ -592,7 +695,7 @@ private struct PomodoroPendingTaskRow: View {
 
     private var phaseColor: Color {
         switch pomodoro.phase {
-        case .work, .idle: return Color(red: 1.0, green: 0.35, blue: 0.35)
+        case .work, .idle: return Color(red: 1.0, green: 0.69, blue: 0.40)
         case .shortBreak, .longBreak: return Color(red: 0.35, green: 0.85, blue: 0.55)
         }
     }
@@ -726,4 +829,14 @@ private struct PomodoroPendingTaskRow: View {
     PomodoroView()
         .frame(width: 420)
         .background(.black)
+}
+
+private struct PomodoroPressStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
+            .opacity(configuration.isPressed ? 0.8 : 1)
+            .animation(reduceMotion ? nil : .spring(response: 0.24, dampingFraction: 0.75), value: configuration.isPressed)
+    }
 }

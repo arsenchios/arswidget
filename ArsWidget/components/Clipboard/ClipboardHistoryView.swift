@@ -15,7 +15,7 @@ struct ClipboardHistoryView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Toggle(isOn: $clipboard.isEnabled) {
-                    Text("История копирования")
+                    Text("История текста")
                         .font(.caption)
                         .foregroundStyle(.gray)
                 }
@@ -33,6 +33,12 @@ struct ClipboardHistoryView: View {
                 }
             }
 
+            if clipboard.isEnabled, let message = clipboard.captureMessage {
+                Text(message)
+                    .font(.caption2)
+                    .foregroundStyle(.gray)
+            }
+
             if !clipboard.isEnabled {
                 Text("Выключено — ничего не отслеживается")
                     .font(.caption2)
@@ -42,7 +48,7 @@ struct ClipboardHistoryView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 2) {
                     if clipboard.history.isEmpty {
-                        Text("Пока ничего не скопировано")
+                        Text("Здесь появятся последние скопированные тексты")
                             .font(.caption)
                             .foregroundStyle(.gray)
                             .padding(.top, 4)

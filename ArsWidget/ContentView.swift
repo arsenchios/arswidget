@@ -20,6 +20,7 @@ struct ContentView: View {
 
     @ObservedObject var coordinator = ArsWidgetViewCoordinator.shared
     @ObservedObject var musicManager = MusicManager.shared
+    @ObservedObject private var vocabManager = VocabManager.shared
     @ObservedObject var pomodoroManager = PomodoroManager.shared
     @ObservedObject var aiUsageManager = AIUsageManager.shared
     @ObservedObject var batteryModel = BatteryStatusViewModel.shared
@@ -59,6 +60,20 @@ struct ContentView: View {
         )
     }
 
+    private var showsVocabLayout: Bool {
+        vm.notchState == .open && vm.isVocabPromptPresented
+    }
+
+    private var closedMusicCenterWidth: CGFloat {
+        coordinator.expandingView.show && coordinator.expandingView.type == .music
+            && Defaults[.sneakPeekStyles] == .inline ? 380 : vm.closedNotchSize.width
+    }
+
+    private var closedMusicSideWidth: CGFloat {
+        max(max(0, vm.effectiveClosedNotchHeight - 12) + 4 + 36 + Self.closedIndicatorsGap,
+            closedTrailingIndicatorsWidth)
+    }
+
     private var computedChinWidth: CGFloat {
         var chinWidth: CGFloat = vm.closedNotchSize.width
 
@@ -70,7 +85,7 @@ struct ContentView: View {
             && vm.notchState == .closed && (musicManager.isPlaying || !musicManager.isPlayerIdle)
             && coordinator.musicLiveActivityEnabled && !vm.hideOnClosed
         {
-            chinWidth += (2 * max(0, vm.effectiveClosedNotchHeight - 12) + 20)
+            return closedMusicCenterWidth + 2 * closedMusicSideWidth
         } else if !coordinator.expandingView.show && vm.notchState == .closed
             && (!musicManager.isPlaying && musicManager.isPlayerIdle) && Defaults[.showNotHumanFace]
             && !vm.hideOnClosed
@@ -138,7 +153,7 @@ struct ContentView: View {
 
     private var shouldKeepOpenOnMouseLeave: Bool {
         vm.notchState == .open && (
-            coordinator.isFirstRunTourPresented
+            vm.isVocabPromptPresented || coordinator.isFirstRunTourPresented
                 || coordinator.currentView == .games
                 || vm.isModalInteractionActive
         )
@@ -165,12 +180,13 @@ struct ContentView: View {
     }
 
     private var openInnerWidth: CGFloat {
+        if vm.isVocabPromptPresented { return VocabPromptCardView.width }
         let sideInset = (
             Defaults[.cornerRadiusScaling]
             ? cornerRadiusInsets.opened.top
             : cornerRadiusInsets.opened.bottom
         ) + 12
-        return max(420, vm.notchSize.width - (sideInset * 2))
+        return max(vm.isVocabPromptPresented ? 340 : 420, vm.notchSize.width - (sideInset * 2))
     }
 
     var body: some View {
@@ -193,15 +209,15 @@ struct ContentView: View {
 
             VStack(spacing: 0) {
                 let mainLayout = NotchLayout()
-                    .frame(alignment: .top)
+                    .frame(width: showsVocabLayout ? VocabPromptCardView.width : nil, alignment: .top)
                     .padding(
                         .horizontal,
-                        vm.notchState == .open
+                        showsVocabLayout ? 0 : vm.notchState == .open
                         ? Defaults[.cornerRadiusScaling]
                         ? (cornerRadiusInsets.opened.top) : (cornerRadiusInsets.opened.bottom)
                         : cornerRadiusInsets.closed.bottom
                     )
-                    .padding([.horizontal, .bottom], vm.notchState == .open ? 12 : 0)
+                    .padding([.horizontal, .bottom], vm.notchState == .open ? (vm.isVocabPromptPresented ? 0 : 12) : 0)
                     .background(.black)
                     .clipShape(currentNotchShape)
                     .overlay(alignment: .top) {
@@ -238,25 +254,26 @@ struct ContentView: View {
                     .onHover { hovering in
                         handleHover(hovering)
                     }
-                    .onTapGesture {
-                        if vm.notchState == .closed {
-                            doOpen()
-                        }
-                    }
-                    .conditionalModifier(Defaults[.enableGestures]) { view in
-                        view
-                            .panGesture(direction: .down) { translation, phase in
-                                handleDownGesture(translation: translation, phase: phase)
-                            }
+                    .simultaneousGesture(
+                        TapGesture().onEnded {
+                            if vm.notchState == .closed { doOpen() }
+                        },
+                        including: vm.notchState == .closed ? .all : .none
+                    )
+                    .panGesture(
+                        direction: .down,
+                        enabled: Defaults[.enableGestures] && !vm.isVocabPromptPresented
+                    ) { translation, phase in
+                        handleDownGesture(translation: translation, phase: phase)
                     }
                     .onReceive(NotificationCenter.default.publisher(for: .sharingDidFinish)) { _ in
-                        if vm.notchState == .open && !isHovering && !vm.isBatteryPopoverActive {
+                        if vm.notchState == .open && !isHovering && !vm.isBatteryPopoverActive && !shouldKeepOpenOnMouseLeave {
                             hoverTask?.cancel()
                             hoverTask = Task {
                                 try? await Task.sleep(for: .milliseconds(100))
                                 guard !Task.isCancelled else { return }
                                 await MainActor.run {
-                                    if self.vm.notchState == .open && !self.isHovering && !self.vm.isBatteryPopoverActive && !SharingStateManager.shared.preventNotchClose {
+                                    if self.vm.notchState == .open && !self.isHovering && !self.vm.isBatteryPopoverActive && !SharingStateManager.shared.preventNotchClose && !self.shouldKeepOpenOnMouseLeave {
                                         self.vm.close()
                                     }
                                 }
@@ -275,13 +292,13 @@ struct ContentView: View {
                         }
                     }
                     .onChange(of: vm.isBatteryPopoverActive) {
-                        if !vm.isBatteryPopoverActive && !isHovering && vm.notchState == .open && !SharingStateManager.shared.preventNotchClose {
+                        if !vm.isBatteryPopoverActive && !isHovering && vm.notchState == .open && !SharingStateManager.shared.preventNotchClose && !shouldKeepOpenOnMouseLeave {
                             hoverTask?.cancel()
                             hoverTask = Task {
                                 try? await Task.sleep(for: .milliseconds(100))
                                 guard !Task.isCancelled else { return }
                                 await MainActor.run {
-                                    if !self.vm.isBatteryPopoverActive && !self.isHovering && self.vm.notchState == .open && !SharingStateManager.shared.preventNotchClose {
+                                    if !self.vm.isBatteryPopoverActive && !self.isHovering && self.vm.notchState == .open && !SharingStateManager.shared.preventNotchClose && !self.shouldKeepOpenOnMouseLeave {
                                         self.vm.close()
                                     }
                                 }
@@ -342,13 +359,23 @@ struct ContentView: View {
                 }
 
                 vm.dropEvent = false
-                if !SharingStateManager.shared.preventNotchClose {
+                if !SharingStateManager.shared.preventNotchClose && !shouldKeepOpenOnMouseLeave {
                     vm.close()
                 }
             }
         }
+        .onChange(of: vm.isVocabPromptPresented) { _, visible in
+            if visible {
+                hoverTask?.cancel()
+                gestureProgress = .zero
+            }
+        }
         .onChange(of: coordinator.currentView) { _, _ in
             vm.updateOpenSizeIfNeeded()
+        }
+        .onChange(of: coordinator.isFirstRunTourPresented) { _, shown in
+            guard shown, vm.screenUUID == nil || vm.screenUUID == coordinator.selectedScreenUUID else { return }
+            withAnimation(animationSpring) { vm.open() }
         }
     }
 
@@ -404,6 +431,9 @@ struct ContentView: View {
                           ClosedActivityIndicators()
                       } else if !coordinator.expandingView.show && vm.notchState == .closed && (!musicManager.isPlaying && musicManager.isPlayerIdle) && Defaults[.showNotHumanFace] && !vm.hideOnClosed  {
                           ArsWidgetFaceAnimation()
+                       } else if vm.notchState == .open && vm.isVocabPromptPresented {
+                           Color.clear
+                               .frame(width: VocabPromptCardView.width, height: max(24, vm.effectiveClosedNotchHeight))
                        } else if vm.notchState == .open {
                            ArsWidgetHeader()
                                .frame(width: openInnerWidth, height: max(24, vm.effectiveClosedNotchHeight))
@@ -476,7 +506,16 @@ struct ContentView: View {
 
     @ViewBuilder
     private func openTabContent() -> some View {
-        if coordinator.isFirstRunTourPresented {
+        if vm.isVocabPromptPresented {
+            VocabPromptCardView { height in
+                guard abs(vm.vocabPromptHeight - height) > 1 else { return }
+                withAnimation(animationSpring) {
+                    vm.vocabPromptHeight = height
+                    vm.updateOpenSizeIfNeeded()
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+        } else if coordinator.isFirstRunTourPresented {
             FirstRunTourView()
                 .frame(maxWidth: .infinity, alignment: .top)
         } else {
@@ -538,7 +577,7 @@ struct ContentView: View {
 
     @ViewBuilder
     func MusicLiveActivity() -> some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 0) {
             HStack(spacing: 4) {
                 Image(nsImage: musicManager.albumArt)
                     .resizable()
@@ -555,6 +594,8 @@ struct ContentView: View {
 
                 musicVisualizerCapsule
             }
+            .padding(.trailing, Self.closedIndicatorsGap)
+            .frame(width: closedMusicSideWidth, alignment: .trailing)
 
             Rectangle()
                 .fill(.black)
@@ -594,16 +635,13 @@ struct ContentView: View {
                         }
                     }
                 )
-                .frame(
-                    width: (coordinator.expandingView.show
-                        && coordinator.expandingView.type == .music
-                        && Defaults[.sneakPeekStyles] == .inline)
-                        ? 380
-                        : vm.closedNotchSize.width
-                            + -cornerRadiusInsets.closed.top
-                )
+                .frame(width: closedMusicCenterWidth)
 
-            closedStatusIndicators
+            HStack(spacing: Self.closedAIUsageCapsuleSpacing) {
+                closedStatusIndicators
+            }
+            .padding(.leading, Self.closedIndicatorsGap)
+            .frame(width: closedMusicSideWidth, alignment: .leading)
         }
         .frame(
             height: vm.effectiveClosedNotchHeight,
@@ -695,27 +733,25 @@ struct ContentView: View {
     }
 
     private var musicVisualizerCapsule: some View {
-        Rectangle()
-            .fill(
-                Defaults[.coloredSpectrogram]
-                    ? Color(nsColor: musicManager.avgColor).gradient
-                    : Color.gray.gradient
-            )
-            // Keep the compact spectrum close to the album cover. Its drawing
-            // is 16 pt wide, so a narrow capsule prevents empty spacing.
-            .frame(width: 20, alignment: .center)
-            .mask {
-                AudioSpectrumView(isPlaying: $musicManager.isPlaying)
-                    .frame(width: 20, height: 14)
+        TimelineView(.animation(minimumInterval: 0.25, paused: !musicManager.isPlaying)) { timeline in
+            let time = timeline.date.timeIntervalSinceReferenceDate
+            HStack(alignment: .center, spacing: 2) {
+                ForEach(0..<4) { index in
+                    let pulse = (sin(time * (3.0 + Double(index) * 0.7) + Double(index) * 1.8) + 1) / 2
+                    Capsule()
+                        .fill(Defaults[.coloredSpectrogram]
+                              ? Color(nsColor: musicManager.avgColor).ensureMinimumBrightness(factor: 0.65)
+                              : Color.white.opacity(0.85))
+                        .frame(width: 2, height: musicManager.isPlaying ? 4 + pulse * 10 : 4)
+                        .animation(.linear(duration: 0.25), value: pulse)
+                }
             }
-            .frame(
-                width: 36,
-                height: max(0, vm.effectiveClosedNotchHeight - 12),
-                alignment: .center
-            )
-            .background(Color.white.opacity(0.06))
-            .clipShape(Capsule())
-            .clipped()
+            .frame(width: 20, height: 14)
+        }
+        .frame(width: 36, height: max(14, vm.effectiveClosedNotchHeight - 12))
+        .background(Color.white.opacity(0.06))
+        .clipShape(Capsule())
+        .accessibilityLabel(musicManager.isPlaying ? "Музыка воспроизводится" : "Музыка на паузе")
     }
 
     @ViewBuilder
@@ -857,222 +893,6 @@ struct GeneralDropTargetDelegate: DropDelegate {
 
     func performDrop(info: DropInfo) -> Bool {
         return false
-    }
-}
-
-private struct FirstRunTourStep {
-    let view: NotchViews
-    let icon: String
-    let title: String
-    let text: String
-    let accent: Color
-
-    static let all: [FirstRunTourStep] = [
-        .init(view: .home, icon: "music.note.list", title: "Музыка и календарь",
-              text: "Что играет и что сегодня в календаре — сразу под рукой. Управление музыкой прямо отсюда, без переключения на плеер.",
-              accent: .pink),
-        .init(view: .reminders, icon: "checklist", title: "Напоминания и привычки",
-              text: "Два списка дел из Напоминаний Apple, а снизу — привычки: неделя кружков, план на 21 день и счётчик дней подряд.",
-              accent: .orange),
-        .init(view: .pomodoro, icon: "timer", title: "Фокус и задачи",
-              text: "Запустите отсчёт, поработайте без отвлечений и сохраните результат. Остаток времени виден, даже когда виджет закрыт.",
-              accent: .red),
-        .init(view: .vocab, icon: "textformat.abc", title: "Изучение языков",
-              text: "Слова всплывают сами по расписанию. Две тысячи украинских слов по уровням от A1 до B2 — берите сколько нужно.",
-              accent: .yellow),
-        .init(view: .clipboard, icon: "doc.on.clipboard", title: "Буфер обмена",
-              text: "История скопированного. Нажмите на запись — она снова в буфере. Больше не нужно копировать одно и то же дважды.",
-              accent: .teal),
-        .init(view: .shelf, icon: "tray.fill", title: "Файлы под рукой",
-              text: "Перетащите файл на виджет — он полежит здесь, пока нужен. Удобно перекидывать между приложениями и через AirDrop.",
-              accent: .blue),
-        .init(view: .games, icon: "gamecontroller.fill", title: "Игры на перерыв",
-              text: "Две небольшие игры для паузы. Закрываются сами после простоя, чтобы не занимать память.",
-              accent: .purple),
-        .init(view: .systemStats, icon: "gauge", title: "Система и лимиты AI",
-              text: "Нагрузка на процессор и память. А с расширением для Chrome — сколько осталось у Claude, ChatGPT, Codex и других, прямо в закрытом виджете.",
-              accent: .green)
-    ]
-}
-
-private struct FirstRunTourView: View {
-    @EnvironmentObject private var vm: ArsWidgetViewModel
-    @ObservedObject private var coordinator = ArsWidgetViewCoordinator.shared
-    @State private var index = 0
-    @State private var progress: Double = 0
-    @State private var isPaused = false
-
-    /// Сколько показывать один шаг. Достаточно, чтобы прочитать две строки,
-    /// и не настолько долго, чтобы захотелось нажать «дальше».
-    private static let stepSeconds: Double = 7
-    private static let tick: Double = 0.05
-
-    // В @State, а не в let: вид перерисовывается на каждом тике, и обычное
-    // свойство создавало бы новый таймер по сорок раз в секунду.
-    @State private var timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
-
-    private var steps: [FirstRunTourStep] { FirstRunTourStep.all }
-    private var step: FirstRunTourStep { steps[index] }
-    private var isLastStep: Bool { index == steps.count - 1 }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            headline
-            Spacer(minLength: 10)
-            description
-            Spacer(minLength: 10)
-            footer
-        }
-        .padding(24)
-        .frame(maxWidth: 560, minHeight: 262, alignment: .topLeading)
-        .background(alignment: .topTrailing) {
-            // Мягкое свечение цветом шага — чтобы каждый экран отличался,
-            // а не выглядел одним и тем же окном с другим текстом.
-            Circle()
-                .fill(step.accent)
-                .frame(width: 190, height: 190)
-                .blur(radius: 90)
-                .opacity(0.5)
-                .offset(x: 40, y: -50)
-                .animation(.easeInOut(duration: 0.6), value: index)
-                .allowsHitTesting(false)
-        }
-        .onAppear(perform: selectStep)
-        .onHover { hovering in
-            // Пока читают — отсчёт стоит. Иначе экран уезжает на полуслове.
-            isPaused = hovering
-        }
-        .onReceive(timer) { _ in
-            guard !isPaused else { return }
-            progress += Self.tick / Self.stepSeconds
-            if progress >= 1 { advance() }
-        }
-    }
-
-    private var headline: some View {
-        HStack(alignment: .center, spacing: 14) {
-            Image(systemName: step.icon)
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(step.accent)
-                .frame(width: 48, height: 48)
-                .background(Circle().fill(step.accent.opacity(0.16)))
-                .overlay(Circle().stroke(step.accent.opacity(0.35), lineWidth: 1))
-                .contentTransition(.symbolEffect)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(index == 0 ? "Добро пожаловать в ArsWidget" : "ArsWidget")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.45))
-                Text(step.title)
-                    .font(.system(size: 21, weight: .bold))
-                    .foregroundStyle(.white)
-            }
-
-            Spacer(minLength: 0)
-
-            Text("\(index + 1) / \(steps.count)")
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(.white.opacity(0.35))
-        }
-    }
-
-    private var description: some View {
-        Text(step.text)
-            .font(.system(size: 14.5, weight: .medium, design: .rounded))
-            .foregroundStyle(.white.opacity(0.82))
-            .fixedSize(horizontal: false, vertical: true)
-            .id(index) // новый текст появляется, а не подменяется на месте
-            .transition(.opacity.combined(with: .move(edge: .bottom)))
-    }
-
-    private var footer: some View {
-        VStack(spacing: 12) {
-            progressTrack
-
-            HStack(spacing: 10) {
-                Button("Пропустить") { finishTour() }
-                    .buttonStyle(.plain)
-                    .font(.system(size: 13))
-                    .foregroundStyle(.white.opacity(0.45))
-
-                Spacer(minLength: 0)
-
-                if index > 0 {
-                    Button {
-                        goTo(index - 1)
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.6))
-                            .frame(width: 26, height: 26)
-                            .background(Circle().fill(Color.white.opacity(0.08)))
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                Button(isLastStep ? "Начать пользоваться" : "Дальше") {
-                    advance()
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(step.accent)
-            }
-        }
-    }
-
-    /// Полоска показывает и место в туре, и сколько осталось до автоперехода:
-    /// пройденные шаги залиты целиком, текущий заполняется на глазах.
-    private var progressTrack: some View {
-        HStack(spacing: 4) {
-            ForEach(steps.indices, id: \.self) { position in
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(Color.white.opacity(0.12))
-                        Capsule()
-                            .fill(step.accent)
-                            .frame(width: geo.size.width * fill(for: position))
-                    }
-                }
-                .frame(height: 3)
-                .contentShape(Rectangle())
-                .onTapGesture { goTo(position) }
-            }
-        }
-        .animation(.linear(duration: Self.tick), value: progress)
-    }
-
-    private func fill(for position: Int) -> Double {
-        if position < index { return 1 }
-        if position > index { return 0 }
-        return min(max(progress, 0), 1)
-    }
-
-    private func advance() {
-        if isLastStep {
-            finishTour()
-        } else {
-            goTo(index + 1)
-        }
-    }
-
-    private func goTo(_ newIndex: Int) {
-        guard steps.indices.contains(newIndex) else { return }
-        withAnimation(.smooth(duration: 0.35)) {
-            index = newIndex
-            progress = 0
-        }
-        selectStep()
-    }
-
-    private func selectStep() {
-        // Вкладка за спиной карточки переключается вместе с шагом — человек
-        // сразу видит то, о чём читает.
-        coordinator.currentView = step.view
-        vm.updateOpenSizeIfNeeded()
-    }
-
-    private func finishTour() {
-        coordinator.finishFirstRunTour()
-        vm.close()
     }
 }
 

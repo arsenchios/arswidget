@@ -40,23 +40,18 @@ struct MinimalFaceFeatures: View {
             }
         }
         .frame(width: self.width, height: self.height) // Maximum size of face
-        .onAppear {
-            startBlinking()
+        .task {
+            // SwiftUI cancels this task when the face disappears, unlike the
+            // old repeating Timer which accumulated on every appearance.
+            while !Task.isCancelled {
+                do { try await Task.sleep(for: .seconds(3)) } catch { return }
+                withAnimation(.spring(duration: 0.2)) { isBlinking = true }
+                do { try await Task.sleep(for: .milliseconds(100)) } catch { return }
+                withAnimation(.spring(duration: 0.2)) { isBlinking = false }
+            }
         }
     }
 
-    func startBlinking() {
-        Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
-            withAnimation(.spring(duration: 0.2)) {
-                isBlinking = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation(.spring(duration: 0.2)) {
-                    isBlinking = false
-                }
-            }
-        }
-    }
 }
 
 struct Eye: View {

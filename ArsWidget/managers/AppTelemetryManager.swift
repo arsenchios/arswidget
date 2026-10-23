@@ -29,7 +29,7 @@ final class AppTelemetryManager: ObservableObject {
     private static let pingInterval: TimeInterval = 24 * 60 * 60
     private static let appName = "arswidget"
 
-    @AppStorage("arswidgetTelemetryEnabled") var isEnabled = true {
+    @AppStorage("arswidgetTelemetryEnabled") var isEnabled = false {
         willSet { objectWillChange.send() }
         didSet { if isEnabled { scheduleSoon() } }
     }

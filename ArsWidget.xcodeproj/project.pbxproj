@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        BA0810000000000000000004 /* PlayerVolumeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0810000000000000000003 /* PlayerVolumeCommands.swift */; };
+        BA0810000000000000000002 /* VocabLearning.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0810000000000000000001 /* VocabLearning.swift */; };
 		1100290C2E847E2800035A57 /* NSItemProvider+LoadHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1100290B2E847E2800035A57 /* NSItemProvider+LoadHelpers.swift */; };
 		110029272E84FD4C00035A57 /* TemporaryFileStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110029262E84FD4C00035A57 /* TemporaryFileStorageService.swift */; };
 		1100292A2E8691B400035A57 /* FileShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110029292E8691B400035A57 /* FileShareView.swift */; };
@@ -160,12 +162,16 @@
 		AA00000000000000000000D4 /* HabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000D3 /* HabitsView.swift */; };
 		AA0000000000000000000012 /* ClipboardHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000011 /* ClipboardHistoryView.swift */; };
 		AA0000000000000000000014 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000013 /* BreathingView.swift */; };
-		AA0000000000000000000016 /* VocabPromptOverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* VocabPromptOverlayWindow.swift */; };
+		AA0000000000000000000016 /* VocabPromptCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* VocabPromptCardView.swift */; };
 		AA0000000000000000000018 /* VocabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000017 /* VocabView.swift */; };
 		AA000000000000000000001A /* GamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000019 /* GamesView.swift */; };
 		AA000000000000000000001C /* SystemStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000001B /* SystemStatsView.swift */; };
 		AA000000000000000000001E /* SessionTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000001D /* SessionTimerView.swift */; };
 		A1C100000000000000000002 /* KeyboardCleaningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C100000000000000000001 /* KeyboardCleaningManager.swift */; };
+		AC2900000000000000000001 /* ClipboardTextReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2900000000000000000002 /* ClipboardTextReader.swift */; };
+		AC3100000000000000000012 /* KeepAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3100000000000000000011 /* KeepAwakeManager.swift */; };
+		AC3100000000000000000022 /* KeepAwakeControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3100000000000000000021 /* KeepAwakeControlsView.swift */; };
+		AC3100000000000000000032 /* FirstRunTourView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3100000000000000000031 /* FirstRunTourView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -204,6 +210,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+        BA0810000000000000000003 /* PlayerVolumeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerVolumeCommands.swift; sourceTree = "<group>"; };
+        BA0810000000000000000001 /* VocabLearning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabLearning.swift; sourceTree = "<group>"; };
 		1100290B2E847E2800035A57 /* NSItemProvider+LoadHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+LoadHelpers.swift"; sourceTree = "<group>"; };
 		110029262E84FD4C00035A57 /* TemporaryFileStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryFileStorageService.swift; sourceTree = "<group>"; };
 		110029292E8691B400035A57 /* FileShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileShareView.swift; sourceTree = "<group>"; };
@@ -349,12 +357,16 @@
 		AA00000000000000000000D3 /* HabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000011 /* ClipboardHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardHistoryView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000013 /* BreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathingView.swift; sourceTree = "<group>"; };
-		AA0000000000000000000015 /* VocabPromptOverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabPromptOverlayWindow.swift; sourceTree = "<group>"; };
+		AA0000000000000000000015 /* VocabPromptCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabPromptCardView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000017 /* VocabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000019 /* GamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesView.swift; sourceTree = "<group>"; };
 		AA000000000000000000001B /* SystemStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStatsView.swift; sourceTree = "<group>"; };
 		AA000000000000000000001D /* SessionTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimerView.swift; sourceTree = "<group>"; };
 		A1C100000000000000000001 /* KeyboardCleaningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardCleaningManager.swift; sourceTree = "<group>"; };
+		AC2900000000000000000002 /* ClipboardTextReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardTextReader.swift; sourceTree = "<group>"; };
+		AC3100000000000000000011 /* KeepAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepAwakeManager.swift; sourceTree = "<group>"; };
+		AC3100000000000000000021 /* KeepAwakeControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepAwakeControlsView.swift; sourceTree = "<group>"; };
+		AC3100000000000000000031 /* FirstRunTourView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunTourView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -598,7 +610,7 @@
 		AA0000000000000000000023 /* Vocab */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000015 /* VocabPromptOverlayWindow.swift */,
+				AA0000000000000000000015 /* VocabPromptCardView.swift */,
 				AA0000000000000000000017 /* VocabView.swift */,
 			);
 			path = Vocab;
@@ -616,6 +628,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000000000000000000001B /* SystemStatsView.swift */,
+				AC3100000000000000000021 /* KeepAwakeControlsView.swift */,
 			);
 			path = SystemStats;
 			sourceTree = "<group>";
@@ -642,7 +655,11 @@
 				AA0000000000000000000001 /* PomodoroManager.swift */,
 				AA0000000000000000000099 /* GameSessionMonitor.swift */,
 				AA0000000000000000000003 /* ClipboardManager.swift */,
+				AC3100000000000000000011 /* KeepAwakeManager.swift */,
+				AC2900000000000000000002 /* ClipboardTextReader.swift */,
 				AA0000000000000000000005 /* VocabManager.swift */,
+                BA0810000000000000000001 /* VocabLearning.swift */,
+                BA0810000000000000000003 /* PlayerVolumeCommands.swift */,
 				AA0000000000000000000007 /* SessionTimerManager.swift */,
 				AA0000000000000000000009 /* SystemStatsManager.swift */,
 				AA00000000000000000000B1 /* AppTelemetryManager.swift */,
@@ -795,6 +812,7 @@
 			isa = PBXGroup;
 			children = (
 				11CFC6642E09C7B300748C80 /* OnboardingFinishView.swift */,
+				AC3100000000000000000031 /* FirstRunTourView.swift */,
 				11CFC6622E09917B00748C80 /* MusicControllerSelectionView.swift */,
 				11CFC6602E097F6800748C80 /* PermissionsRequestView.swift */,
 				11CFC65E2E097F2100748C80 /* OnboardingView.swift */,
@@ -919,6 +937,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 14CEF4212C5CAED400855D72 /* Build configuration list for PBXNativeTarget "ArsWidget" */;
 			buildPhases = (
+				AC2900000000000000000003 /* Build clipboard reader */,
 				14CEF40E2C5CAED300855D72 /* Sources */,
 				14CEF40F2C5CAED300855D72 /* Frameworks */,
 				14CEF4102C5CAED300855D72 /* Resources */,
@@ -1029,6 +1048,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+        AC2900000000000000000003 /* Build clipboard reader */ = {
+            isa = PBXShellScriptBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            inputPaths = (
+                "$(SRCROOT)/tools/clipboard-reader/build.sh",
+                "$(SRCROOT)/tools/clipboard-reader/main.swift",
+                "$(SRCROOT)/tools/clipboard-reader/ClipboardReader.entitlements",
+                "$(SRCROOT)/ArsWidget/managers/ClipboardTextReader.swift",
+            );
+            name = "Build clipboard reader";
+            outputPaths = (
+                "$(TARGET_BUILD_DIR)/$(EXECUTABLE_FOLDER_PATH)/ArsWidgetClipboardReader",
+                "$(DERIVED_FILE_DIR)/ClipboardReader",
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+            shellPath = /bin/sh;
+            shellScript = "sh \"$SRCROOT/tools/clipboard-reader/build.sh\"";
+        };
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		11F7484B2EC9AABA00F841DB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -1044,7 +1085,13 @@
 				AA0000000000000000000002 /* PomodoroManager.swift in Sources */,
 				AA000000000000000000009A /* GameSessionMonitor.swift in Sources */,
 				AA0000000000000000000004 /* ClipboardManager.swift in Sources */,
+				AC3100000000000000000032 /* FirstRunTourView.swift in Sources */,
+				AC3100000000000000000022 /* KeepAwakeControlsView.swift in Sources */,
+				AC3100000000000000000012 /* KeepAwakeManager.swift in Sources */,
+				AC2900000000000000000001 /* ClipboardTextReader.swift in Sources */,
 				AA0000000000000000000006 /* VocabManager.swift in Sources */,
+                BA0810000000000000000002 /* VocabLearning.swift in Sources */,
+                BA0810000000000000000004 /* PlayerVolumeCommands.swift in Sources */,
 				AA0000000000000000000008 /* SessionTimerManager.swift in Sources */,
 				AA000000000000000000000A /* SystemStatsManager.swift in Sources */,
 				AA00000000000000000000B2 /* AppTelemetryManager.swift in Sources */,
@@ -1055,7 +1102,7 @@
 				AA00000000000000000000D4 /* HabitsView.swift in Sources */,
 				AA0000000000000000000012 /* ClipboardHistoryView.swift in Sources */,
 				AA0000000000000000000014 /* BreathingView.swift in Sources */,
-				AA0000000000000000000016 /* VocabPromptOverlayWindow.swift in Sources */,
+				AA0000000000000000000016 /* VocabPromptCardView.swift in Sources */,
 				AA0000000000000000000018 /* VocabView.swift in Sources */,
 				AA000000000000000000001A /* GamesView.swift in Sources */,
 				AA000000000000000000001C /* SystemStatsView.swift in Sources */,
@@ -1198,14 +1245,14 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1022;
+				CURRENT_PROJECT_VERSION = 1043;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ArsWidgetXPCHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ArsWidgetXPCHelper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.2.10;
+				MARKETING_VERSION = 0.2.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.staroschuk.arswidget.ArsWidgetXPCHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -1223,14 +1270,14 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1022;
+				CURRENT_PROJECT_VERSION = 1043;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ArsWidgetXPCHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ArsWidgetXPCHelper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.2.10;
+				MARKETING_VERSION = 0.2.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.staroschuk.arswidget.ArsWidgetXPCHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -1377,7 +1424,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1022;
+				CURRENT_PROJECT_VERSION = 1043;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ArsWidget/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -1404,7 +1451,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.2.10;
+				MARKETING_VERSION = 0.2.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.staroschuk.arswidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1431,7 +1478,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1022;
+				CURRENT_PROJECT_VERSION = 1043;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ArsWidget/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -1457,7 +1504,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.2.10;
+				MARKETING_VERSION = 0.2.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.staroschuk.arswidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -5,6 +5,7 @@
 //  Created by Harsh Vardhan  Goswami  on 02/08/24.
 //
 
+import Darwin
 import Combine
 import Defaults
 import KeyboardShortcuts
@@ -21,6 +22,17 @@ struct ArsWidgetApp: App {
     let updaterController: SPUStandardUpdaterController
 
     init() {
+        // LaunchServices can run separate copies of the same app from different
+        // paths. Keep only the already running instance, before starting services.
+        let current = NSRunningApplication.current
+        if let bundleID = current.bundleIdentifier,
+           let existing = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+            .first(where: { $0.processIdentifier != current.processIdentifier && !$0.isTerminated }) {
+            existing.activate(options: [])
+            NSLog("ArsWidget is already running; ignoring a second launch")
+            exit(EXIT_SUCCESS)
+        }
+
         // Enable the login item once for new installs, while still respecting
         // a later choice to turn it off in Settings.
         let hasConfiguredLaunchAtLogin = UserDefaults.standard.bool(forKey: "hasConfiguredLaunchAtLogin")
@@ -37,7 +49,7 @@ struct ArsWidgetApp: App {
         }
 
         updaterController = SPUStandardUpdaterController(
-            startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+            startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
 
         // Initialize the settings window controller with the updater controller
         SettingsWindowController.shared.setUpdaterController(updaterController)
@@ -51,7 +63,7 @@ struct ArsWidgetApp: App {
                 }
             }
             .keyboardShortcut(KeyEquivalent(","), modifiers: .command)
-            CheckForUpdatesView(updater: updaterController.updater)
+            Link("Скачать обновление", destination: URL(string: "https://github.com/arsenchios/arswidget/releases/latest")!)
             Divider()
             Button("Перезапустить ArsWidget") {
                 ApplicationRelauncher.restart()
@@ -81,6 +93,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var previousScreens: [NSScreen]?
     private var screenLockedObserver: Any?
     private var screenUnlockedObserver: Any?
+    private var workspaceSessionObservers: [NSObjectProtocol] = []
     private var isScreenLocked: Bool = false
     private var windowScreenDidChangeObserver: Any?
     private var dragDetectors: [String: DragDetector] = [:] // UUID -> DragDetector
@@ -91,6 +104,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         NotificationCenter.default.removeObserver(self)
+        for observer in workspaceSessionObservers {
+            NSWorkspace.shared.notificationCenter.removeObserver(observer)
+        }
+        workspaceSessionObservers.removeAll()
         if let observer = screenLockedObserver {
             DistributedNotificationCenter.default().removeObserver(observer)
             screenLockedObserver = nil
@@ -99,6 +116,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             DistributedNotificationCenter.default().removeObserver(observer)
             screenUnlockedObserver = nil
         }
+        KeepAwakeManager.shared.stopAll()
+        ClipboardManager.shared.stopWatching()
         MusicManager.shared.destroy()
         AIUsageBridge.shared.stop()
         AppTelemetryManager.shared.stop()
@@ -113,7 +132,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func onScreenLocked(_ notification: Notification) {
         isScreenLocked = true
         PomodoroManager.shared.handleScreenLockChange(isLocked: true)
-        VocabManager.shared.dismissPrompt()
+        vocabManager.setSessionSuspended(.screenLocked, suspended: true)
         if !Defaults[.showOnLockScreen] {
             cleanupWindows()
         } else {
@@ -125,10 +144,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func onScreenUnlocked(_ notification: Notification) {
         isScreenLocked = false
         PomodoroManager.shared.handleScreenLockChange(isLocked: false)
-        if !Defaults[.showOnLockScreen] {
-            adjustWindowPosition(changeAlpha: true)
-        } else {
+        if Defaults[.showOnLockScreen] {
             disableSkyLightOnAllWindows()
+        }
+        adjustWindowPosition(changeAlpha: true)
+        setupDragDetectors()
+        vocabManager.setSessionSuspended(.screenLocked, suspended: false)
+    }
+
+    private func observeWorkspaceSessionChanges() {
+        let transitions: [(Notification.Name, VocabSessionAvailability.Suspension, Bool)] = [
+            (NSWorkspace.willSleepNotification, .systemAsleep, true),
+            (NSWorkspace.didWakeNotification, .systemAsleep, false),
+            (NSWorkspace.screensDidSleepNotification, .screensAsleep, true),
+            (NSWorkspace.screensDidWakeNotification, .screensAsleep, false),
+        ]
+        for (name, reason, suspended) in transitions {
+            let observer = NSWorkspace.shared.notificationCenter.addObserver(
+                forName: name, object: nil, queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor in
+                    guard let self else { return }
+                    if !suspended && !self.isScreenLocked {
+                        self.adjustWindowPosition(changeAlpha: true)
+                        self.setupDragDetectors()
+                    }
+                    self.vocabManager.setSessionSuspended(reason, suspended: suspended)
+                }
+            }
+            workspaceSessionObservers.append(observer)
         }
     }
 
@@ -303,6 +347,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        observeWorkspaceSessionChanges()
         AIUsageBridge.shared.start()
         AppTelemetryManager.shared.start()
 
@@ -515,6 +560,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
 
                 if let window = windows[uuid], let viewModel = viewModels[uuid] {
+                    viewModel.refreshScreenGeometry(for: uuid)
                     positionWindow(window, on: screen, changeAlpha: changeAlpha)
 
                     if viewModel.notchState == .closed {
@@ -539,8 +585,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
 
-            vm.screenUUID = selectedScreen.displayUUID
-            vm.notchSize = getClosedNotchSize(screenUUID: selectedScreen.displayUUID)
+            vm.refreshScreenGeometry(for: selectedScreen.displayUUID)
 
             if window == nil {
                 window = createArsWidgetWindow(for: selectedScreen, with: vm)

@@ -19,7 +19,7 @@ struct MusicPlayerView: View {
     var body: some View {
         HStack {
             AlbumArtView(vm: vm, albumArtNamespace: albumArtNamespace).padding(.all, 5)
-            MusicControlsView().drawingGroup().compositingGroup()
+            MusicControlsView()
         }
     }
 }
@@ -123,6 +123,13 @@ struct MusicControlsView: View {
         VStack(alignment: .leading) {
             songInfoAndSlider
             slotToolbar
+            HStack {
+                Spacer(minLength: 24)
+                VolumeControlView(compact: false)
+                    .frame(maxWidth: 160)
+            }
+            .padding(.trailing, 5)
+            .padding(.bottom, 3)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -190,7 +197,7 @@ struct MusicControlsView: View {
     }
 
     private var musicSlider: some View {
-        TimelineView(.animation(minimumInterval: musicManager.playbackRate > 0 ? 0.1 : nil)) { timeline in
+        TimelineView(.animation(minimumInterval: 0.2, paused: !musicManager.isPlaying)) { timeline in
             MusicSliderView(
                 sliderValue: $sliderValue,
                 duration: $musicManager.songDuration,
@@ -329,89 +336,59 @@ private extension Array where Element == MusicControlButton {
 
 struct VolumeControlView: View {
     @ObservedObject var musicManager = MusicManager.shared
+    var compact = true
     @State private var volumeSliderValue: Double = 0.5
-    @State private var dragging: Bool = false
-    @State private var showVolumeSlider: Bool = false
-    @State private var lastVolumeUpdateTime: Date = Date.distantPast
-    private let volumeUpdateThrottle: TimeInterval = 0.1
+    @State private var dragging = false
+    @State private var showVolumeSlider = false
 
     var body: some View {
-        HStack(spacing: 4) {
-            Button(action: {
-                if musicManager.volumeControlSupported {
-                    withAnimation(.easeInOut(duration: 0.12)) {
-                        showVolumeSlider.toggle()
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 6) {
+                Image(systemName: volumeSliderValue == 0 ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                    .font(.system(size: compact ? 14 : 11))
+                    .frame(width: compact ? 24 : 16)
+                    .onTapGesture {
+                        if compact { withAnimation(.easeInOut(duration: 0.12)) { showVolumeSlider.toggle() } }
+                    }
+                if !compact {
+                    Text(musicManager.volumeSourceName)
+                        .font(.system(size: 10))
+                        .lineLimit(1)
+                }
+                if !compact || showVolumeSlider {
+                    Slider(value: $volumeSliderValue, in: 0...1) { editing in
+                        dragging = editing
+                        if !editing { musicManager.setVolume(to: volumeSliderValue) }
+                    }
+                    .controlSize(.mini)
+                    .tint(.white)
+                    .accessibilityLabel("Громкость \(musicManager.volumeSourceName)")
+                    .accessibilityValue("\(Int(volumeSliderValue * 100)) процентов")
+                    .frame(minWidth: compact ? 48 : 60, maxWidth: compact ? 60 : .infinity)
+                    .onChange(of: volumeSliderValue) { _, value in
+                        if dragging { musicManager.setVolume(to: value) }
                     }
                 }
-            }) {
-                Image(systemName: volumeIcon)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(musicManager.volumeControlSupported ? .white : .gray)
             }
-            .buttonStyle(PlainButtonStyle())
+            .foregroundStyle(musicManager.volumeControlSupported ? .white.opacity(0.8) : .gray)
             .disabled(!musicManager.volumeControlSupported)
-            .frame(width: 24)
-
-            if showVolumeSlider && musicManager.volumeControlSupported {
-                CustomSlider(
-                    value: $volumeSliderValue,
-                    range: 0.0...1.0,
-                    color: .white,
-                    dragging: $dragging,
-                    lastDragged: .constant(Date.distantPast),
-                    onValueChange: { newValue in
-                        MusicManager.shared.setVolume(to: newValue)
-                    },
-                    onDragChange: { newValue in
-                        let now = Date()
-                        if now.timeIntervalSince(lastVolumeUpdateTime) > volumeUpdateThrottle {
-                            MusicManager.shared.setVolume(to: newValue)
-                            lastVolumeUpdateTime = now
-                        }
-                    }
-                )
-                .frame(width: 48, height: 8)
-                .transition(.scale.combined(with: .opacity))
+            .help(musicManager.volumeControlSupported
+                  ? "Громкость самого плеера, включая его AirPlay. Громкость Mac не меняется."
+                  : "Этот плеер не предоставляет управление своей громкостью.")
+            if !compact, let error = musicManager.volumeControlError {
+                Text(error).font(.system(size: 9)).foregroundStyle(.orange).lineLimit(2)
             }
         }
-        .clipped()
-        .onReceive(musicManager.$volume) { volume in
-            if !dragging {
-                volumeSliderValue = volume
+        .onReceive(musicManager.$volume.removeDuplicates()) { value in
+            if !dragging { volumeSliderValue = value }
+        }
+        .task(id: "\(musicManager.bundleIdentifier ?? "")-\(!compact || showVolumeSlider)") {
+            guard !compact || showVolumeSlider else { return }
+            // Poll only while the control is actually visible; no artwork reads.
+            while !Task.isCancelled {
+                if !dragging { await musicManager.syncVolumeFromActiveApp() }
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
             }
-        }
-        .onReceive(musicManager.$volumeControlSupported) { supported in
-            if !supported {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    showVolumeSlider = false
-                }
-            }
-        }
-        .onChange(of: showVolumeSlider) { _, isShowing in
-            if isShowing {
-                // Sync volume from app when slider appears
-                Task {
-                    await MusicManager.shared.syncVolumeFromActiveApp()
-                }
-            }
-        }
-        .onDisappear {
-            // volumeUpdateTask?.cancel() // No longer needed
-        }
-    }
-
-
-    private var volumeIcon: String {
-        if !musicManager.volumeControlSupported {
-            return "speaker.slash"
-        } else if volumeSliderValue == 0 {
-            return "speaker.slash.fill"
-        } else if volumeSliderValue < 0.33 {
-            return "speaker.1.fill"
-        } else if volumeSliderValue < 0.66 {
-            return "speaker.2.fill"
-        } else {
-            return "speaker.3.fill"
         }
     }
 }

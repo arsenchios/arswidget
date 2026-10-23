@@ -90,7 +90,7 @@ final class PomodoroManager: NSObject, ObservableObject {
     @Published private(set) var reviewAfterBreak: Bool = false
     @Published var reviewComment: String = ""
     @Published var reviewNextTaskTitle: String = ""
-    @Published var showStatistics: Bool = true
+    @Published var showStatistics: Bool = false
 
     @AppStorage("pomodoroWorkMinutes") var workMinutes: Int = 25 {
         didSet { if phase == .idle { secondsRemaining = workMinutes * 60 } }
@@ -207,7 +207,7 @@ final class PomodoroManager: NSObject, ObservableObject {
     }
 
     var canStartFocus: Bool {
-        !awaitingReview && activeTask != nil
+        !awaitingReview
     }
 
     var nextPendingTask: PomodoroTask? {
@@ -327,7 +327,7 @@ final class PomodoroManager: NSObject, ObservableObject {
 
         if phase == .idle {
             ensureActiveTask()
-            guard activeTask != nil else { return }
+            if activeTask == nil { addTask(title: "Фокус") }
             beginWork()
         } else if currentPhaseStartedAt == nil {
             currentPhaseStartedAt = Date()
@@ -402,9 +402,10 @@ final class PomodoroManager: NSObject, ObservableObject {
         guard phase == .work, isRunning else { return }
 
         let end = Date()
-        let duration = max(0, totalSeconds - secondsRemaining)
-        let safeDuration = max(0, duration)
-        let start = end.addingTimeInterval(TimeInterval(-safeDuration))
+        // Pausing already saves the preceding segment. Only review the
+        // current segment, otherwise pause/resume counts that time twice.
+        let start = currentPhaseStartedAt ?? end
+        let safeDuration = max(0, Int(end.timeIntervalSince(start)))
         let taskTitle = activeTask?.title ?? "Без задачи"
 
         timerCancellable?.cancel()
@@ -716,9 +717,7 @@ final class PomodoroManager: NSObject, ObservableObject {
         if overlayWindow == nil {
             overlayWindow = PomodoroBreakOverlayWindow()
         }
-        // The break always blocks other input: the only way out is the
-        // "Пропустить перерыв" button or Esc.
-        overlayWindow?.showOverlay(blocksInput: true)
+        overlayWindow?.showOverlay(blocksInput: lockDuringBreak)
     }
 
     private func hideBreakOverlay() {
