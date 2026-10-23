@@ -1062,7 +1062,7 @@
             name = "Build clipboard reader";
             outputPaths = (
                 "$(TARGET_BUILD_DIR)/$(EXECUTABLE_FOLDER_PATH)/ArsWidgetClipboardReader",
-                "$(DERIVED_FILE_DIR)/ClipboardReader",
+                "$(TEMP_DIR)/ClipboardReader",
             );
             runOnlyForDeploymentPostprocessing = 0;
             shellPath = /bin/sh;

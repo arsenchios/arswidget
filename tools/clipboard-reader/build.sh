@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
-reader_build_dir="${DERIVED_FILE_DIR}/ClipboardReader"
+# TEMP_DIR is writable recursively in Xcode's script sandbox; declared output
+# directories under DERIVED_FILE_DIR are allowed only as literal paths.
+reader_build_dir="${TEMP_DIR}/ClipboardReader"
 reader_destination="${TARGET_BUILD_DIR}/${EXECUTABLE_FOLDER_PATH}/ArsWidgetClipboardReader"
 mkdir -p "$reader_build_dir" "$(dirname "$reader_destination")"
 for reader_arch in $ARCHS; do
